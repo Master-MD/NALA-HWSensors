@@ -1,0 +1,2547 @@
+<!doctype html>
+<html lang="de" data-theme="fuselab-spatial">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NALA-HWSensors v2.5 & NALA-OS v6.6.6 — High-DPI Telemetry & macOS Stats Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="dark-pro"] {
+      --bg-void: #08090c;
+      --bg-surface: #0e1117;
+      --bg-card: rgba(16, 20, 28, 0.92);
+      --bg-card-hover: rgba(22, 28, 40, 0.96);
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --border-accent: rgba(6, 182, 212, 0.45);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #06b6d4;
+      --accent-secondary: #a855f7;
+      --accent-read: #00f0ff;
+      --accent-write: #f59e0b;
+      --accent-alloc: #9333ea;
+      --accent-ok: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-danger: #ef4444;
+      --card-radius: 10px;
+      --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="fuselab-spatial"] {
+      --bg-void: #060811;
+      --bg-surface: rgba(11, 15, 26, 0.88);
+      --bg-card: rgba(14, 19, 32, 0.78);
+      --bg-card-hover: rgba(20, 27, 45, 0.9);
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --border-accent: rgba(0, 229, 255, 0.65);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #00e5ff;
+      --accent-secondary: #8b5cf6;
+      --accent-read: #2dd4bf;
+      --accent-write: #f59e0b;
+      --accent-alloc: #8b5cf6;
+      --accent-ok: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-danger: #f43f5e;
+      --card-radius: 14px;
+      --font-display: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="porsche-chalk"] {
+      --bg-void: #f4f5f7;
+      --bg-surface: #ffffff;
+      --bg-card: rgba(255, 255, 255, 0.98);
+      --bg-card-hover: #ffffff;
+      --border-subtle: rgba(1, 2, 5, 0.14);
+      --border-accent: rgba(213, 0, 28, 0.85);
+      --text-primary: #010205;
+      --text-secondary: #40444d;
+      --text-muted: #6b6d70;
+      --accent-primary: #d5001c;
+      --accent-secondary: #0066cc;
+      --accent-read: #0066cc;
+      --accent-write: #e05a00;
+      --accent-alloc: #1e293b;
+      --accent-ok: #008a4b;
+      --accent-warn: #d97706;
+      --accent-danger: #d5001c;
+      --card-radius: 6px;
+      --font-display: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="porsche-gt"] {
+      --bg-void: #0b0c0e;
+      --bg-surface: #121318;
+      --bg-card: rgba(20, 22, 28, 0.95);
+      --bg-card-hover: rgba(28, 31, 40, 0.98);
+      --border-subtle: rgba(255, 255, 255, 0.14);
+      --border-accent: rgba(213, 0, 28, 0.82);
+      --text-primary: #fbfcff;
+      --text-secondary: #b0b5be;
+      --text-muted: #6b707b;
+      --accent-primary: #d5001c;
+      --accent-secondary: #c5ff00;
+      --accent-read: #c5ff00;
+      --accent-write: #ff9e00;
+      --accent-alloc: #d5001c;
+      --accent-ok: #00e676;
+      --accent-warn: #ff9e00;
+      --accent-danger: #d5001c;
+      --card-radius: 6px;
+      --font-display: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="terminator-hud"] {
+      --bg-void: #090002;
+      --bg-surface: #140005;
+      --bg-card: rgba(24, 2, 8, 0.94);
+      --bg-card-hover: rgba(36, 4, 12, 0.98);
+      --border-subtle: rgba(255, 0, 51, 0.3);
+      --border-accent: rgba(255, 0, 51, 0.8);
+      --text-primary: #ffe4e9;
+      --text-secondary: #ff4d6d;
+      --text-muted: #9f1239;
+      --accent-primary: #ff0033;
+      --accent-secondary: #ff758f;
+      --accent-read: #38bdf8;
+      --accent-write: #ff0033;
+      --accent-alloc: #e11d48;
+      --accent-ok: #ff4d6d;
+      --accent-warn: #fbbf24;
+      --accent-danger: #ff0033;
+      --card-radius: 0px;
+      --font-display: 'JetBrains Mono', monospace;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="umbrella-corp"] {
+      --bg-void: #070709;
+      --bg-surface: #101014;
+      --bg-card: rgba(18, 18, 24, 0.96);
+      --bg-card-hover: rgba(26, 26, 34, 0.98);
+      --border-subtle: rgba(255, 255, 255, 0.16);
+      --border-accent: rgba(225, 29, 72, 0.75);
+      --text-primary: #ffffff;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent-primary: #e11d48;
+      --accent-secondary: #ffffff;
+      --accent-read: #ffffff;
+      --accent-write: #e11d48;
+      --accent-alloc: #be123c;
+      --accent-ok: #38bdf8;
+      --accent-warn: #fb7185;
+      --accent-danger: #e11d48;
+      --card-radius: 6px;
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="matrix"] {
+      --bg-void: #020502;
+      --bg-surface: #040b04;
+      --bg-card: rgba(4, 16, 6, 0.95);
+      --bg-card-hover: rgba(8, 26, 10, 0.98);
+      --border-subtle: rgba(0, 255, 65, 0.22);
+      --border-accent: rgba(0, 255, 65, 0.65);
+      --text-primary: #d8ffdf;
+      --text-secondary: #00ff41;
+      --text-muted: #15803d;
+      --accent-primary: #00ff41;
+      --accent-secondary: #22c55e;
+      --accent-read: #4ade80;
+      --accent-write: #a3e635;
+      --accent-alloc: #16a34a;
+      --accent-ok: #00ff41;
+      --accent-warn: #eab308;
+      --accent-danger: #ff0055;
+      --card-radius: 4px;
+      --font-display: 'JetBrains Mono', monospace;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="doom-uac"] {
+      --bg-void: #0c0807;
+      --bg-surface: #160f0d;
+      --bg-card: rgba(26, 16, 14, 0.95);
+      --bg-card-hover: rgba(36, 22, 18, 0.98);
+      --border-subtle: rgba(255, 42, 0, 0.25);
+      --border-accent: rgba(255, 153, 0, 0.65);
+      --text-primary: #fff5f0;
+      --text-secondary: #fdba74;
+      --text-muted: #9a3412;
+      --accent-primary: #ff2a00;
+      --accent-secondary: #ff9900;
+      --accent-read: #ff9900;
+      --accent-write: #ff2a00;
+      --accent-alloc: #dc2626;
+      --accent-ok: #f97316;
+      --accent-warn: #ff9900;
+      --accent-danger: #ff0000;
+      --card-radius: 2px;
+      --font-display: 'Chakra Petch', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    [data-theme="impeccable-craft"] {
+      --bg-void: #09090b;
+      --bg-surface: #121215;
+      --bg-card: rgba(20, 20, 24, 0.95);
+      --bg-card-hover: rgba(28, 28, 34, 0.98);
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --border-accent: rgba(99, 102, 241, 0.65);
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent-primary: #6366f1;
+      --accent-secondary: #22d3ee;
+      --accent-read: #22d3ee;
+      --accent-write: #f59e0b;
+      --accent-alloc: #818cf8;
+      --accent-ok: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-danger: #f43f5e;
+      --card-radius: 10px;
+    }
+    [data-theme="aura-typeui"] {
+      --bg-void: #05050a;
+      --bg-surface: #0c0b16;
+      --bg-card: rgba(16, 15, 30, 0.88);
+      --bg-card-hover: rgba(24, 22, 44, 0.94);
+      --border-subtle: rgba(167, 139, 250, 0.18);
+      --border-accent: rgba(139, 92, 246, 0.72);
+      --text-primary: #f5f3ff;
+      --text-secondary: #c4b5fd;
+      --text-muted: #6d28d9;
+      --accent-primary: #8b5cf6;
+      --accent-secondary: #ec4899;
+      --accent-read: #38bdf8;
+      --accent-write: #f472b6;
+      --accent-alloc: #a855f7;
+      --accent-ok: #34d399;
+      --accent-warn: #fbbf24;
+      --accent-danger: #fb7185;
+      --card-radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    .font-mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 1. AUTHENTIC macOS SONOMA / SEQUOIA TOP MENU BAR (Stats / MenuMeters Style) */
+    .macos-menubar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: 30px;
+      background: rgba(10, 12, 18, 0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      color: #ffffff;
+      user-select: none;
+    }
+    .menubar-left, .menubar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mb-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s;
+    }
+    .mb-btn:hover { background: rgba(255, 255, 255, 0.2); }
+    .mb-btn.active-blue { background: #007AFF; border-color: #007AFF; color: #fff; }
+    .mb-btn.active-red { background: #d5001c; border-color: #d5001c; color: #fff; }
+    .mb-btn.active-green { background: #10b981; border-color: #10b981; color: #020617; font-weight: 800; }
+
+    /* Pixel-Accurate macOS Stats / MenuMeters Micro-Widgets (Screenshots 1, 2, 3) */
+    .mb-status-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 5px;
+      border-radius: 5px;
+      cursor: grab;
+      transition: background 0.15s;
+    }
+    .mb-status-item:hover, .mb-status-item.selected {
+      background: rgba(0, 122, 255, 0.32);
+      outline: 1px solid #007AFF;
+    }
+    /* 3-letter vertical stacked label: R\nA\nM, C\nP\nU, G\nP\nU, S\nE\nN, B\nA\nT */
+    .stat-vlabel3 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 6.5px;
+      font-weight: 800;
+      line-height: 6.2px;
+      letter-spacing: -0.03em;
+      color: rgba(255, 255, 255, 0.95);
+    }
+    /* Vertical Rounded Fill Tank (Screenshot 1 RAM & GPU: 13x18px white rounded border + #007AFF fill) */
+    .stat-vtank {
+      width: 13px;
+      height: 18px;
+      border-radius: 3.5px;
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      background: rgba(0, 0, 0, 0.55);
+      padding: 1px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .stat-vtank-fill {
+      width: 100%;
+      border-radius: 1.5px;
+      transition: height 0.3s ease;
+    }
+    /* Framed Multi-Bar Chart Box (Screenshot 1 CPU & Screenshot 2 Sensors: 22x18px white rounded frame with vertical bars) */
+    .stat-framed-bars {
+      width: 22px;
+      height: 18px;
+      border-radius: 3.5px;
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      background: rgba(0, 0, 0, 0.55);
+      padding: 2px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2px;
+    }
+    .stat-bar-col {
+      flex: 1;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 1px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .stat-bar-col-fill {
+      width: 100%;
+      border-radius: 1px;
+      transition: height 0.3s ease;
+    }
+    /* Two-Line Label + Big % Box (Screenshot 2 "Sensors / 12%") */
+    .stat-label-pct {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0 2px;
+    }
+    .stat-label-pct .top { font-size: 7px; color: rgba(255,255,255,0.8); font-weight: 600; }
+    .stat-label-pct .bot { font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: #fff; margin-top: 1px; }
+    /* Stacked Dual-Value Box (Screenshot 2 "38° / 41°", Screenshot 3 "72% / 6:55") */
+    .stat-stacked-dual {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 700;
+      line-height: 9px;
+      color: #ffffff;
+      padding: 0 2px;
+    }
+    /* Horizontal Battery (Screenshot 3 left) */
+    .stat-bat-horiz {
+      display: inline-flex;
+      align-items: center;
+    }
+    .stat-bat-horiz-body {
+      width: 22px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1.5px solid rgba(255,255,255,0.95);
+      padding: 1.5px;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: center;
+    }
+    .stat-bat-horiz-nub {
+      width: 2px;
+      height: 5px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 0 1px 1px 0;
+      margin-left: 1px;
+    }
+    /* Vertical Battery (Screenshot 3 Available Tray) */
+    .stat-bat-vert {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-bat-vert-cap {
+      width: 5px;
+      height: 2px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 1px 1px 0 0;
+      margin-bottom: 0.5px;
+    }
+    .stat-bat-vert-body {
+      width: 11px;
+      height: 16px;
+      border-radius: 2.5px;
+      border: 1.5px solid rgba(255,255,255,0.95);
+      padding: 1.5px;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      align-items: flex-end;
+    }
+    /* Porsche Mini Fuel Tank in Menubar */
+    .stat-porsche-tank {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(0,0,0,0.45);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: #fff;
+    }
+
+    /* 2. STATS MODULE WIDGET SELECTOR TRAY (Screenshots 2 & 3: Active | Available + Blue "Module" Bar) */
+    .stats-tray-drawer {
+      background: #121318;
+      border-bottom: 1px solid rgba(255,255,255,0.16);
+      padding: 12px 16px;
+      color: #ffffff;
+      position: relative;
+      z-index: 55;
+      display: none;
+    }
+    .stats-tray-drawer.open { display: block; }
+    .stats-dark-box {
+      background: #1c1d22;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+    .stats-active-avail-bar {
+      background: #141519;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9px;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      min-height: 48px;
+    }
+    .stats-divider {
+      width: 2px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 2px;
+      margin: 0 6px;
+    }
+    .stats-blue-module-header {
+      margin-top: 10px;
+      background: #007AFF;
+      color: #ffffff;
+      border-radius: 7px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .sensor-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      cursor: pointer;
+    }
+    .sensor-pill.pinned {
+      background: rgba(0, 122, 255, 0.22);
+      border-color: #007AFF;
+    }
+
+    /* 3. STOCK TICKER BAR (30px) & COCKPIT HEADER */
+    .ticker-bar {
+      height: 30px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      position: relative;
+      z-index: 30;
+    }
+    .cockpit-header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      position: relative;
+      z-index: 30;
+    }
+    .btn-ui {
+      background: var(--bg-void);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-ui:hover, .btn-ui.active {
+      border-color: var(--accent-primary);
+      color: var(--text-primary);
+      background: rgba(0, 229, 255, 0.12);
+    }
+    [data-theme="porsche-chalk"] .btn-ui.active,
+    [data-theme="porsche-gt"] .btn-ui.active {
+      background: #d5001c;
+      border-color: #d5001c;
+      color: #ffffff;
+    }
+
+    /* 4. MAIN 2D FLUID INSTRUMENT GRID & HIGH-CRAFT CARDS */
+    .cockpit-main {
+      position: relative;
+      z-index: 10;
+      padding: 12px 14px;
+    }
+    .instrument-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .nala-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(14px);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease;
+      user-select: none;
+      cursor: pointer;
+    }
+    .nala-card:hover { border-color: var(--border-accent); }
+    .nala-card.dragging {
+      opacity: 0.45;
+      transform: scale(0.98);
+      border: 2px dashed var(--accent-primary) !important;
+    }
+    .nala-card.drag-over {
+      border: 2px solid var(--accent-primary) !important;
+      box-shadow: 0 0 24px rgba(0, 229, 255, 0.35) !important;
+    }
+    .drag-handle {
+      cursor: grab;
+      padding: 1px 4px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-right: 4px;
+    }
+    .drag-handle:hover {
+      color: var(--accent-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .skin-pulldown {
+      background: var(--bg-void);
+      color: var(--text-primary);
+      border: 1px solid var(--border-accent);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+    }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(4, 6, 12, 0.82);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border-accent);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 780px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 18px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+    }
+    [data-theme="porsche-chalk"] .nala-card {
+      box-shadow: 0 6px 20px -6px rgba(1, 2, 5, 0.08), 0 1px 2px rgba(1, 2, 5, 0.04) !important;
+      border-top: 2.5px solid #d5001c !important;
+    }
+    [data-theme="porsche-gt"] .nala-card {
+      border-top: 2.5px solid #d5001c !important;
+    }
+    .nala-card.textless .card-top-bar,
+    .nala-card.textless .kpi-row,
+    .nala-card.textless .sub-row,
+    .nala-card.textless .card-footer {
+      display: none !important;
+    }
+    .nala-card.textless { padding: 4px !important; }
+
+    .card-top-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .card-code {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .card-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .kpi-box {
+      background: var(--bg-void);
+      border: 1px solid var(--border-subtle);
+      border-radius: 7px;
+      padding: 7px 9px;
+    }
+    .kpi-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+    .kpi-micro {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      padding-right: 14px;
+    }
+    .corner-resizer {
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      width: 14px;
+      height: 14px;
+      cursor: nwse-resize;
+      color: var(--accent-primary);
+      opacity: 0.75;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .corner-resizer:hover { opacity: 1; }
+
+    /* 5. MULTI-MONITOR ULTRA-ECO SCREENSAVER OVERLAY */
+    .screensaver-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(4, 6, 10, 0.96);
+      backdrop-filter: blur(20px);
+      padding: 18px;
+      display: none;
+      flex-direction: column;
+      color: #fff;
+      overflow-y: auto;
+    }
+    .screensaver-modal.open { display: flex; }
+    .monitors-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      flex: 1;
+    }
+    @media (max-width: 1100px) {
+      .monitors-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- SPATIAL 3D ISOMETRIC TOPOLOGY BACKDROP CANVAS -->
+  <canvas id="spatialBackdropCanvas" style="position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.85;"></canvas>
+
+  <!-- 1. AUTHENTIC macOS SONOMA / SEQUOIA STATUS MENU BAR (Exact Screenshots 1, 2, 3 Micro-Widgets!) -->
+  <div class="macos-menubar">
+    <div class="menubar-left">
+      <span style="font-weight:800; font-size:12px; display:inline-flex; align-items:center; gap:6px;">
+        <span style="font-size:14px;"></span> NALA-HWSensors
+        <span style="background:#007AFF; padding:1px 6px; border-radius:4px; font-family:var(--font-mono); font-size:10px;">v2.5 macOS</span>
+      </span>
+      <button class="mb-btn" id="btnTrayBuilder" onclick="toggleTrayBuilder()">
+        🎛️ Menubar Tray Builder (Stats Style)
+      </button>
+      <button class="mb-btn" id="btnScreensaver" onclick="toggleScreensaver()">
+        🖥️ Multi-Monitor Screensaver (&lt;2% CPU)
+      </button>
+      <div style="display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,0.1); padding:1px 7px; border-radius:5px; border:1px solid rgba(255,255,255,0.18);">
+        <span style="font-size:10px; font-family:var(--font-mono); color:rgba(255,255,255,0.75);">🎨 Skin:</span>
+        <select id="menubarSkinPulldown" onchange="onPulldownSkinChange(this.value)" style="background:transparent; color:#fff; border:none; font-family:var(--font-mono); font-size:11px; font-weight:700; outline:none; cursor:pointer;">
+          <option value="fuselab-spatial" style="background:#121318; color:#fff;">FuseLab Spatial 3D</option>
+          <option value="porsche-chalk" style="background:#121318; color:#fff;">🏎️ Porsche v4 Open Light</option>
+          <option value="porsche-gt" style="background:#121318; color:#fff;">🏁 Porsche GT3 Dark</option>
+          <option value="dark-pro" style="background:#121318; color:#fff;">Dark Pro</option>
+          <option value="terminator-hud" style="background:#121318; color:#fff;">Terminator Skynet HUD</option>
+          <option value="umbrella-corp" style="background:#121318; color:#fff;">Umbrella Corp Bio-Lab</option>
+          <option value="matrix" style="background:#121318; color:#fff;">Matrix Construct</option>
+          <option value="doom-uac" style="background:#121318; color:#fff;">DOOM UAC Tactical</option>
+          <option value="impeccable-craft" style="background:#121318; color:#fff;">Impeccable &amp; Emil Craft</option>
+          <option value="aura-typeui" style="background:#121318; color:#fff;">Aura &amp; TypeUI Swiss</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Live Draggable macOS NSStatusItem Tray (Rendered dynamically by JS to match Screenshots 1-3) -->
+    <div class="menubar-right" id="macosStatusItemTray"></div>
+  </div>
+
+  <!-- 2. AUTHENTIC macOS "STATS" MODULE WIDGET SELECTOR TRAY (Screenshots 2 & 3: Active | Available + Blue "Module" Bar) -->
+  <div class="stats-tray-drawer" id="statsTrayDrawer">
+    <div style="max-width:1360px; margin:0 auto;">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="display:flex; flex-wrap:wrap; gap:5px;" id="statsModuleTabs"></div>
+        <div style="display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; background:rgba(0,0,0,0.45); padding:4px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);">
+          <span style="color:rgba(255,255,255,0.6);">Menubar Farbe:</span>
+          <button class="mb-btn active-blue" id="colBtnBlue" onclick="setMenubarColorMode('macos-blue')">macOS Blue (#007AFF)</button>
+          <button class="mb-btn" id="colBtnSkin" onclick="setMenubarColorMode('skin-accent')">Skin Accent</button>
+          <button class="mb-btn" id="colBtnTraffic" onclick="setMenubarColorMode('traffic-light')">Thermal Ampel</button>
+          <button class="mb-btn" id="colBtnMono" onclick="setMenubarColorMode('monochrome')">Monochrome</button>
+          <button class="mb-btn" onclick="toggleTrayBuilder()">✕ Schließen</button>
+        </div>
+      </div>
+
+      <div class="stats-dark-box">
+        <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:rgba(255,255,255,0.65); margin-bottom:6px;">
+          <span><strong style="color:#fff;" id="trayActiveTitle">AKTIV IN DER MENÜLEISTE</strong> — Anklicken zum Entfernen</span>
+          <span><strong style="color:#007AFF;">VERFÜGBARE WIDGET-STILE (Stats / MenuMeters Vorlage)</strong> — Anklicken zum Hinzufügen</span>
+        </div>
+
+        <!-- Exact Dark Rounded Selector Bar with Vertical "|" Divider from Screenshots 2 & 3 -->
+        <div class="stats-active-avail-bar">
+          <div style="display:flex; align-items:center; gap:8px; min-width:110px;" id="trayActiveZone"></div>
+          <div class="stats-divider"></div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; flex:1;" id="trayAvailableZone"></div>
+        </div>
+
+        <!-- Exact macOS System Blue "Module" Section Bar from Screenshots 2 & 3 -->
+        <div class="stats-blue-module-header">
+          <span id="statsBlueHeaderTitle">Module — Sensors (45+ Apple Silicon M4 Max PMU & Legacy Intel SMC Sensoren)</span>
+          <span class="font-mono" style="font-size:11px;">Drag & Drop in der Menüleiste aktiv · GPLv2 HWSensors / FakeSMC Bridge</span>
+        </div>
+
+        <!-- 45+ Apple Silicon PMU & Legacy Intel SMC Sensor Matrix -->
+        <div class="sensor-grid" id="pmuSmcSensorGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 30px LIVE TELEMETRY BUS STOCK-TICKER (Animated Marquee + Speed Controls + Ticker Manager) -->
+  <div class="ticker-bar" onmouseenter="setTickerHover(true)" onmouseleave="setTickerHover(false)">
+    <div style="display:flex; align-items:center; gap:6px; padding-right:10px; flex-shrink:0;">
+      <span id="tickerStatusBadge" style="background:rgba(16,185,129,0.18); color:var(--accent-ok); border:1px solid rgba(16,185,129,0.45); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:800;">
+        ● LIVE TELEMETRYBUS
+      </span>
+    </div>
+    <div style="flex:1; overflow:hidden; white-space:nowrap; position:relative; mask-image:linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%); -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%);" id="tickerViewport">
+      <div id="tickerTrack" style="display:inline-block; white-space:nowrap; will-change:transform;"></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:4px; padding-left:10px; flex-shrink:0;">
+      <span style="font-size:10px; color:var(--text-muted);" id="tickerSpeedLabel" title="Aktuelle Laufband-Geschwindigkeit">1.0x</span>
+      <input type="range" id="tickerSpeedSlider" min="0.2" max="3.5" step="0.1" value="1.0" oninput="setTickerSpeed(this.value)" style="width:58px; accent-color:var(--accent-primary); cursor:pointer;" title="Ticker-Geschwindigkeit stufenlos regeln" />
+      <button class="btn-ui" onclick="adjustTickerSpeed(-0.25)" style="padding:2px 6px;" title="Ticker langsamer">[ − ]</button>
+      <button class="btn-ui" id="btnTickerPause" onclick="toggleTickerPause()" style="padding:2px 6px;" title="Ticker pausieren / fortsetzen">[ ⏸ ]</button>
+      <button class="btn-ui" onclick="adjustTickerSpeed(0.25)" style="padding:2px 6px;" title="Ticker schneller">[ + ]</button>
+      <button class="btn-ui" onclick="triggerTestAlert()" style="color:var(--accent-warn); border-color:var(--accent-warn); padding:2px 6px;" title="Kritischen Hardware-Alarm im Ticker testen">[ ! ] Alert</button>
+      <button class="btn-ui" onclick="openTickerManager()" style="padding:2px 7px;" title="Ticker-Meldungen, Speed &amp; CSV Export verwalten">[ ⚙ Ticker ]</button>
+      <button class="btn-ui" onclick="exportTelemetryCsv()" style="padding:2px 7px;">.CSV</button>
+    </div>
+  </div>
+
+  <!-- 4. COCKPIT HEADER WITH COMPACT SKIN PULLDOWN, PORSCHE 3-TUBE CHRONO TOGGLE & NANO-DOCK PRESETS -->
+  <header class="cockpit-header">
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div style="width:28px; height:28px; border-radius:7px; border:1px solid var(--border-accent); background:rgba(0,229,255,0.12); color:var(--accent-primary); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:800; font-size:12px;">
+        N6
+      </div>
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <h1 style="font-size:14px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; font-family:var(--font-display);">
+            NALA-OS v6.6.6 · NALA-HWSensors v2.5
+          </h1>
+          <span class="font-mono" style="font-size:11px; color:var(--accent-primary);" id="nodeIdentityBadge">
+            NALA-bRaiN-cORe · NODE-01 · MESH-SECURE · MacBook Pro M4 Max
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compact Skin Pulldown + Porsche 3-Tube Chrono / Fuel-Tank Toggle + Window Presets -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+      <div style="display:inline-flex; align-items:center; gap:6px;">
+        <label for="headerSkinPulldown" class="font-mono" style="font-size:11px; color:var(--text-secondary); font-weight:700;">🎨 Skin:</label>
+        <select id="headerSkinPulldown" class="skin-pulldown" onchange="onPulldownSkinChange(this.value)" title="Alle 10 Design-Skins im kompakten Pulldown-Menü">
+          <option value="fuselab-spatial">FuseLab Spatial 3D (AI Studio Default)</option>
+          <option value="porsche-chalk">🏎️ Porsche v4 Open Light (911 GT3 Chrono + Tank)</option>
+          <option value="porsche-gt">🏁 Porsche GT3 Dark (Guards Red + Acid Green)</option>
+          <option value="dark-pro">Dark Pro (Obsidian Studio)</option>
+          <option value="terminator-hud">Terminator Skynet T-800 HUD</option>
+          <option value="umbrella-corp">Umbrella Corp Bio-Lab</option>
+          <option value="matrix">Matrix Construct</option>
+          <option value="doom-uac">DOOM UAC Tactical</option>
+          <option value="impeccable-craft">Impeccable &amp; Emil Kowalski Craft</option>
+          <option value="aura-typeui">Aura &amp; TypeUI Swiss</option>
+        </select>
+      </div>
+
+      <span style="width:1px; height:18px; background:var(--border-subtle); margin:0 2px;"></span>
+
+      <button class="btn-ui" id="btnTogglePorscheGauges" onclick="togglePorscheGauges()" title="Zwischen Porsche 911 GT3 3-Tube Tachometer + Tankanzeige und NALA High-DPI Matrix/Spline umschalten">
+        ⏱️ Modus: High-DPI Matrix
+      </button>
+      <button class="btn-ui" id="btnNanoMode" onclick="toggleNanoMode()" title="Alle Texte ausblenden &amp; Karten auf kompakte Nano-Größe schrumpfen">
+        [ T ] Nur Graph / Nano
+      </button>
+    </div>
+  </header>
+
+  <!-- 5. MAIN 7-INSTRUMENT HIGH-DPI STUDIO COCKPIT (Drag & Drop Reordering + 1-Click Drill-Down + 2D Corner Resize!) -->
+  <main class="cockpit-main">
+    <div class="instrument-grid" id="instrumentGrid">
+      <!-- INST-01: TOTAL VRAM & RAM POOL -->
+      <article class="nala-card" id="card-vram" draggable="true" onclick="handleCardClick(event, 'card-vram')" style="width:445px; flex:1 1 410px;" data-h="116">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-01</span> <span class="card-title">Total VRAM &amp; RAM Pool</span></div>
+            <div class="card-sub">Honeycomb Memory Map · NVIDIA + AMD + M4 Max Unified Pool</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-vram')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-vram')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-vram', -70, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-vram', 85, 20)">[ + ]</button>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">Total Cluster VRAM Pool</div>
+            <div class="kpi-val" style="color:var(--accent-primary);" id="kpiVramVal">139.6 / 184.0 GB</div>
+            <div class="kpi-micro">NVIDIA: 34.4/56G · AMD: 89.2/128G</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Total Cluster System RAM</div>
+            <div class="kpi-val" style="color:var(--accent-secondary);" id="kpiRamVal">320.6 / 512.0 GB</div>
+            <div class="kpi-micro">Dell + Worker + Proxmox (8/8 ECC)</div>
+          </div>
+        </div>
+        <canvas id="canvas-vram" style="width:100%; height:116px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>■ Allocated &nbsp; ■ Read &nbsp; ■ Write</span>
+          <span style="color:var(--accent-primary);">Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-vram', 'canvas-vram')">◢</div>
+      </article>
+
+      <!-- INST-02: AI TOKEN & PREFILL ENGINE -->
+      <article class="nala-card" id="card-tokens" draggable="true" onclick="handleCardClick(event, 'card-tokens')" style="width:445px; flex:1 1 410px;" data-h="112">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-02</span> <span class="card-title">AI Token &amp; Prefill Engine ⚡</span></div>
+            <div class="card-sub">Dual-Spline &amp; FuseLab Anomaly Highlight Stream</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-tokens')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-tokens')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-tokens', -70, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-tokens', 85, 20)">[ + ]</button>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">Current Token/s</div>
+            <div class="kpi-val" style="color:var(--accent-write);" id="kpiTpsVal">94.6 t/s</div>
+            <div class="kpi-micro">Avg: 88.2 t/s · Peak: 112.8 t/s</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Current Prefill/s</div>
+            <div class="kpi-val" style="color:var(--accent-read);" id="kpiPrefillVal">1,455 prefill/s</div>
+            <div class="kpi-micro">Total: 1,488,755 Tokens · TTFT 0.12s</div>
+          </div>
+        </div>
+        <canvas id="canvas-tokens" style="width:100%; height:112px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>Gemma-4 26B · Qwen3-32B · Coder-32B</span>
+          <span style="color:var(--accent-primary);">Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-tokens', 'canvas-tokens')">◢</div>
+      </article>
+
+      <!-- INST-03: CPU CLUSTER OVERVIEW -->
+      <article class="nala-card" id="card-cpu" draggable="true" onclick="handleCardClick(event, 'card-cpu')" style="width:445px; flex:1 1 410px;" data-h="126">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-03</span> <span class="card-title">CPU Cluster Overview (108 Threads)</span></div>
+            <div class="card-sub">3-Ring Telemetry + 16-Core Equalizer Capsules</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-cpu')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-cpu')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-cpu', -70, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-cpu', 85, 20)">[ + ]</button>
+          </div>
+        </div>
+        <div class="sub-row font-mono" style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+          <span>Cluster Cores: <strong>108 Threads + 16C M4 Max</strong></span>
+          <span style="color:var(--accent-ok);" id="kpiCpuSummary">40°C Avg · 9% Load · 3.65 GHz</span>
+        </div>
+        <canvas id="canvas-cpu" style="width:100%; height:126px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>Xeon (44T) + Ryzen AI Max+ (32T) + PVE (32T)</span>
+          <span style="color:var(--accent-primary);">Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-cpu', 'canvas-cpu')">◢</div>
+      </article>
+
+      <!-- INST-04: THERMAL RADAR & HOTTEST CARD -->
+      <article class="nala-card" id="card-thermal" draggable="true" onclick="handleCardClick(event, 'card-thermal')" style="width:445px; flex:1 1 410px;" data-h="118">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-04</span> <span class="card-title">Thermal Radar &amp; Hottest Card</span></div>
+            <div class="card-sub">5× GPU + XDNA NPU + M4 Max PMU Thermal Rails</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-thermal')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-thermal')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-thermal', -70, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-thermal', 85, 20)">[ + ]</button>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">Hottest GPU Diode</div>
+            <div class="kpi-val" style="color:var(--accent-warn); font-size:15px;">56°C / Peak 68°C</div>
+            <div class="kpi-micro">RTX PRO 4000 Blackwell #0</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Hottest CPU / SoC Package</div>
+            <div class="kpi-val" style="color:var(--accent-ok); font-size:15px;">48°C / Peak 64°C</div>
+            <div class="kpi-micro">Proxmox Xeon · M4 Max 38°C</div>
+          </div>
+        </div>
+        <canvas id="canvas-thermal" style="width:100%; height:118px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>5× GPUs + AMD XDNA 2 NPU + Apple PMU</span>
+          <span style="color:var(--accent-primary);">Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-thermal', 'canvas-thermal')">◢</div>
+      </article>
+
+      <!-- INST-05: NETWORK & STORAGE I/O SPEED GRAPHS -->
+      <article class="nala-card" id="card-storage" draggable="true" onclick="handleCardClick(event, 'card-storage')" style="width:445px; flex:1 1 410px;" data-h="118">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-05</span> <span class="card-title">Network &amp; Storage (Porsche Tank / 120-LED)</span></div>
+            <div class="card-sub">120-LED Mesh Matrix · Porsche Fuel-Tank (0 — 1/2 — 1/1)</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-storage')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-storage')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-storage', -70, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-storage', 85, 20)">[ + ]</button>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">Total Storage Pool (⛽ Tank)</div>
+            <div class="kpi-val" style="color:var(--text-primary); font-size:15px;">20.8 / 32.0 TB (65%)</div>
+            <div class="kpi-micro">ZFS Pool ONLINE · Reserve @ 85%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">Aggregate NVMe &amp; Mesh I/O</div>
+            <div class="kpi-val" style="color:var(--accent-read); font-size:15px;" id="kpiIoVal">8.4 GB/s R · 5.1 GB/s W</div>
+            <div class="kpi-micro">Tailscale Mesh: 8.6 Gb/s</div>
+          </div>
+        </div>
+        <canvas id="canvas-storage" style="width:100%; height:118px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>120-LED Mesh Matrix · ZFS &amp; Apple 8TB NVMe</span>
+          <span style="color:var(--accent-primary);">⛽ Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-storage', 'canvas-storage')">◢</div>
+      </article>
+
+      <!-- INST-06: POWER CONSUMPTION & ECOFLOW UPS GUARD -->
+      <article class="nala-card" id="card-ups" draggable="true" onclick="handleCardClick(event, 'card-ups')" style="width:445px; flex:1 1 410px;" data-h="118">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-06</span> <span class="card-title">Power &amp; EcoFlow UPS Guard</span></div>
+            <div class="card-sub">AC 230V / DC 51.2V · 5-Min Safe ZFS Shutdown</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-ups')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-ups')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-ups', -70, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-ups', 85, 20)">[ + ]</button>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">Total Cluster Power</div>
+            <div class="kpi-val" style="color:var(--accent-write); font-size:16px;" id="kpiWattVal">385 W</div>
+            <div class="kpi-micro">Dell 185W · PVE 108W · Worker 92W</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">EcoFlow LFP Bus</div>
+            <div class="kpi-val" style="color:var(--accent-ok); font-size:15px;">AC 230V · 100%</div>
+            <div class="kpi-micro">DC 51.2V · Runtime 42m</div>
+          </div>
+        </div>
+        <canvas id="canvas-ups" style="width:100%; height:118px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>EcoFlow River 3 UPS · MagSafe 3 42W</span>
+          <span style="color:var(--accent-primary);">Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-ups', 'canvas-ups')">◢</div>
+      </article>
+
+      <!-- INST-07: SERVICE & AI STACK MONITORS (10/10 UP — FuseDash Glowing Bubble Matrix) -->
+      <article class="nala-card" id="card-services" draggable="true" onclick="handleCardClick(event, 'card-services')" style="width:902px; flex:2 1 680px;" data-h="118">
+        <div class="card-top-bar">
+          <div>
+            <div><span class="drag-handle" title="Ziehen zum Verschieben (Drag &amp; Drop)">⠿</span><span class="card-code">INST-07</span> <span class="card-title">Service &amp; AI Stack Monitors (10/10 UP)</span></div>
+            <div class="card-sub">Router · Ollama GPU 0/1 · ComfyUI · Paperless · MemPalace · Stirling · Handbrake · ChromaDB · Neo4j</div>
+          </div>
+          <div style="display:flex; gap:4px;">
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="openCardDrillDown('card-services')" title="Detail-Inspektor &amp; Schnell-Skalierung öffnen">[ 🔍 ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="toggleCardText('card-services')" title="Text ein-/ausblenden">[ T ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-services', -110, -18)">[ − ]</button>
+            <button class="btn-ui" style="padding:2px 6px; font-size:10px;" onclick="resizeCardBy('card-services', 110, 20)">[ + ]</button>
+          </div>
+        </div>
+        <canvas id="canvas-services" style="width:100%; height:118px; display:block;"></canvas>
+        <div class="card-footer">
+          <span>● 10/10 Services ONLINE · Avg Latency 1.4ms</span>
+          <span style="color:var(--accent-primary);">Klick = Details / Ziehen = ⠿ →</span>
+        </div>
+        <div class="corner-resizer" onpointerdown="startCornerDrag(event, 'card-services', 'canvas-services')">◢</div>
+      </article>
+    </div>
+  </main>
+
+  <!-- 5B. 1-CLICK CARD DRILL-DOWN & QUICK-SCALE INSPECTOR MODAL -->
+  <div class="modal-backdrop" id="drillDownModal" onclick="if(event.target===this)closeCardDrillDown()">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding-bottom:10px; margin-bottom:12px; border-bottom:1px solid var(--border-subtle);">
+        <div>
+          <span class="font-mono" style="font-size:11px; color:var(--accent-primary); font-weight:800;" id="ddCode">INST-01</span>
+          <h3 style="font-size:16px; font-weight:800; font-family:var(--font-display); text-transform:uppercase;" id="ddTitle">Instrument Inspector</h3>
+        </div>
+        <button class="btn-ui" onclick="closeCardDrillDown()">✕ Schließen</button>
+      </div>
+
+      <!-- Quick Scale Presets for the selected card -->
+      <div style="background:var(--bg-void); border:1px solid var(--border-subtle); border-radius:9px; padding:10px 12px; margin-bottom:12px;">
+        <div class="font-mono" style="font-size:10px; color:var(--text-secondary); margin-bottom:6px; text-transform:uppercase;">
+          📐 1-Klick Größen-Presets &amp; Darstellung für diese Karte:
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <button class="btn-ui" onclick="applyCardPresetSize(95, 38, true)">Nano Pill (95×38 · Nur Graph)</button>
+          <button class="btn-ui" onclick="applyCardPresetSize(220, 68, true)">Kompakt Graph (220×68)</button>
+          <button class="btn-ui" onclick="applyCardPresetSize(320, 96, false)">Kompakt + KPI (320×96)</button>
+          <button class="btn-ui" onclick="applyCardPresetSize(445, 118, false)">Standard Studio (445×118)</button>
+          <button class="btn-ui" onclick="applyCardPresetSize(680, 145, false)">Breit (680×145)</button>
+          <button class="btn-ui" onclick="applyCardPresetSize(920, 165, false)">Full-Width (920×165)</button>
+        </div>
+      </div>
+
+      <!-- Detailed Hardware Telemetry Breakdown -->
+      <div id="ddBody" class="font-mono" style="font-size:12px; line-height:1.55;"></div>
+    </div>
+  </div>
+
+  <!-- 5C. LIVE TICKER & CSV MANAGER MODAL -->
+  <div class="modal-backdrop" id="tickerManagerModal" onclick="if(event.target===this)closeTickerManager()">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; padding-bottom:10px; margin-bottom:12px; border-bottom:1px solid var(--border-subtle);">
+        <div>
+          <span class="font-mono" style="font-size:11px; color:var(--accent-primary); font-weight:800;">LIVE TELEMETRYBUS</span>
+          <h3 style="font-size:16px; font-weight:800; font-family:var(--font-display); text-transform:uppercase;">Banner / Stock-Ticker &amp; Speed Manager</h3>
+        </div>
+        <button class="btn-ui" onclick="closeTickerManager()">✕ Schließen</button>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; background:var(--bg-void); border:1px solid var(--border-subtle); border-radius:9px; padding:10px 12px; margin-bottom:12px;">
+        <div class="font-mono" style="font-size:11px;">
+          Geschwindigkeit: <strong id="modalTickerSpeedVal" style="color:var(--accent-primary);">1.0x</strong>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button class="btn-ui" onclick="setTickerSpeed(0.5)">0.5x Langsam</button>
+          <button class="btn-ui" onclick="setTickerSpeed(1.0)">1.0x Normal</button>
+          <button class="btn-ui" onclick="setTickerSpeed(1.8)">1.8x Schnell</button>
+          <button class="btn-ui" onclick="setTickerSpeed(2.8)">2.8x Börsen-Rush</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:6px; margin-bottom:12px;">
+        <input id="customTickerInput" type="text" placeholder="Eigene Ticker-Meldung hinzufügen (z.B. CRM Proxmox Sync OK)..." style="flex:1; background:var(--bg-void); color:var(--text-primary); border:1px solid var(--border-subtle); border-radius:6px; padding:6px 10px; font-family:var(--font-mono); font-size:11px;" />
+        <button class="btn-ui active" onclick="addCustomTickerMessage()">+ Meldung Hinzufügen</button>
+      </div>
+
+      <div id="tickerMessagesList" style="display:flex; flex-direction:column; gap:6px; max-height:240px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- 6. MULTI-MONITOR ULTRA-ECO SCREENSAVER STUDIO MODAL (<2% CPU/GPU across 3 Displays) -->
+  <div class="screensaver-modal" id="screensaverModal">
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding-bottom:12px; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.16);">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="font-mono" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:800;">
+          ⚡ ULTRA-ECO SCREENSAVER: 2 FPS · 0.9% CPU Load (&lt; 2.0% Limit) · OLED Pixel-Shift ON
+        </span>
+        <h2 class="font-mono" style="font-size:15px; font-weight:800;">
+          Multi-Monitor Telemetry Studio (3× Unabhängiger Skin pro Monitor + Katze-Nala Thermal Shield &le;55°C)
+        </h2>
+      </div>
+      <button class="mb-btn" style="background:#dc2626; border-color:#dc2626; padding:5px 12px; font-size:12px;" onclick="toggleScreensaver()">
+        ✕ Screensaver Beenden
+      </button>
+    </div>
+
+    <div class="monitors-grid">
+      <!-- Monitor 1: Porsche v4 Open Chalk -->
+      <div style="background:#f4f5f7; color:#010205; border:2px solid #d5001c; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px;">
+        <div class="font-mono" style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(1,2,5,0.14); padding-bottom:6px; font-size:11px;">
+          <strong>Display 1 · MacBook Pro M4 Max (Porsche v4 Open Light)</strong>
+          <span style="color:#d5001c; font-weight:800;">911 GT3 CHRONO + TANK</span>
+        </div>
+        <canvas id="ss-mon1-chrono" style="width:100%; height:135px; display:block;"></canvas>
+        <canvas id="ss-mon1-tank" style="width:100%; height:135px; display:block;"></canvas>
+      </div>
+
+      <!-- Monitor 2: Terminator Skynet HUD -->
+      <div style="background:#090002; color:#ffe4e9; border:2px solid #ff0033; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px;">
+        <div class="font-mono" style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,0,51,0.3); padding-bottom:6px; font-size:11px;">
+          <strong>Display 2 · Apple Studio Display 5K (Terminator HUD)</strong>
+          <span style="color:#ff0033; font-weight:800;">HONEYCOMB + SPLINE</span>
+        </div>
+        <canvas id="ss-mon2-hex" style="width:100%; height:135px; display:block;"></canvas>
+        <canvas id="ss-mon2-spline" style="width:100%; height:135px; display:block;"></canvas>
+      </div>
+
+      <!-- Monitor 3: Matrix Construct -->
+      <div style="background:#020502; color:#d8ffdf; border:2px solid #00ff41; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px;">
+        <div class="font-mono" style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(0,255,65,0.28); padding-bottom:6px; font-size:11px;">
+          <strong>Display 3 · LG UltraFine 4K (Matrix Construct)</strong>
+          <span style="color:#00ff41; font-weight:800;">CPU RINGS + THERMAL</span>
+        </div>
+        <canvas id="ss-mon3-cpu" style="width:100%; height:135px; display:block;"></canvas>
+        <canvas id="ss-mon3-therm" style="width:100%; height:135px; display:block;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. STATE: TELEMETRY, PORSCHE MODE & macOS STATS MENUBAR CONFIGURATION
+    // =========================================================================
+    let activeSkin = 'fuselab-spatial';
+    let porscheChronoMode = false;
+    let nanoMode = false;
+    let menubarColorMode = 'macos-blue'; // 'macos-blue' (#007AFF), 'skin-accent', 'traffic-light', 'monochrome'
+    let selectedTrayModule = 'sensors';
+
+    const liveTelemetry = {
+      vramUsed: 139.6,
+      vramTotal: 184.0,
+      ramUsed: 320.6,
+      ramTotal: 512.0,
+      currentTps: 94.6,
+      prefillTps: 1455,
+      peakTps: 112.8,
+      historyTps: [62.4, 68.1, 71.5, 92.8, 94.6, 86.2, 81.0, 84.5, 89.2, 91.8, 93.4, 94.6],
+      historyPrefill: [980, 1120, 1190, 1620, 1580, 1340, 1290, 1380, 1410, 1440, 1450, 1455],
+      cpuTemp: 40,
+      cpuLoad: 9,
+      cpuFreq: 3.65,
+      gpuTemps: [56, 52, 42, 39, 29],
+      storageUsedTb: 20.8,
+      storageTotalTb: 32.0,
+      readGbs: 8.4,
+      writeGbs: 5.1,
+      meshGbps: 8.6,
+      wattage: 385,
+      upsPct: 100,
+      batteryPct: 72,
+    };
+
+    // Exact macOS Stats / MenuMeters Modules (Screenshots 1, 2, 3)
+    const menubarModules = [
+      {
+        id: 'ram',
+        title: 'RAM / Unified Memory',
+        short3: ['R', 'A', 'M'],
+        active: ['vlabel-3', 'vtank'],
+        available: [
+          { type: 'vlabel-3', label: 'R/A/M Vertical Label' },
+          { type: 'vtank', label: 'Vertical Fill Tank (Screenshot 1)' },
+          { type: 'framed-bars', label: 'Pressure Bar Box' },
+          { type: 'label-pct-box', label: 'RAM / 63% Box' },
+          { type: 'stacked-dual', label: '321G / 512G Stacked' },
+        ]
+      },
+      {
+        id: 'cpu',
+        title: 'CPU (P/E Cores & Threads)',
+        short3: ['C', 'P', 'U'],
+        active: ['vlabel-3', 'framed-bars'],
+        available: [
+          { type: 'vlabel-3', label: 'C/P/U Vertical Label' },
+          { type: 'framed-bars', label: 'Framed 2-Bar Box (Screenshot 1)' },
+          { type: 'vtank', label: 'Vertical Fill Tank' },
+          { type: 'label-pct-box', label: 'CPU / 9% Box' },
+          { type: 'stacked-dual', label: '9% / 40°C Stacked' },
+        ]
+      },
+      {
+        id: 'gpu',
+        title: 'GPU (40-Core M4 Max & Cluster)',
+        short3: ['G', 'P', 'U'],
+        active: ['vlabel-3', 'vtank'],
+        available: [
+          { type: 'vlabel-3', label: 'G/P/U Vertical Label' },
+          { type: 'vtank', label: 'Vertical Fill Tank (Screenshot 1)' },
+          { type: 'framed-bars', label: 'Multi-GPU Bar Box' },
+          { type: 'stacked-dual', label: '42% / 56°C Stacked' },
+        ]
+      },
+      {
+        id: 'sensors',
+        title: 'Sensors (45+ PMU & Intel SMC)',
+        short3: ['S', 'E', 'N'],
+        active: ['label-pct-box', 'stacked-dual'],
+        available: [
+          { type: 'label-pct-box', label: 'Sensors / 12% (Screenshot 2)' },
+          { type: 'vlabel-3', label: 'S/E/N Vertical Label (Screenshot 2)' },
+          { type: 'stacked-dual', label: '38° / 41° Stacked (Screenshot 2)' },
+          { type: 'framed-bars', label: '2-Bar Thermal Box (Screenshot 2)' },
+        ]
+      },
+      {
+        id: 'battery',
+        title: 'Battery & EcoFlow USV',
+        short3: ['B', 'A', 'T'],
+        active: ['battery-horiz', 'stacked-dual'],
+        available: [
+          { type: 'battery-horiz', label: 'Horizontal Battery (Screenshot 3)' },
+          { type: 'battery-vert', label: 'Vertical Battery (Screenshot 3)' },
+          { type: 'stacked-dual', label: '72% / 6:55 Stacked (Screenshot 3)' },
+          { type: 'vlabel-3', label: 'B/A/T Vertical Label (Screenshot 3)' },
+          { type: 'big-pct', label: 'Single 72% (Screenshot 3)' },
+        ]
+      },
+      {
+        id: 'disk',
+        title: 'NVMe SSD & Porsche Tank',
+        short3: ['D', 'S', 'K'],
+        active: ['porsche-tank'],
+        available: [
+          { type: 'porsche-tank', label: '⛽ Porsche Tank (0-1/2-1/1)' },
+          { type: 'vlabel-3', label: 'D/S/K Vertical Label' },
+          { type: 'vtank', label: 'Vertical SSD Tank' },
+        ]
+      },
+      {
+        id: 'tokens',
+        title: 'AI Token/s Stream',
+        short3: ['T', 'P', 'S'],
+        active: ['vlabel-3', 'stacked-dual'],
+        available: [
+          { type: 'vlabel-3', label: 'T/P/S Vertical Label' },
+          { type: 'stacked-dual', label: '94.6 / t/s Stacked' },
+          { type: 'big-pct', label: '94.6 t/s' },
+        ]
+      }
+    ];
+
+    const pmuSmcSensors = [
+      { key: 'Tp01', name: 'M4 Max Die Average', val: '38°C', pinned: true },
+      { key: 'Tp05', name: 'P-Core Cluster 0', val: '41°C', pinned: true },
+      { key: 'Tg05', name: '40-Core GPU Cluster', val: '44°C', pinned: false },
+      { key: 'TaNE', name: '16-Core Neural Engine', val: '35°C', pinned: false },
+      { key: 'TH0x', name: 'Apple 8TB NVMe SMART', val: '34°C', pinned: false },
+      { key: 'TC0P', name: 'CPU Proximity (Intel SMC)', val: '48°C', pinned: false },
+      { key: 'TG0D', name: 'RTX PRO 4000 #0 Diode', val: '56°C', pinned: false },
+      { key: 'F0Ac', name: 'Cooling Fan 0 RPM', val: '1,380 RPM', pinned: false },
+      { key: 'F1Ac', name: 'Cooling Fan 1 RPM', val: '1,365 RPM', pinned: false },
+      { key: 'VD0R', name: 'MagSafe 3 DC-In', val: '27.8V · 42W', pinned: false },
+      { key: 'UPS1', name: 'EcoFlow River 3 LFP', val: '230V · 385W', pinned: false },
+      { key: 'ZFS0', name: 'Proxmox ZFS Pool Health', val: 'ONLINE · 65%', pinned: false },
+    ];
+
+    function getMenubarFillColor(ratio) {
+      if (menubarColorMode === 'monochrome') return '#ffffff';
+      if (menubarColorMode === 'macos-blue') return '#007AFF';
+      if (menubarColorMode === 'traffic-light') {
+        if (ratio >= 0.8) return '#ef4444';
+        if (ratio >= 0.55) return '#f59e0b';
+        return '#10b981';
+      }
+      const st = getComputedStyle(document.documentElement);
+      return st.getPropertyValue('--accent-primary').trim() || '#007AFF';
+    }
+
+    function getModuleLiveMetrics(modId) {
+      if (modId === 'ram') {
+        const r = liveTelemetry.ramUsed / liveTelemetry.ramTotal;
+        return { ratio: r, bars: [r, r * 0.82], pct: Math.round(r * 100) + '%', top: Math.round(liveTelemetry.ramUsed) + 'G', bot: '512G', box: 'RAM' };
+      }
+      if (modId === 'cpu') {
+        const r = Math.max(0.22, liveTelemetry.cpuLoad / 100);
+        return { ratio: r, bars: [Math.min(1, r * 2.4), Math.min(1, r * 1.5)], pct: liveTelemetry.cpuLoad + '%', top: liveTelemetry.cpuLoad + '%', bot: liveTelemetry.cpuTemp + '°C', box: 'CPU' };
+      }
+      if (modId === 'gpu') {
+        return { ratio: 0.48, bars: [0.54, 0.36], pct: '48%', top: '48%', bot: liveTelemetry.gpuTemps[0] + '°C', box: 'GPU' };
+      }
+      if (modId === 'sensors') {
+        const pinned = pmuSmcSensors.filter(s => s.pinned);
+        const t1 = (pinned[0]?.val || '38°C').replace('C', '');
+        const t2 = (pinned[1]?.val || '41°C').replace('C', '');
+        return { ratio: 0.45, bars: [0.42, 0.55], pct: '12%', top: t1, bot: t2, box: 'Sensors' };
+      }
+      if (modId === 'battery') {
+        return { ratio: 0.72, bars: [0.72, 0.9], pct: '72%', top: '72%', bot: '6:55', box: 'Battery' };
+      }
+      if (modId === 'disk') {
+        const r = liveTelemetry.storageUsedTb / liveTelemetry.storageTotalTb;
+        return { ratio: r, bars: [r, 0.5], pct: Math.round(r * 100) + '%', top: liveTelemetry.readGbs + 'G', bot: liveTelemetry.writeGbs + 'G', box: 'Disk' };
+      }
+      return { ratio: 0.74, bars: [0.74, 0.68], pct: liveTelemetry.currentTps.toFixed(1) + 't/s', top: liveTelemetry.currentTps.toFixed(1), bot: 't/s', box: 'Tokens' };
+    }
+
+    function renderPrimitiveHtml(mod, primType) {
+      const m = getModuleLiveMetrics(mod.id);
+      const col = getMenubarFillColor(m.ratio);
+      if (primType === 'vlabel-3') {
+        return `<div class="stat-vlabel3"><span>${mod.short3[0]}</span><span>${mod.short3[1]}</span><span>${mod.short3[2]}</span></div>`;
+      }
+      if (primType === 'vtank') {
+        const hPx = Math.max(3, Math.round(14 * Math.min(1, Math.max(0.18, m.ratio))));
+        return `<div class="stat-vtank"><div class="stat-vtank-fill" style="height:${hPx}px; background:${col};"></div></div>`;
+      }
+      if (primType === 'framed-bars') {
+        const b0 = Math.max(22, Math.round(m.bars[0] * 100));
+        const b1 = Math.max(22, Math.round(m.bars[1] * 100));
+        return `<div class="stat-framed-bars">
+          <div class="stat-bar-col"><div class="stat-bar-col-fill" style="height:${b0}%; background:${col};"></div></div>
+          <div class="stat-bar-col"><div class="stat-bar-col-fill" style="height:${b1}%; background:${col};"></div></div>
+        </div>`;
+      }
+      if (primType === 'label-pct-box') {
+        return `<div class="stat-label-pct"><span class="top">${m.box}</span><span class="bot">${m.pct}</span></div>`;
+      }
+      if (primType === 'stacked-dual') {
+        return `<div class="stat-stacked-dual"><span>${m.top}</span><span>${m.bot}</span></div>`;
+      }
+      if (primType === 'battery-horiz') {
+        return `<div class="stat-bat-horiz"><div class="stat-bat-horiz-body"><div style="width:${Math.round(m.ratio*100)}%; height:100%; background:#fff; border-radius:1px;"></div></div><div class="stat-bat-horiz-nub"></div></div>`;
+      }
+      if (primType === 'battery-vert') {
+        return `<div class="stat-bat-vert"><div class="stat-bat-vert-cap"></div><div class="stat-bat-vert-body"><div style="width:100%; height:${Math.round(m.ratio*100)}%; background:${col}; border-radius:1px;"></div></div></div>`;
+      }
+      if (primType === 'big-pct') {
+        return `<span class="font-mono" style="font-size:11px; font-weight:800; color:#fff; padding:0 2px;">${m.pct}</span>`;
+      }
+      if (primType === 'porsche-tank') {
+        return `<div class="stat-porsche-tank"><span style="color:#d5001c; font-weight:800;">⛽</span><span>${m.pct}</span></div>`;
+      }
+      return '';
+    }
+
+    function renderMacosMenubarAndTray() {
+      const trayEl = document.getElementById('macosStatusItemTray');
+      let html = '';
+      menubarModules.forEach((mod, idx) => {
+        if (mod.active.length === 0) return;
+        const inner = mod.active.map(p => renderPrimitiveHtml(mod, p)).join('');
+        const isSel = selectedTrayModule === mod.id && document.getElementById('statsTrayDrawer').classList.contains('open');
+        html += `<div class="mb-status-item ${isSel ? 'selected' : ''}" draggable="true" ondragstart="onMbDragStart(event, ${idx})" ondragover="onMbDragOver(event)" ondrop="onMbDrop(event, ${idx})" onclick="openModuleInTray('${mod.id}')" title="${mod.title} — Klicken zum Anpassen | Ziehen (Drag &amp; Drop) zum Umsortieren">${inner}</div>`;
+      });
+      html += `<span class="font-mono" style="font-size:11px; font-weight:600; padding-left:6px; color:rgba(255,255,255,0.9);">Fr. 23. Okt. 12:15</span>`;
+      trayEl.innerHTML = html;
+
+      // Render Tray Tabs & Active | Available Bar
+      const tabsEl = document.getElementById('statsModuleTabs');
+      tabsEl.innerHTML = menubarModules.map(mod =>
+        `<button class="mb-btn ${selectedTrayModule === mod.id ? 'active-blue' : ''}" onclick="openModuleInTray('${mod.id}')">${mod.title.split(' ')[0]}</button>`
+      ).join('');
+
+      const curMod = menubarModules.find(m => m.id === selectedTrayModule) || menubarModules[0];
+      document.getElementById('trayActiveTitle').textContent = `AKTIV IN DER MENÜLEISTE (${curMod.title})`;
+      document.getElementById('statsBlueHeaderTitle').textContent = `Module — ${curMod.title} (45+ Apple Silicon M4 Max PMU & Legacy Intel SMC Sensoren)`;
+
+      const activeZone = document.getElementById('trayActiveZone');
+      if (curMod.active.length === 0) {
+        activeZone.innerHTML = `<span class="font-mono" style="font-size:11px; color:rgba(255,255,255,0.4);">Nicht aktiv (rechts Stil anklicken)</span>`;
+      } else {
+        activeZone.innerHTML = curMod.active.map(p =>
+          `<button class="mb-btn active-blue" style="padding:4px 8px;" onclick="toggleModulePrimitive('${curMod.id}', '${p}')" title="Klicken zum Entfernen">${renderPrimitiveHtml(curMod, p)}</button>`
+        ).join('');
+      }
+
+      const availZone = document.getElementById('trayAvailableZone');
+      availZone.innerHTML = curMod.available.map(av => {
+        const isAct = curMod.active.includes(av.type);
+        return `<button class="mb-btn ${isAct ? 'active-blue' : ''}" style="padding:4px 9px; background:${isAct ? 'rgba(0,122,255,0.28)' : 'rgba(0,0,0,0.45)'};" onclick="toggleModulePrimitive('${curMod.id}', '${av.type}')">
+          ${renderPrimitiveHtml(curMod, av.type)}
+          <span style="font-size:10px;">${av.label}</span>
+        </button>`;
+      }).join('');
+
+      const sensorGrid = document.getElementById('pmuSmcSensorGrid');
+      sensorGrid.innerHTML = pmuSmcSensors.map((s, idx) =>
+        `<div class="sensor-pill ${s.pinned ? 'pinned' : ''}" onclick="toggleSensorPin(${idx})">
+          <span><input type="checkbox" ${s.pinned ? 'checked' : ''} style="accent-color:#007AFF; margin-right:5px;"/><strong>${s.name}</strong> <span style="opacity:0.5;">(${s.key})</span></span>
+          <strong style="color:#007AFF;">${s.val}</strong>
+        </div>`
+      ).join('');
+    }
+
+    let draggedMbIdx = null;
+    function onMbDragStart(e, idx) {
+      draggedMbIdx = idx;
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function onMbDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+    function onMbDrop(e, targetIdx) {
+      e.preventDefault();
+      if (draggedMbIdx === null || draggedMbIdx === targetIdx) return;
+      const moved = menubarModules.splice(draggedMbIdx, 1)[0];
+      menubarModules.splice(targetIdx, 0, moved);
+      draggedMbIdx = null;
+      renderMacosMenubarAndTray();
+    }
+
+    function toggleTrayBuilder() {
+      document.getElementById('statsTrayDrawer').classList.toggle('open');
+      document.getElementById('btnTrayBuilder').classList.toggle('active-blue');
+      renderMacosMenubarAndTray();
+    }
+    function openModuleInTray(modId) {
+      selectedTrayModule = modId;
+      document.getElementById('statsTrayDrawer').classList.add('open');
+      document.getElementById('btnTrayBuilder').classList.add('active-blue');
+      renderMacosMenubarAndTray();
+    }
+    function toggleModulePrimitive(modId, primType) {
+      const mod = menubarModules.find(m => m.id === modId);
+      if (!mod) return;
+      const i = mod.active.indexOf(primType);
+      if (i >= 0) mod.active.splice(i, 1);
+      else mod.active.push(primType);
+      renderMacosMenubarAndTray();
+    }
+    function toggleSensorPin(idx) {
+      pmuSmcSensors[idx].pinned = !pmuSmcSensors[idx].pinned;
+      renderMacosMenubarAndTray();
+    }
+    function setMenubarColorMode(mode) {
+      menubarColorMode = mode;
+      ['Blue', 'Skin', 'Traffic', 'Mono'].forEach(k => document.getElementById('colBtn' + k).classList.remove('active-blue'));
+      if (mode === 'macos-blue') document.getElementById('colBtnBlue').classList.add('active-blue');
+      if (mode === 'skin-accent') document.getElementById('colBtnSkin').classList.add('active-blue');
+      if (mode === 'traffic-light') document.getElementById('colBtnTraffic').classList.add('active-blue');
+      if (mode === 'monochrome') document.getElementById('colBtnMono').classList.add('active-blue');
+      renderMacosMenubarAndTray();
+    }
+
+    // =========================================================================
+    // 2. SKIN SWITCHER, PORSCHE 3-TUBE CHRONO + FUEL TANK & 2D RESIZING
+    // =========================================================================
+    function getThemeColors(overrideSkin) {
+      const skin = overrideSkin || activeSkin;
+      const isLight = skin === 'porsche-chalk';
+      if (skin === 'porsche-chalk') {
+        return { isLight: true, primary: '#d5001c', secondary: '#0066cc', read: '#0066cc', write: '#e05a00', alloc: '#1e293b', ok: '#008a4b', warn: '#d97706', danger: '#d5001c', text: '#010205', muted: '#6b6d70' };
+      }
+      if (skin === 'porsche-gt') {
+        return { isLight: false, primary: '#d5001c', secondary: '#c5ff00', read: '#c5ff00', write: '#ff9e00', alloc: '#d5001c', ok: '#00e676', warn: '#ff9e00', danger: '#d5001c', text: '#fbfcff', muted: '#6b707b' };
+      }
+      if (skin === 'terminator-hud') {
+        return { isLight: false, primary: '#ff0033', secondary: '#ff758f', read: '#38bdf8', write: '#ff0033', alloc: '#e11d48', ok: '#ff4d6d', warn: '#fbbf24', danger: '#ff0033', text: '#ffe4e9', muted: '#9f1239' };
+      }
+      if (skin === 'matrix') {
+        return { isLight: false, primary: '#00ff41', secondary: '#22c55e', read: '#4ade80', write: '#a3e635', alloc: '#16a34a', ok: '#00ff41', warn: '#eab308', danger: '#ff0055', text: '#d8ffdf', muted: '#15803d' };
+      }
+      const st = getComputedStyle(document.documentElement);
+      return {
+        isLight,
+        primary: st.getPropertyValue('--accent-primary').trim() || '#00e5ff',
+        secondary: st.getPropertyValue('--accent-secondary').trim() || '#8b5cf6',
+        read: st.getPropertyValue('--accent-read').trim() || '#2dd4bf',
+        write: st.getPropertyValue('--accent-write').trim() || '#f59e0b',
+        alloc: st.getPropertyValue('--accent-alloc').trim() || '#8b5cf6',
+        ok: st.getPropertyValue('--accent-ok').trim() || '#10b981',
+        warn: st.getPropertyValue('--accent-warn').trim() || '#f59e0b',
+        danger: st.getPropertyValue('--accent-danger').trim() || '#ef4444',
+        text: st.getPropertyValue('--text-primary').trim() || '#f8fafc',
+        muted: st.getPropertyValue('--text-muted').trim() || '#64748b',
+      };
+    }
+
+    function onPulldownSkinChange(skinId) {
+      const enablePorsche = skinId === 'porsche-chalk' || skinId === 'porsche-gt';
+      selectSkin(skinId, enablePorsche);
+    }
+
+    function selectSkin(skinId, enablePorscheChrono) {
+      activeSkin = skinId;
+      document.documentElement.setAttribute('data-theme', skinId);
+      porscheChronoMode = Boolean(enablePorscheChrono);
+      const mbSel = document.getElementById('menubarSkinPulldown');
+      if (mbSel && mbSel.value !== skinId) mbSel.value = skinId;
+      const hdSel = document.getElementById('headerSkinPulldown');
+      if (hdSel && hdSel.value !== skinId) hdSel.value = skinId;
+      updatePorscheBtnLabel();
+      renderMacosMenubarAndTray();
+      drawAllInstruments();
+    }
+
+    function togglePorscheGauges() {
+      porscheChronoMode = !porscheChronoMode;
+      updatePorscheBtnLabel();
+      drawAllInstruments();
+    }
+
+    function updatePorscheBtnLabel() {
+      const btn = document.getElementById('btnTogglePorscheGauges');
+      btn.textContent = porscheChronoMode ? '🏎️ Modus: Porsche 3-Tube + Tank' : '⏱️ Modus: High-DPI Matrix';
+      btn.classList.toggle('active', porscheChronoMode);
+    }
+
+    function toggleCardText(cardId) {
+      const card = document.getElementById(cardId);
+      card.classList.toggle('textless');
+      drawAllInstruments();
+    }
+
+    function toggleNanoMode() {
+      nanoMode = !nanoMode;
+      document.getElementById('btnNanoMode').classList.toggle('active', nanoMode);
+      document.querySelectorAll('.nala-card').forEach(card => {
+        card.classList.toggle('textless', nanoMode);
+        if (nanoMode) {
+          card.style.width = '155px';
+          card.style.flex = '0 1 155px';
+          const cv = card.querySelector('canvas');
+          if (cv) cv.style.height = '54px';
+        } else {
+          const isSvc = card.id === 'card-services';
+          card.style.width = isSvc ? '902px' : '445px';
+          card.style.flex = isSvc ? '2 1 680px' : '1 1 410px';
+          const cv = card.querySelector('canvas');
+          if (cv) cv.style.height = (card.getAttribute('data-h') || '116') + 'px';
+        }
+      });
+      setTimeout(drawAllInstruments, 40);
+    }
+
+    function resizeCardBy(cardId, dw, dh) {
+      const card = document.getElementById(cardId);
+      const cv = card.querySelector('canvas');
+      const curW = card.clientWidth || 440;
+      const curH = cv.clientHeight || 116;
+      const nextW = Math.max(75, Math.min(1360, curW + dw));
+      const nextH = Math.max(32, Math.min(320, curH + dh));
+      card.style.width = nextW + 'px';
+      card.style.flex = `0 1 ${nextW}px`;
+      cv.style.height = nextH + 'px';
+      if (nextW < 150) card.classList.add('textless');
+      drawAllInstruments();
+    }
+
+    function startCornerDrag(e, cardId, canvasId) {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = document.getElementById(cardId);
+      const cv = document.getElementById(canvasId);
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startW = card.clientWidth;
+      const startH = cv.clientHeight;
+      function onMove(ev) {
+        const nw = Math.max(68, Math.min(1380, startW + (ev.clientX - startX)));
+        const nh = Math.max(30, Math.min(340, startH + (ev.clientY - startY)));
+        card.style.width = nw + 'px';
+        card.style.flex = `0 1 ${nw}px`;
+        cv.style.height = nh + 'px';
+        if (nw < 140) card.classList.add('textless');
+        drawAllInstruments();
+      }
+      function onUp() {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      }
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    }
+
+    // =========================================================================
+    // 3. REAL HIGH-DPI AI STUDIO CANVAS INSTRUMENTS (Ported 1:1 from CanvasInstruments.tsx)
+    // =========================================================================
+    function setupHiDpiCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return null;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const width = canvas.clientWidth || 420;
+      const height = canvas.clientHeight || 116;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+      return { ctx, width, height };
+    }
+
+    // Porsche 911 GT3 / Taycan 3-Tube Sport Chrono & Porsche NVMe Fuel-Tank Gauge (0 — 1/2 — 1/1)
+    function drawPorscheChrono(canvasId, cVal, cUnit, cRatio, lVal, lLbl, lRatio, rVal, rLbl, rRatio, isFuelTank, overrideSkin) {
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+      const cx = width / 2;
+      const cy = height * 0.54;
+      const mainR = Math.max(14, Math.min(width * 0.19, height * 0.45));
+      const sideR = mainR * 0.8;
+      const showSides = width >= 200 && height >= 48;
+      const startAng = Math.PI * 0.75;
+      const endAng = Math.PI * 2.25;
+      const sweep = endAng - startAng;
+
+      function drawTube(tx, ty, r, ratio, accent, valStr, unitStr, lblStr, isCenter, fuelMode) {
+        ctx.beginPath();
+        ctx.arc(tx, ty, r + 2, 0, Math.PI * 2);
+        ctx.fillStyle = colors.isLight ? '#e2e5ea' : '#1e212a';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(tx, ty, r, 0, Math.PI * 2);
+        const fg = ctx.createRadialGradient(tx, ty - r * 0.25, 2, tx, ty, r);
+        if (colors.isLight) { fg.addColorStop(0, '#ffffff'); fg.addColorStop(1, '#f1f3f6'); }
+        else { fg.addColorStop(0, '#171922'); fg.addColorStop(1, '#0b0c10'); }
+        ctx.fillStyle = fg;
+        ctx.fill();
+        ctx.lineWidth = isCenter ? 1.8 : 1.3;
+        ctx.strokeStyle = colors.isLight ? 'rgba(1,2,5,0.28)' : 'rgba(255,255,255,0.22)';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(tx, ty, Math.max(4, r - 5), startAng, endAng);
+        ctx.strokeStyle = colors.isLight ? 'rgba(1,2,5,0.1)' : 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = isCenter ? 5 : 4;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(tx, ty, Math.max(4, r - 5), startAng + sweep * 0.8, endAng);
+        ctx.strokeStyle = 'rgba(213, 0, 28, 0.45)';
+        ctx.lineWidth = isCenter ? 5 : 4;
+        ctx.stroke();
+
+        const actEnd = startAng + sweep * Math.max(0.03, Math.min(1, ratio));
+        ctx.beginPath();
+        ctx.arc(tx, ty, Math.max(4, r - 5), startAng, actEnd);
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = isCenter ? 5.5 : 4;
+        ctx.stroke();
+
+        if (r >= 20) {
+          const ticks = isCenter ? 36 : 16;
+          for (let i = 0; i <= ticks; i++) {
+            const a = startAng + (i / ticks) * sweep;
+            const maj = i % 4 === 0;
+            const inR = r - (maj ? 11.5 : 8.5);
+            const outR = r - 5.5;
+            ctx.beginPath();
+            ctx.moveTo(tx + Math.cos(a) * inR, ty + Math.sin(a) * inR);
+            ctx.lineTo(tx + Math.cos(a) * outR, ty + Math.sin(a) * outR);
+            ctx.strokeStyle = i / ticks >= 0.8 ? '#d5001c' : (colors.isLight ? (maj ? '#010205' : 'rgba(1,2,5,0.35)') : (maj ? '#fff' : 'rgba(255,255,255,0.35)'));
+            ctx.lineWidth = maj ? 1.5 : 0.75;
+            ctx.stroke();
+
+            if (isCenter && maj && r >= 34) {
+              const nr = r - 17;
+              const nx = tx + Math.cos(a) * nr;
+              const ny = ty + Math.sin(a) * nr + 2.5;
+              ctx.font = '700 6.5px JetBrains Mono, monospace';
+              ctx.textAlign = 'center';
+              ctx.fillStyle = i / ticks >= 0.8 ? '#d5001c' : (colors.isLight ? '#40444d' : '#94a3b8');
+              if (fuelMode) {
+                if (i === 0) ctx.fillText('0', nx, ny);
+                else if (i === ticks / 2) ctx.fillText('1/2', nx, ny);
+                else if (i === ticks) ctx.fillText('1/1', nx, ny);
+              } else {
+                ctx.fillText(String(Math.round((i / ticks) * 9)), nx, ny);
+              }
+            }
+          }
+        }
+
+        if (isCenter) {
+          const nLen = Math.max(5, r - 9);
+          ctx.beginPath();
+          ctx.moveTo(tx - Math.cos(actEnd) * 4, ty - Math.sin(actEnd) * 4);
+          ctx.lineTo(tx + Math.cos(actEnd) * nLen, ty + Math.sin(actEnd) * nLen);
+          ctx.strokeStyle = '#d5001c';
+          ctx.lineWidth = 2.2;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(tx, ty, 3.8, 0, Math.PI * 2);
+          ctx.fillStyle = colors.isLight ? '#010205' : '#e2e8f0';
+          ctx.fill();
+        }
+
+        if (r >= 18) {
+          ctx.textAlign = 'center';
+          ctx.fillStyle = colors.text;
+          ctx.font = `700 ${isCenter ? (r < 34 ? 11 : 13) : 9.5}px JetBrains Mono, monospace`;
+          ctx.fillText(valStr, tx, ty + (isCenter ? 4 : 3));
+          if (r >= 24) {
+            ctx.fillStyle = accent;
+            ctx.font = `700 ${isCenter ? 7.5 : 6.5}px JetBrains Mono, monospace`;
+            ctx.fillText(unitStr, tx, ty + (isCenter ? 13 : 11));
+            ctx.fillStyle = colors.muted;
+            ctx.font = '700 7px JetBrains Mono, monospace';
+            ctx.fillText(fuelMode ? '⛽ TANK' : lblStr, tx, ty + r - 3);
+          }
+        }
+      }
+
+      if (showSides) {
+        const off = mainR * 1.52;
+        drawTube(cx - off, cy + 2, sideR, lRatio, colors.read, lVal, lLbl, 'AUX L', false, false);
+        drawTube(cx + off, cy + 2, sideR, rRatio, colors.secondary, rVal, rLbl, 'AUX R', false, false);
+      }
+      drawTube(cx, cy - 2, mainR, cRatio, '#d5001c', cVal, cUnit, 'GT3 · PDK', true, isFuelTank);
+    }
+
+    // INST-01: Real High-DPI 6-Sided Honeycomb Memory Map
+    function drawHoneycombMemory(canvasId, overrideSkin) {
+      if (porscheChronoMode && !overrideSkin) {
+        drawPorscheChrono(canvasId, '140G', 'GB VRAM', 139.6 / 184, '321G', 'SYS RAM', 320.6 / 512, '76%', 'POOL LOAD', 0.76, false);
+        return;
+      }
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+      const cols = width < 180 ? 12 : width < 280 ? 18 : 24;
+      const rows = height <= 60 ? 3 : 5;
+      const totalCells = cols * rows;
+      const ratio = liveTelemetry.vramUsed / liveTelemetry.vramTotal;
+      const activeCells = Math.round(totalCells * ratio);
+      const readCells = Math.max(2, Math.round(totalCells * 0.1));
+      const writeCells = Math.max(2, Math.round(totalCells * 0.06));
+      const padX = 10, padY = 8;
+      const radius = Math.max(2.2, Math.min((width - padX * 2) / (cols * 1.78), (height - padY * 2) / (rows * 1.65)));
+      const dx = radius * 1.74;
+      const dy = radius * 1.52;
+
+      let idx = 0;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cx = padX + c * dx + (r % 2 === 1 ? dx * 0.5 : 0);
+          const cy = padY + r * dy + radius;
+          ctx.beginPath();
+          for (let s = 0; s < 6; s++) {
+            const ang = (Math.PI / 3) * s - Math.PI / 6;
+            const hx = cx + (radius - 0.9) * Math.cos(ang);
+            const hy = cy + (radius - 0.9) * Math.sin(ang);
+            if (s === 0) ctx.moveTo(hx, hy);
+            else ctx.lineTo(hx, hy);
+          }
+          ctx.closePath();
+          if (idx < writeCells) ctx.fillStyle = colors.write;
+          else if (idx < writeCells + readCells) ctx.fillStyle = colors.read;
+          else if (idx < activeCells) ctx.fillStyle = colors.alloc;
+          else ctx.fillStyle = colors.isLight ? 'rgba(1,2,5,0.08)' : 'rgba(255,255,255,0.06)';
+          ctx.fill();
+          ctx.strokeStyle = colors.isLight ? 'rgba(1,2,5,0.14)' : 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          idx++;
+        }
+      }
+    }
+
+    // INST-02: Real High-DPI Dual-Spline Token & Prefill Engine with FuseLab Anomaly Highlight
+    function drawDualSplineTokens(canvasId, overrideSkin) {
+      if (porscheChronoMode && !overrideSkin) {
+        drawPorscheChrono(canvasId, liveTelemetry.currentTps.toFixed(1), 'TOKEN / S', liveTelemetry.currentTps / 130, String(liveTelemetry.prefillTps), 'PREFILL', liveTelemetry.prefillTps / 2000, '113', 'PEAK T/S', 112.8 / 150, false);
+        return;
+      }
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+      const tps = liveTelemetry.historyTps;
+      const pref = liveTelemetry.historyPrefill;
+      const padX = 8, padY = 10;
+      const usableW = width - padX * 2;
+      const usableH = height - padY * 2;
+
+      ctx.strokeStyle = colors.isLight ? 'rgba(1,2,5,0.08)' : 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let g = 1; g <= 3; g++) {
+        const gy = (height / 4) * g;
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(width, gy); ctx.stroke();
+      }
+
+      // Peak Anomaly Column
+      let peakIdx = 3;
+      const peakX = padX + (peakIdx / (tps.length - 1)) * usableW;
+      const peakY = height - padY - ((tps[peakIdx] - 50) / 70) * usableH;
+      const colW = Math.max(16, usableW / tps.length);
+      const bgG = ctx.createLinearGradient(0, padY, 0, height - padY);
+      bgG.addColorStop(0, 'rgba(244, 63, 94, 0.25)');
+      bgG.addColorStop(1, 'rgba(244, 63, 94, 0.02)');
+      ctx.fillStyle = bgG;
+      ctx.fillRect(peakX - colW / 2, padY, colW, usableH);
+
+      // Prefill Spline
+      ctx.beginPath();
+      pref.forEach((v, i) => {
+        const x = padX + (i / (pref.length - 1)) * usableW;
+        const y = height - padY - ((v - 800) / 1000) * usableH;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = colors.read;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Token/s Spline + Gradient Fill
+      const pts = tps.map((v, i) => ({
+        x: padX + (i / (tps.length - 1)) * usableW,
+        y: height - padY - ((v - 50) / 70) * usableH
+      }));
+      ctx.beginPath();
+      pts.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+      ctx.strokeStyle = colors.write;
+      ctx.lineWidth = 2.6;
+      ctx.stroke();
+
+      ctx.lineTo(pts[pts.length - 1].x, height - 2);
+      ctx.lineTo(pts[0].x, height - 2);
+      ctx.closePath();
+      const fg = ctx.createLinearGradient(0, 0, 0, height);
+      fg.addColorStop(0, 'rgba(245, 158, 11, 0.28)');
+      fg.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+      ctx.fillStyle = fg;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(peakX, peakY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = colors.danger;
+      ctx.fill();
+    }
+
+    // INST-03: Real High-DPI 3-Ring Telemetry + 16-Core Equalizer Capsules
+    function drawCpuClusterRings(canvasId, overrideSkin) {
+      if (porscheChronoMode && !overrideSkin) {
+        drawPorscheChrono(canvasId, liveTelemetry.cpuLoad + '%', 'CPU LOAD', liveTelemetry.cpuLoad / 100, liveTelemetry.cpuTemp + '°C', 'PKG TEMP', liveTelemetry.cpuTemp / 95, liveTelemetry.cpuFreq + 'G', 'BOOST GHZ', liveTelemetry.cpuFreq / 5.5, false);
+        return;
+      }
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+
+      const rings = [
+        { label: `${liveTelemetry.cpuTemp}°C`, sub: 'TEMP', ratio: liveTelemetry.cpuTemp / 95, color: colors.ok },
+        { label: `${liveTelemetry.cpuLoad}%`, sub: 'LOAD', ratio: Math.max(0.12, liveTelemetry.cpuLoad / 100), color: colors.primary },
+        { label: `${liveTelemetry.cpuFreq}G`, sub: 'FREQ', ratio: liveTelemetry.cpuFreq / 5.0, color: colors.secondary },
+      ];
+      const rZoneH = height * 0.56;
+      const r = Math.max(12, Math.min(width / 8.5, rZoneH * 0.39));
+      const secW = width / 3;
+      rings.forEach((rg, idx) => {
+        const cx = secW * idx + secW / 2;
+        const cy = r + 5;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.strokeStyle = colors.isLight ? 'rgba(1,2,5,0.1)' : 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 5; ctx.stroke();
+
+        ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * rg.ratio);
+        ctx.strokeStyle = rg.color; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.stroke();
+
+        ctx.fillStyle = colors.text;
+        ctx.font = '700 10.5px JetBrains Mono, monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(rg.label, cx, cy + 3.5);
+      });
+
+      const caps = 16;
+      const padX = 8;
+      const eqTop = Math.round(height * 0.58);
+      const eqH = Math.max(12, height - eqTop - 4);
+      const slotW = (width - padX * 2) / caps;
+      const barW = Math.max(3, slotW - 3);
+      for (let i = 0; i < caps; i++) {
+        const bx = padX + i * slotW + 1.5;
+        ctx.fillStyle = colors.isLight ? 'rgba(1,2,5,0.08)' : 'rgba(255,255,255,0.06)';
+        ctx.beginPath(); ctx.roundRect(bx, eqTop, barW, eqH, 2.5); ctx.fill();
+        const isEff = i < 4;
+        const lRatio = isEff ? 0.32 + ((i * 7) % 24) / 100 : 0.22 + ((i * 13 + liveTelemetry.cpuLoad) % 64) / 100;
+        const fillH = Math.max(3, Math.round(eqH * lRatio));
+        ctx.fillStyle = isEff ? colors.ok : (lRatio > 0.65 ? colors.danger : colors.write);
+        ctx.beginPath(); ctx.roundRect(bx, eqTop + eqH - fillH, barW, fillH, 2.5); ctx.fill();
+      }
+    }
+
+    // INST-04: Real High-DPI Thermal Radar Rails
+    function drawThermalRadar(canvasId, overrideSkin) {
+      if (porscheChronoMode && !overrideSkin) {
+        drawPorscheChrono(canvasId, '56°C', 'GPU PEAK', 56 / 95, '48°C', 'CPU PKG', 48 / 95, '38°C', 'M4 MAX', 38 / 95, false);
+        return;
+      }
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+      const cards = [
+        { label: 'RTX PRO 4000 #0 (24G)', temp: liveTelemetry.gpuTemps[0], peak: 68, col: colors.ok },
+        { label: 'RTX PRO 4000 #1 (24G)', temp: liveTelemetry.gpuTemps[1], peak: 64, col: colors.ok },
+        { label: 'Quadro RTX 4000 (8G)', temp: 42, peak: 58, col: colors.ok },
+        { label: 'Radeon Pro VII (16G)', temp: 39, peak: 54, col: colors.danger },
+        { label: 'M4 Max 40C GPU + NPU', temp: 38, peak: 49, col: colors.primary },
+      ];
+      const rowH = height / cards.length;
+      cards.forEach((c, idx) => {
+        const y = idx * rowH + 2;
+        ctx.beginPath(); ctx.arc(8, y + 6, 3, 0, Math.PI * 2); ctx.fillStyle = c.col; ctx.fill();
+        ctx.fillStyle = colors.text; ctx.font = '500 9.5px JetBrains Mono, monospace';
+        ctx.textAlign = 'left'; ctx.fillText(c.label, 16, y + 9);
+        ctx.textAlign = 'right'; ctx.fillStyle = colors.muted;
+        ctx.fillText(`${c.temp}°C / Peak ${c.peak}°C`, width - 6, y + 9);
+
+        const bx = 16, by = y + 12, bw = width - 22, bh = Math.max(3.5, rowH * 0.22);
+        ctx.fillStyle = colors.isLight ? 'rgba(1,2,5,0.1)' : 'rgba(255,255,255,0.07)';
+        ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 2); ctx.fill();
+
+        const fw = (c.temp / 95) * bw;
+        const g = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+        g.addColorStop(0, colors.ok); g.addColorStop(0.55, colors.warn); g.addColorStop(1, colors.danger);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.roundRect(bx, by, fw, bh, 2); ctx.fill();
+
+        const px = bx + (c.peak / 95) * bw;
+        ctx.fillStyle = colors.text;
+        ctx.fillRect(px, by - 1, 2, bh + 2);
+      });
+    }
+
+    // INST-05: Real High-DPI 120-LED Mesh Matrix + I/O Curves (OR Porsche NVMe Fuel-Tank 0 - 1/2 - 1/1!)
+    function drawStorageAndNetwork(canvasId, overrideSkin) {
+      if (porscheChronoMode && !overrideSkin) {
+        drawPorscheChrono(canvasId, '65%', '20.8 / 32 TB', 0.65, liveTelemetry.readGbs + 'G', 'NVME READ', liveTelemetry.readGbs / 15, liveTelemetry.writeGbs + 'G', 'NVME WRITE', liveTelemetry.writeGbs / 10, true);
+        return;
+      }
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+      const padX = 8;
+      const cols = 30, rows = 4;
+      const ledH = height * 0.44;
+      const cellW = (width - padX * 2) / cols;
+      const cellH = Math.max(3, (ledH - rows * 2) / rows);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const idx = r * cols + c;
+          const x = padX + c * cellW;
+          const y = 4 + r * (cellH + 2);
+          ctx.fillStyle = idx % 11 === 0 ? colors.read : idx % 5 === 0 ? colors.ok : 'rgba(16, 185, 129, 0.55)';
+          ctx.beginPath(); ctx.roundRect(x, y, Math.max(2, cellW - 1.5), cellH, 1.5); ctx.fill();
+        }
+      }
+      const gTop = Math.round(height * 0.52);
+      const gH = Math.max(12, height - gTop - 6);
+      const pts = 24;
+      ctx.beginPath();
+      for (let i = 0; i < pts; i++) {
+        const x = padX + (i / (pts - 1)) * (width - padX * 2);
+        const y = gTop + gH * 0.35 + Math.sin(i * 0.45) * (gH * 0.24);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = colors.read; ctx.lineWidth = 2; ctx.stroke();
+
+      ctx.beginPath();
+      for (let i = 0; i < pts; i++) {
+        const x = padX + (i / (pts - 1)) * (width - padX * 2);
+        const y = gTop + gH * 0.68 + Math.cos(i * 0.35) * (gH * 0.2);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = colors.write; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    // INST-06: Real High-DPI EcoFlow UPS Power Sine Wave & Segment Bar
+    function drawUpsPower(canvasId, overrideSkin) {
+      if (porscheChronoMode && !overrideSkin) {
+        drawPorscheChrono(canvasId, liveTelemetry.wattage + 'W', 'POWER DRAW', liveTelemetry.wattage / 600, '230V', 'AC GRID', 230 / 250, '100%', 'LFP CELL', 1.0, false);
+        return;
+      }
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors(overrideSkin);
+      const padX = 8;
+      const segs = 20;
+      const segW = (width - padX * 2) / segs;
+      for (let i = 0; i < segs; i++) {
+        ctx.fillStyle = colors.ok;
+        ctx.beginPath(); ctx.roundRect(padX + i * segW, 6, Math.max(2.5, segW - 2), 12, 2); ctx.fill();
+      }
+      const nodes = [
+        { w: 185, col: colors.primary },
+        { w: 108, col: colors.secondary },
+        { w: 92, col: colors.write },
+      ];
+      let curX = padX;
+      const barW = width - padX * 2;
+      nodes.forEach(n => {
+        const wPx = (n.w / 385) * barW;
+        ctx.fillStyle = n.col;
+        ctx.fillRect(curX, 24, Math.max(3, wPx - 1.5), 8);
+        curX += wPx;
+      });
+      const waveY = Math.max(62, height - 20);
+      ctx.beginPath();
+      for (let x = padX; x <= width - padX; x += 3) {
+        const y = waveY + Math.sin((x + liveTelemetry.wattage) * 0.08) * 10;
+        if (x === padX) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = colors.ok; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    // INST-07: Real High-DPI 10-Service FuseDash Bubble Matrix
+    function drawServiceBubbles(canvasId) {
+      const env = setupHiDpiCanvas(canvasId);
+      if (!env) return;
+      const { ctx, width, height } = env;
+      const colors = getThemeColors();
+      const svcs = [
+        { name: 'Router', load: 12, lat: '0.4ms', cat: 'CORE' },
+        { name: 'Ollama #0', load: 64, lat: '1.2ms', cat: 'AI' },
+        { name: 'Ollama #1', load: 48, lat: '1.1ms', cat: 'AI' },
+        { name: 'ComfyUI', load: 32, lat: '2.4ms', cat: 'AI' },
+        { name: 'Paperless', load: 8, lat: '3.1ms', cat: 'STORAGE' },
+        { name: 'MemPalace', load: 28, lat: '0.9ms', cat: 'AI' },
+        { name: 'Stirling', load: 5, lat: '2.8ms', cat: 'STORAGE' },
+        { name: 'Handbrake', load: 14, lat: '4.2ms', cat: 'STORAGE' },
+        { name: 'ChromaDB', load: 22, lat: '0.8ms', cat: 'GRAPH' },
+        { name: 'Neo4j', load: 19, lat: '1.1ms', cat: 'GRAPH' },
+      ];
+      const cols = width >= 620 ? 10 : 5;
+      const rows = Math.ceil(svcs.length / cols);
+      const cellW = (width - 16) / cols;
+      const cellH = (height - 12) / rows;
+      svcs.forEach((s, idx) => {
+        const c = idx % cols;
+        const r = Math.floor(idx / cols);
+        const cx = 8 + c * cellW + cellW / 2;
+        const cy = 6 + r * cellH + cellH * 0.36;
+        const rad = Math.max(10, Math.min(18, cellW * 0.28) * (0.65 + (s.load / 100) * 0.35));
+        const col = s.cat === 'AI' ? colors.primary : s.cat === 'GRAPH' ? colors.secondary : s.cat === 'STORAGE' ? colors.write : colors.ok;
+        ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+        ctx.fillStyle = colors.isLight ? 'rgba(213,0,28,0.08)' : 'rgba(0,229,255,0.14)';
+        ctx.fill();
+        ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke();
+
+        ctx.fillStyle = colors.text; ctx.font = '700 9px JetBrains Mono, monospace';
+        ctx.textAlign = 'center'; ctx.fillText(s.load + '%', cx, cy + 3);
+        ctx.font = '600 8.5px JetBrains Mono, monospace';
+        ctx.fillText(s.name, cx, cy + rad + 11);
+      });
+    }
+
+    // Spatial 3D Isometric Backdrop
+    function drawSpatialBackdrop() {
+      const canvas = document.getElementById('spatialBackdropCanvas');
+      if (!canvas) return;
+      const dpr = 1;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, w, h);
+      const colors = getThemeColors();
+      if (colors.isLight) {
+        ctx.strokeStyle = 'rgba(1, 2, 5, 0.04)';
+        for (let x = 0; x < w; x += 48) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+        for (let y = 0; y < h; y += 48) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+        return;
+      }
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
+      for (let x = -h; x < w + h; x += 64) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + h * 0.85, h); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x - h * 0.85, h); ctx.stroke();
+      }
+    }
+
+    function drawAllInstruments() {
+      drawSpatialBackdrop();
+      drawHoneycombMemory('canvas-vram');
+      drawDualSplineTokens('canvas-tokens');
+      drawCpuClusterRings('canvas-cpu');
+      drawThermalRadar('canvas-thermal');
+      drawStorageAndNetwork('canvas-storage');
+      drawUpsPower('canvas-ups');
+      drawServiceBubbles('canvas-services');
+
+      // Also render Multi-Monitor Screensaver canvases if open
+      if (document.getElementById('screensaverModal').classList.contains('open')) {
+        drawPorscheChrono('ss-mon1-chrono', liveTelemetry.cpuLoad + '%', 'GT3 · CPU', liveTelemetry.cpuLoad / 100, '56°C', 'GPU TEMP', 56 / 95, liveTelemetry.currentTps.toFixed(0), 'TOKEN/S', liveTelemetry.currentTps / 130, false, 'porsche-chalk');
+        drawPorscheChrono('ss-mon1-tank', '65%', '20.8 / 32 TB', 0.65, liveTelemetry.readGbs + 'G', 'READ/S', 0.6, liveTelemetry.writeGbs + 'G', 'WRITE/S', 0.5, true, 'porsche-chalk');
+        drawHoneycombMemory('ss-mon2-hex', 'terminator-hud');
+        drawDualSplineTokens('ss-mon2-spline', 'terminator-hud');
+        drawCpuClusterRings('ss-mon3-cpu', 'matrix');
+        drawThermalRadar('ss-mon3-therm', 'matrix');
+      }
+    }
+
+    // =========================================================================
+    // 4. ANIMATED LIVE TELEMETRY STOCK-TICKER WITH SPEED CONTROLS & MANAGER
+    // =========================================================================
+    let tickerSpeed = 1.0; // 0.2x to 3.5x
+    let tickerPaused = false;
+    let tickerHovered = false;
+    let tickerOffsetPx = 0;
+
+    const tickerMessages = [
+      { id: 'm1', active: true, text: '● NOMINAL: NALA-OS v6.6.6 CLUSTER & MACBOOK PRO M4 MAX ONLINE' },
+      { id: 'm2', active: true, text: '● VRAM POOL: 139.6 / 184.0 GB (NVIDIA 34.4G + AMD 89.2G + M4 Max Unified)' },
+      { id: 'm3', active: true, text: '● TOKEN ENGINE: 94.6 t/s · PREFILL 1,455 t/s (Gemma-4 26B · Qwen3-32B · Coder-32B)' },
+      { id: 'm4', active: true, text: '● HOTTEST GPU: RTX PRO 4000 #0 (56°C / Peak 68°C) · M4 MAX DIE 38°C' },
+      { id: 'm5', active: true, text: '● STORAGE (PORSCHE TANK): 20.8 / 32.0 TB (65%) · NVMe 8.4 GB/s R · 5.1 GB/s W' },
+      { id: 'm6', active: true, text: '● ECOFLOW RIVER 3 UPS GUARD: 385W · AC 230V · DC 51.2V (100% · 42m Runtime)' }
+    ];
+
+    function rebuildTickerDom() {
+      const track = document.getElementById('tickerTrack');
+      if (!track) return;
+      const activeItems = tickerMessages.filter(m => m.active).map(m => m.text);
+      const joined = (activeItems.length ? activeItems.join('   ·   ') : '● TELEMETRY BUS STANDBY');
+      // Duplicate content so seamless infinite loop works smoothly
+      track.textContent = joined + '   ·   ' + joined + '   ·   ';
+    }
+
+    function stepTickerFrame() {
+      const track = document.getElementById('tickerTrack');
+      if (track && !tickerPaused && !tickerHovered) {
+        tickerOffsetPx -= 0.85 * tickerSpeed;
+        const halfW = track.scrollWidth / 2;
+        if (halfW > 50 && Math.abs(tickerOffsetPx) >= halfW) {
+          tickerOffsetPx = 0;
+        }
+        track.style.transform = `translate3d(${tickerOffsetPx}px, 0, 0)`;
+      }
+      requestAnimationFrame(stepTickerFrame);
+    }
+
+    function setTickerHover(state) {
+      tickerHovered = state;
+    }
+
+    function setTickerSpeed(val) {
+      tickerSpeed = Math.max(0.2, Math.min(3.5, parseFloat(val) || 1.0));
+      const lbl = document.getElementById('tickerSpeedLabel');
+      if (lbl) lbl.textContent = tickerSpeed.toFixed(1) + 'x';
+      const sld = document.getElementById('tickerSpeedSlider');
+      if (sld) sld.value = String(tickerSpeed);
+      const mVal = document.getElementById('modalTickerSpeedVal');
+      if (mVal) mVal.textContent = tickerSpeed.toFixed(1) + 'x';
+    }
+
+    function adjustTickerSpeed(delta) {
+      setTickerSpeed((tickerSpeed + delta).toFixed(2));
+    }
+
+    function toggleTickerPause() {
+      tickerPaused = !tickerPaused;
+      const btn = document.getElementById('btnTickerPause');
+      if (btn) {
+        btn.textContent = tickerPaused ? '[ ▶ ]' : '[ ⏸ ]';
+        btn.classList.toggle('active', tickerPaused);
+      }
+    }
+
+    function triggerTestAlert() {
+      const alertText = '🚨 CRITICAL TEST: CPU #35 AT 95°C · GPU #0 AT 85°C · UPS POWER OUTAGE — ZFS SYNC IN 5:00m';
+      tickerMessages.unshift({ id: 'alert-' + Date.now(), active: true, text: alertText });
+      const badge = document.getElementById('tickerStatusBadge');
+      if (badge) {
+        badge.textContent = '🚨 CRITICAL ALERT';
+        badge.style.background = 'rgba(239,68,68,0.24)';
+        badge.style.color = 'var(--accent-danger)';
+        badge.style.borderColor = 'rgba(239,68,68,0.65)';
+      }
+      rebuildTickerDom();
+      renderTickerManagerList();
+    }
+
+    function openTickerManager() {
+      renderTickerManagerList();
+      document.getElementById('tickerManagerModal').classList.add('open');
+    }
+    function closeTickerManager() {
+      document.getElementById('tickerManagerModal').classList.remove('open');
+    }
+    function renderTickerManagerList() {
+      const listEl = document.getElementById('tickerMessagesList');
+      if (!listEl) return;
+      listEl.innerHTML = tickerMessages.map((m, i) => `
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--bg-void); border:1px solid var(--border-subtle); border-radius:7px; padding:6px 10px; font-family:var(--font-mono); font-size:11px;">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1;">
+            <input type="checkbox" ${m.active ? 'checked' : ''} onchange="toggleTickerMsg(${i})" style="accent-color:var(--accent-primary);" />
+            <span>${m.text}</span>
+          </label>
+          <button class="btn-ui" onclick="removeTickerMsg(${i})" style="padding:2px 6px; font-size:10px;">✕</button>
+        </div>
+      `).join('');
+    }
+    function addCustomTickerMessage() {
+      const inp = document.getElementById('customTickerInput');
+      const v = (inp.value || '').trim();
+      if (!v) return;
+      tickerMessages.unshift({ id: 'cust-' + Date.now(), active: true, text: '● ' + v });
+      inp.value = '';
+      rebuildTickerDom();
+      renderTickerManagerList();
+    }
+    function toggleTickerMsg(idx) {
+      if (!tickerMessages[idx]) return;
+      tickerMessages[idx].active = !tickerMessages[idx].active;
+      rebuildTickerDom();
+      renderTickerManagerList();
+    }
+    function removeTickerMsg(idx) {
+      tickerMessages.splice(idx, 1);
+      rebuildTickerDom();
+      renderTickerManagerList();
+    }
+
+    // =========================================================================
+    // 5. CARD DRAG & DROP REORDERING + 1-CLICK DRILL-DOWN INSPECTOR MODAL
+    // =========================================================================
+    let draggedCardEl = null;
+    let activeInspectorCardId = 'card-vram';
+
+    function initCardDragAndDrop() {
+      const grid = document.getElementById('instrumentGrid');
+      if (!grid) return;
+      const cards = grid.querySelectorAll('.nala-card');
+      cards.forEach(card => {
+        card.addEventListener('dragstart', e => {
+          draggedCardEl = card;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', card.id);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          grid.querySelectorAll('.nala-card').forEach(c => c.classList.remove('drag-over'));
+          draggedCardEl = null;
+          drawAllInstruments();
+        });
+        card.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (draggedCardEl && draggedCardEl !== card) {
+            card.classList.add('drag-over');
+          }
+        });
+        card.addEventListener('dragleave', () => {
+          card.classList.remove('drag-over');
+        });
+        card.addEventListener('drop', e => {
+          e.preventDefault();
+          card.classList.remove('drag-over');
+          if (!draggedCardEl || draggedCardEl === card) return;
+          const all = Array.from(grid.querySelectorAll('.nala-card'));
+          const fromIdx = all.indexOf(draggedCardEl);
+          const toIdx = all.indexOf(card);
+          if (fromIdx < toIdx) {
+            grid.insertBefore(draggedCardEl, card.nextSibling);
+          } else {
+            grid.insertBefore(draggedCardEl, card);
+          }
+          setTimeout(drawAllInstruments, 30);
+        });
+      });
+    }
+
+    const cardInspectorDetails = {
+      'card-vram': {
+        code: 'INST-01 · MEMORY ARCHITECTURE',
+        title: 'Total VRAM & Unified System RAM Pool',
+        rows: [
+          ['NVIDIA RTX PRO 4000 Blackwell #0', '20.2 / 24.0 GB GDDR7 · ECC ON · 56°C'],
+          ['NVIDIA RTX PRO 4000 Blackwell #1', '11.4 / 24.0 GB GDDR7 · ECC ON · 52°C'],
+          ['NVIDIA Quadro RTX 4000', '2.8 / 8.0 GB GDDR6 · 42°C'],
+          ['AMD Ryzen AI Max+ Unified Pool', '89.2 / 128.0 GB LPDDR5X-8000'],
+          ['MacBook Pro M4 Max Unified RAM', '16.0 / 128.0 GB (546 GB/s Memory Bandwidth)'],
+          ['Cluster System ECC DDR4/DDR5', '320.6 / 512.0 GB (8/8 DIMMs Healthy)']
+        ]
+      },
+      'card-tokens': {
+        code: 'INST-02 · AI INFERENCE ENGINE',
+        title: 'AI Token/s & Prefill Stream',
+        rows: [
+          ['Current Generation Throughput', '94.6 Tokens/s (Peak: 112.8 t/s)'],
+          ['Current Prompt Prefill Speed', '1,455 Prefill/s · TTFT 0.12s'],
+          ['Active Model #1 (GPU 0)', 'Gemma-4 26B Q4_K_M · 48.2 t/s'],
+          ['Active Model #2 (GPU 1)', 'Qwen3-32B Instruct · 31.4 t/s'],
+          ['Active Model #3 (M4 Max Metal)', 'Qwen2.5-Coder-32B MLX · 15.0 t/s'],
+          ['24h Cumulative Tokens Processed', '1,488,755 Tokens · 0 OOM Errors']
+        ]
+      },
+      'card-cpu': {
+        code: 'INST-03 · COMPUTE CORES',
+        title: 'CPU Cluster Overview (108 Threads + 16C M4 Max)',
+        rows: [
+          ['Node 1 · Dell Precision Dual Xeon', '44 Threads · 3.65 GHz · 42°C · 11% Load'],
+          ['Node 2 · Ryzen AI Max+ PRO 395', '32 Threads · 5.10 GHz Boost · 39°C · 8% Load'],
+          ['Node 3 · Proxmox VE Hypervisor', '32 Threads · ZFS & CRM VM Host · 48°C'],
+          ['Local · MacBook Pro M4 Max', '12 P-Cores + 4 E-Cores · 38°C · 6% Load']
+        ]
+      },
+      'card-thermal': {
+        code: 'INST-04 · THERMAL & SMC GUARD',
+        title: 'Thermal Radar, Fan Curves & Katze-Nala 55°C Shield',
+        rows: [
+          ['RTX PRO 4000 Blackwell #0', '56°C Diode / 68°C Peak · Fan 42% (1,420 RPM)'],
+          ['RTX PRO 4000 Blackwell #1', '52°C Diode / 64°C Peak · Fan 38% (1,310 RPM)'],
+          ['Quadro RTX 4000 (8G)', '42°C Diode / 58°C Peak · Fan 30%'],
+          ['Radeon Pro VII (16G HBM2)', '39°C Diode / 54°C Peak · Fan 28%'],
+          ['Apple M4 Max Die & Fans', '38°C Die · Fan 0: 1,380 RPM · Fan 1: 1,365 RPM'],
+          ['Katze-Nala Surface Guard', 'AKTIV (Max Exhaust Limit ≤ 55°C Nominal)']
+        ]
+      },
+      'card-storage': {
+        code: 'INST-05 · PORSCHE FUEL-TANK & MESH I/O',
+        title: 'NVMe ZFS Storage Tank (0 — 1/2 — 1/1) & 120-LED Mesh',
+        rows: [
+          ['Total Cluster Storage Pool (⛽ Tank)', '20.8 / 32.0 TB (65% Belegt · 11.2 TB Frei)'],
+          ['Porsche Reserve Warning Threshold', '85% (27.2 TB) — Status: GRÜN / NOMINAL'],
+          ['Aggregate NVMe Read / Write', '8.4 GB/s Read · 5.1 GB/s Write'],
+          ['Apple 8TB Internal NVMe (M4 Max)', '7.4 GB/s Read · SMART Verified (34°C)'],
+          ['Tailscale WireGuard Mesh Bus', '8.6 Gb/s Throughput · 0.4ms Latency']
+        ]
+      },
+      'card-ups': {
+        code: 'INST-06 · POWER & ECOFLOW LFP BUS',
+        title: 'Power Consumption & EcoFlow River 3 UPS Guard',
+        rows: [
+          ['Total Cluster Active Power Draw', '385 W (Dell 185W · PVE 108W · Worker 92W)'],
+          ['MacBook Pro M4 Max MagSafe 3', '27.8V DC · 42W (Battery at 72%)'],
+          ['EcoFlow River 3 LFP State', '100% SoC · AC 230V 50Hz Pure Sine · DC 51.2V'],
+          ['Estimated Runtime on Outage', '42 Minutes · Auto-ZFS Sync after 5:00m']
+        ]
+      },
+      'card-services': {
+        code: 'INST-07 · FUSEDASH BUBBLE MATRIX',
+        title: 'Service & AI Stack Monitors (10/10 UP)',
+        rows: [
+          ['NALA API Router & sHeriFF Gate', 'ONLINE · 0.4ms · 12% Load'],
+          ['Ollama GPU #0 & GPU #1', 'ONLINE · 1.1ms · 64% / 48% Load'],
+          ['ComfyUI Studio :8188', 'ONLINE · 2.4ms · 32% Load'],
+          ['Paperless-ngx & Stirling PDF', 'ONLINE · 2.9ms · OCR Idle'],
+          ['MemPalace, ChromaDB & Neo4j', 'ONLINE · 0.9ms · Graph Synced']
+        ]
+      }
+    };
+
+    function handleCardClick(e, cardId) {
+      // Ignore clicks on buttons, inputs, selects, or corner-resizer
+      if (e.target.closest('button, select, input, .corner-resizer, .drag-handle')) return;
+      openCardDrillDown(cardId);
+    }
+
+    function openCardDrillDown(cardId) {
+      activeInspectorCardId = cardId;
+      const info = cardInspectorDetails[cardId] || cardInspectorDetails['card-vram'];
+      document.getElementById('ddCode').textContent = info.code;
+      document.getElementById('ddTitle').textContent = info.title;
+      document.getElementById('ddBody').innerHTML = info.rows.map(r => `
+        <div style="display:flex; justify-content:space-between; gap:12px; padding:7px 10px; border-bottom:1px solid var(--border-subtle);">
+          <span style="color:var(--text-secondary);">${r[0]}</span>
+          <strong style="color:var(--text-primary); text-align:right;">${r[1]}</strong>
+        </div>
+      `).join('');
+      document.getElementById('drillDownModal').classList.add('open');
+    }
+
+    function closeCardDrillDown() {
+      document.getElementById('drillDownModal').classList.remove('open');
+    }
+
+    function applyCardPresetSize(w, h, hideText) {
+      const card = document.getElementById(activeInspectorCardId);
+      if (!card) return;
+      const cv = card.querySelector('canvas');
+      card.style.width = w + 'px';
+      card.style.flex = `0 1 ${w}px`;
+      if (cv) cv.style.height = h + 'px';
+      card.classList.toggle('textless', Boolean(hideText));
+      closeCardDrillDown();
+      setTimeout(drawAllInstruments, 30);
+    }
+
+    function toggleScreensaver() {
+      const m = document.getElementById('screensaverModal');
+      m.classList.toggle('open');
+      document.getElementById('btnScreensaver').classList.toggle('active-green');
+      setTimeout(drawAllInstruments, 50);
+    }
+
+    function exportTelemetryCsv() {
+      const csv = 'timestamp,node,tps,prefill_tps,vram_gb,ram_gb,cpu_load_pct,gpu_temp_c,wattage_w\n' +
+        new Date().toISOString() + ',NALA-bRaiN-cORe,' + liveTelemetry.currentTps + ',' + liveTelemetry.prefillTps + ',' + liveTelemetry.vramUsed + ',' + liveTelemetry.ramUsed + ',' + liveTelemetry.cpuLoad + ',' + liveTelemetry.gpuTemps[0] + ',' + liveTelemetry.wattage + '\n';
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'nala_hwsensors_v25_telemetry.csv';
+      a.click();
+    }
+
+    // Live simulation loop
+    setInterval(() => {
+      liveTelemetry.currentTps = Number((91.5 + Math.sin(Date.now() / 1200) * 4.8).toFixed(1));
+      liveTelemetry.historyTps.shift();
+      liveTelemetry.historyTps.push(liveTelemetry.currentTps);
+      liveTelemetry.cpuLoad = Math.max(6, Math.min(28, Math.round(11 + Math.sin(Date.now() / 1500) * 6)));
+      document.getElementById('kpiTpsVal').textContent = liveTelemetry.currentTps.toFixed(1) + ' t/s';
+      document.getElementById('kpiCpuSummary').textContent = `${liveTelemetry.cpuTemp}°C Avg · ${liveTelemetry.cpuLoad}% Load · ${liveTelemetry.cpuFreq} GHz`;
+      renderMacosMenubarAndTray();
+      drawAllInstruments();
+    }, 2200);
+
+    window.addEventListener('resize', drawAllInstruments);
+    rebuildTickerDom();
+    requestAnimationFrame(stepTickerFrame);
+    initCardDragAndDrop();
+    renderMacosMenubarAndTray();
+    drawAllInstruments();
+  </script>
+</body>
+</html>

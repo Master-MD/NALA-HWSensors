@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="de" data-skin="porsche-v4">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NALA-HWSensors v2.5 — macOS Menubar, 8-Skin Cockpit & Ultra-Eco Screensaver Studio</title>
+  <style>
+    :root, [data-skin="porsche-v4"] {
+      --bg-void: #0b0c10;
+      --bg-surface: #13151c;
+      --bg-card: rgba(22, 25, 34, 0.92);
+      --border-subtle: rgba(255, 255, 255, 0.11);
+      --border-accent: #d5001c;
+      --text-primary: #f4f5f7;
+      --text-secondary: #a0a8b8;
+      --text-muted: #687082;
+      --accent-primary: #d5001c;
+      --accent-secondary: #00a3e0;
+      --accent-ok: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-danger: #ef4444;
+      --card-radius: 14px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      --font-mono: "SF Mono", "JetBrains Mono", Menlo, monospace;
+      --skin-badge: "🏎️ PORSCHE DESIGN v4 COCKPIT";
+    }
+    [data-skin="porsche-chalk"] {
+      --bg-void: #ebedf0;
+      --bg-surface: #f5f6f8;
+      --bg-card: rgba(255, 255, 255, 0.96);
+      --border-subtle: rgba(13, 15, 18, 0.14);
+      --border-accent: #d5001c;
+      --text-primary: #0d0f12;
+      --text-secondary: #3b4049;
+      --text-muted: #69707d;
+      --accent-primary: #d5001c;
+      --accent-secondary: #0077b6;
+      --accent-ok: #059669;
+      --accent-warn: #d97706;
+      --accent-danger: #dc2626;
+      --card-radius: 14px;
+      --skin-badge: "🏎️ PORSCHE v4 OPEN CHALK (LIGHT)";
+    }
+    [data-skin="terminator-skynet"] {
+      --bg-void: #050204;
+      --bg-surface: #0d0408;
+      --bg-card: rgba(20, 6, 11, 0.94);
+      --border-subtle: rgba(225, 29, 72, 0.28);
+      --border-accent: #ff1e42;
+      --text-primary: #ffe4e8;
+      --text-secondary: #fda4af;
+      --text-muted: #9f1239;
+      --accent-primary: #ff1e42;
+      --accent-secondary: #f43f5e;
+      --accent-ok: #fb7185;
+      --accent-warn: #f59e0b;
+      --accent-danger: #ff002b;
+      --card-radius: 2px;
+      --skin-badge: "🤖 CYBERDYNE SKYNET T-800 HUD";
+    }
+    [data-skin="umbrella-corp"] {
+      --bg-void: #09090b;
+      --bg-surface: #121216;
+      --bg-card: rgba(24, 24, 29, 0.95);
+      --border-subtle: rgba(220, 38, 38, 0.3);
+      --border-accent: #dc2626;
+      --text-primary: #fafafa;
+      --text-secondary: #d4d4d8;
+      --text-muted: #71717a;
+      --accent-primary: #dc2626;
+      --accent-secondary: #f8fafc;
+      --accent-ok: #22c55e;
+      --accent-warn: #eab308;
+      --accent-danger: #ef4444;
+      --card-radius: 6px;
+      --skin-badge: "☣️ UMBRELLA CORP BIO-LAB HUD";
+    }
+    [data-skin="matrix-construct"] {
+      --bg-void: #020804;
+      --bg-surface: #041209;
+      --bg-card: rgba(5, 22, 12, 0.92);
+      --border-subtle: rgba(16, 185, 129, 0.28);
+      --border-accent: #10b981;
+      --text-primary: #d1fae5;
+      --text-secondary: #6ee7b7;
+      --text-muted: #047857;
+      --accent-primary: #10b981;
+      --accent-secondary: #34d399;
+      --accent-ok: #10b981;
+      --accent-warn: #facc15;
+      --accent-danger: #f87171;
+      --card-radius: 4px;
+      --skin-badge: "🟩 MATRIX NEBUCHADNEZZAR CONSTRUCT";
+    }
+    [data-skin="doom-uac"] {
+      --bg-void: #0c0705;
+      --bg-surface: #170d09;
+      --bg-card: rgba(29, 16, 11, 0.94);
+      --border-subtle: rgba(234, 88, 12, 0.32);
+      --border-accent: #ea580c;
+      --text-primary: #ffedd5;
+      --text-secondary: #fdba74;
+      --text-muted: #9a3412;
+      --accent-primary: #ea580c;
+      --accent-secondary: #84cc16;
+      --accent-ok: #84cc16;
+      --accent-warn: #f59e0b;
+      --accent-danger: #dc2626;
+      --card-radius: 4px;
+      --skin-badge: "🔥 DOOM SLAYER UAC PRAETOR HUD";
+    }
+    [data-skin="blackmagic-ive"] {
+      --bg-void: #07080c;
+      --bg-surface: #0f1118;
+      --bg-card: rgba(18, 21, 30, 0.94);
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --border-accent: #06b6d4;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --accent-primary: #06b6d4;
+      --accent-secondary: #a855f7;
+      --accent-ok: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-danger: #f43f5e;
+      --card-radius: 16px;
+      --skin-badge: "🎬 BLACKMAGIC × JONY IVE STUDIO";
+    }
+    [data-skin="liquid-glass"] {
+      --bg-void: #0f172a;
+      --bg-surface: rgba(30, 41, 59, 0.7);
+      --bg-card: rgba(255, 255, 255, 0.08);
+      --border-subtle: rgba(255, 255, 255, 0.22);
+      --border-accent: #38bdf8;
+      --text-primary: #ffffff;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #818cf8;
+      --accent-ok: #34d399;
+      --accent-warn: #fbbf24;
+      --accent-danger: #fb7185;
+      --card-radius: 22px;
+      --skin-badge: "💎 APPLE CUPERTINO LIQUID GLASS";
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-void);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    /* 1. SIMULATED MACOS TOP MENUBAR (MenuMeters / iStat / NALA-HWSensors) */
+    .macos-menubar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 32px;
+      background: rgba(12, 14, 20, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 12px;
+      user-select: none;
+    }
+    [data-skin="porsche-chalk"] .macos-menubar {
+      background: rgba(245, 246, 248, 0.92);
+      color: #0d0f12;
+    }
+    .menubar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 600;
+    }
+    .menubar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .mb-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: grab;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    [data-skin="porsche-chalk"] .mb-pill {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.12);
+    }
+    .mb-pill:hover {
+      border-color: var(--accent-primary);
+      transform: translateY(-1px);
+    }
+    .menubar-mono .mb-pill {
+      color: var(--text-primary) !important;
+      border-color: rgba(150, 150, 150, 0.25) !important;
+    }
+    .menubar-mono .mb-bar-fill {
+      background: var(--text-primary) !important;
+    }
+    .mb-mini-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 1.5px;
+      height: 12px;
+    }
+    .mb-bar {
+      width: 3px;
+      background: rgba(150, 150, 150, 0.25);
+      border-radius: 1px;
+      overflow: hidden;
+      height: 12px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .mb-bar-fill {
+      width: 100%;
+      transition: height 0.3s ease;
+    }
+
+    /* Menubar Popover Dropdown */
+    .menubar-popover {
+      position: fixed;
+      top: 36px;
+      right: 16px;
+      width: 360px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 14px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      padding: 14px;
+      z-index: 200;
+      display: none;
+      backdrop-filter: blur(24px);
+    }
+    .menubar-popover.open { display: block; }
+
+    /* Control Subheader */
+    .studio-toolbar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .tab-group, .skin-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .btn {
+      padding: 6px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      border-color: var(--accent-primary);
+    }
+    .btn.active {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border-color: var(--accent-primary);
+    }
+
+    /* Main Content Container */
+    .main-wrap {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Grid & Cards */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+    @media (max-width: 1024px) {
+      .col-4, .col-6, .col-8 { grid-column: span 12; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    [data-skin="terminator-skynet"] .card {
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+      border-color: rgba(255, 30, 66, 0.45);
+    }
+    .card:hover { border-color: var(--border-accent); }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+    .hero-metric {
+      font-family: var(--font-mono);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .sub-metric {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    /* Sensor Picker List */
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 8px;
+      max-height: 310px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .sensor-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.03);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .sensor-item.pinned {
+      border-color: var(--accent-primary);
+      background: rgba(213, 0, 28, 0.14);
+    }
+
+    /* Multi-Monitor Screensaver Preview */
+    .desk-monitors {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      gap: 16px;
+      margin-top: 14px;
+      align-items: center;
+    }
+    @media (max-width: 980px) {
+      .desk-monitors { grid-template-columns: 1fr; }
+    }
+    .monitor-frame {
+      background: #050608;
+      border: 3px solid #2c303a;
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 250px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: opacity 0.3s ease;
+    }
+    .monitor-stand {
+      width: 64px;
+      height: 14px;
+      background: #2c303a;
+      margin: 0 auto;
+      border-radius: 0 0 6px 6px;
+    }
+
+    /* Tables */
+    .caveman-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    .caveman-table th, .caveman-table td {
+      border: 1px solid var(--border-subtle);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .caveman-table th {
+      background: rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      font-size: 11px;
+      color: var(--accent-primary);
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. INTERACTIVE MACOS MENUBAR (MenuMeters / iStat / NALA-HWSensors v2.5) -->
+  <header class="macos-menubar" id="topMenubar">
+    <div class="menubar-left">
+      <span style="font-size:14px;"></span>
+      <span>NALA-HWSensors v2.5</span>
+      <span style="font-weight:400; opacity:0.75; font-size:11px;" id="activeSkinLabel">🏎️ PORSCHE DESIGN v4 COCKPIT</span>
+    </div>
+
+    <!-- DRAG & DROP MENUBAR ITEMS -->
+    <div class="menubar-right" id="menubarItemsContainer">
+      <!-- Filled dynamically by JS so items can be dragged, reordered, toggled & styled -->
+    </div>
+  </header>
+
+  <!-- MENUBAR POPOVER WINDOW (Opens when clicking any Menubar sensor pill) -->
+  <div class="menubar-popover" id="menubarPopover">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid var(--border-subtle); padding-bottom:8px;">
+      <div>
+        <div style="font-weight:700; font-size:13px;" id="popoverTitle">Apple M4 Max — Live Menubar Popover</div>
+        <div style="font-size:10px; color:var(--text-secondary); font-family:var(--font-mono);">User-Space HAL · 0% FakeSMC.kext · &lt;0.8% CPU</div>
+      </div>
+      <button class="btn" onclick="togglePopover(false)" style="padding:2px 8px;">✕</button>
+    </div>
+    <div id="popoverBody" style="font-family:var(--font-mono); font-size:11px; line-height:1.6;"></div>
+  </div>
+
+  <!-- 2. STUDIO TOOLBAR (Mode Switcher & Live 8-Skin Selector) -->
+  <nav class="studio-toolbar">
+    <div class="tab-group">
+      <button class="btn active" onclick="switchView('cockpit', this)">🎛️ 1. 8-Skin Live Cockpit</button>
+      <button class="btn" onclick="switchView('menubar', this)">🍎 2. Menubar Drag &amp; Drop Builder</button>
+      <button class="btn" onclick="switchView('screensaver', this)">🖥️ 3. Multi-Monitor Eco-Screensaver (&lt;2% CPU)</button>
+      <button class="btn" onclick="switchView('matrix', this)">🏛️ 4. Caveman-Matrix, Legacy-SMC &amp; 4×25% Lizenz</button>
+    </div>
+
+    <div class="skin-group">
+      <span style="font-size:11px; font-family:var(--font-mono); color:var(--text-secondary);">SKIN:</span>
+      <button class="btn active" onclick="setSkin('porsche-v4', this)">🏎️ Porsche v4 Dark</button>
+      <button class="btn" onclick="setSkin('porsche-chalk', this)">🏳️ Porsche v4 Chalk</button>
+      <button class="btn" onclick="setSkin('terminator-skynet', this)">🤖 Terminator HUD</button>
+      <button class="btn" onclick="setSkin('umbrella-corp', this)">☣️ Umbrella Corp</button>
+      <button class="btn" onclick="setSkin('matrix-construct', this)">🟩 Matrix</button>
+      <button class="btn" onclick="setSkin('doom-uac', this)">🔥 DOOM UAC</button>
+      <button class="btn" onclick="setSkin('blackmagic-ive', this)">🎬 Blackmagic</button>
+      <button class="btn" onclick="setSkin('liquid-glass', this)">💎 Liquid Glass</button>
+    </div>
+  </nav>
+
+  <main class="main-wrap">
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: 8-SKIN LIVE TELEMETRY COCKPIT (Porsche, Terminator, Matrix...) -->
+    <!-- ===================================================================== -->
+    <section id="view-cockpit" class="view-section active">
+      <div class="bento-grid">
+
+        <!-- CARD 1: PORSCHE SPORT CHRONO / T-800 RETICLE / UMBRELLA OCTAGON -->
+        <div class="card col-4">
+          <div class="card-header">
+            <span>INST-01 · CPU &amp; GPU PRIMARY INSTRUMENT</span>
+            <span id="inst01ModeTag">SPORT CHRONO</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+            <div>
+              <div class="hero-metric" id="cpuHeroVal">53.2%</div>
+              <div class="sub-metric">Apple M4 Max (16C) · 67.0°C</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="hero-metric" style="color:var(--accent-secondary);" id="gpuHeroVal">40C GPU</div>
+              <div class="sub-metric">Metal 3.7 / 19.0 GB · 51.5°C</div>
+            </div>
+          </div>
+          <canvas id="primaryGaugeCanvas" width="420" height="210" style="width:100%; height:195px; display:block;"></canvas>
+        </div>
+
+        <!-- CARD 2: PORSCHE NVMe FUEL-TANK GAUGE / DOOM HEALTH / MATRIX CONSTRUCT -->
+        <div class="card col-4">
+          <div class="card-header">
+            <span>INST-02 · NVMe SSD STORAGE FUEL TANK</span>
+            <span style="color:var(--accent-ok);">⛽ RANGE: 328 DAYS</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+            <div>
+              <div class="hero-metric" id="fuelHeroVal">86.4% FULL</div>
+              <div class="sub-metric">504.4 GB Free / 3'721.9 GB NVMe</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge" style="background:rgba(16,185,129,0.18); color:var(--accent-ok); border:1px solid var(--accent-ok);">RESERVE LED: OFF</span>
+            </div>
+          </div>
+          <canvas id="fuelTankCanvas" width="420" height="210" style="width:100%; height:195px; display:block;"></canvas>
+        </div>
+
+        <!-- CARD 3: AI TOKEN & NALA CLUSTER BRIDGE -->
+        <div class="card col-4">
+          <div class="card-header">
+            <span>INST-03 · NALA AI TOKEN &amp; CLUSTER SYNC</span>
+            <span style="color:var(--accent-secondary);">⚡ LIVE STREAM</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+            <div>
+              <div class="hero-metric" id="tpsHeroVal">94.6 t/s</div>
+              <div class="sub-metric">Prefill: 1'455 t/s · Ø 87.6 t/s</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="hero-metric" style="font-size:18px; color:var(--accent-ok);">4/4 NODES</div>
+              <div class="sub-metric">M4 Max · Dell .41 · GTR9 · PVE</div>
+            </div>
+          </div>
+          <canvas id="tokenWaveCanvas" width="420" height="210" style="width:100%; height:195px; display:block;"></canvas>
+        </div>
+
+        <!-- CARD 4: 45+ APPLE SILICON PMU & LEGACY INTEL SMC SENSOR RAILS -->
+        <div class="card col-8">
+          <div class="card-header">
+            <span>INST-04 · LIVE HARDWARE SENSOR MATRIX (APPLE SILICON IOHID + INTEL SMC + LINUX HWMON)</span>
+            <span>🐾 KATZE-NALA NIGHT SHIELD: ACTIVE (&le;55°C SURFACE)</span>
+          </div>
+          <div class="sensor-grid" id="liveSensorMatrixGrid"></div>
+        </div>
+
+        <!-- CARD 5: DESKTOP FLOATING WIDGET PREVIEW -->
+        <div class="card col-4">
+          <div class="card-header">
+            <span>INST-05 · DESKTOP FLOATING WIDGET MODE</span>
+            <span>macOS · Ubuntu · NALA-OS · Win11</span>
+          </div>
+          <p style="font-size:11.5px; color:var(--text-secondary); margin-bottom:10px;">
+            Jedes Instrument kann als frei schwebendes, rahmenloses Desktop-Widget (Tiny 48×28px Nano-Pill bis XL-Widget) auf dem Schreibtisch verankert werden:
+          </p>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="padding:10px; border-radius:12px; border:1px solid var(--border-accent); background:rgba(0,0,0,0.35); display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-mono); font-size:11px;">📌 Widget #1: Nano Token Pill (50×24px)</span>
+              <span class="badge" style="background:var(--accent-primary); color:#fff;">94.6 t/s</span>
+            </div>
+            <div style="padding:10px; border-radius:12px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-mono); font-size:11px;">📌 Widget #2: Porsche SSD Fuel Gauge</span>
+              <span class="badge" style="background:rgba(16,185,129,0.2); color:var(--accent-ok);">⛽ 86.4%</span>
+            </div>
+            <div style="padding:10px; border-radius:12px; border:1px solid var(--border-subtle); background:rgba(0,0,0,0.35); display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-mono); font-size:11px;">📌 Widget #3: M4 Max 45-Sensor Radar</span>
+              <span class="badge" style="background:rgba(56,189,248,0.2); color:var(--accent-secondary);">67.0°C</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: MACOS MENUBAR DRAG & DROP BUILDER (MenuMeters / iStat Style)  -->
+    <!-- ===================================================================== -->
+    <section id="view-menubar" class="view-section">
+      <div class="bento-grid">
+        <div class="card col-6">
+          <div class="card-header">
+            <span>🍎 MACOS MENUBAR BAUKASTEN (DRAG &amp; DROP REIHENFOLGE + FARBIG / MONOCHROM)</span>
+            <span>NSStatusItem + Swift Bridge</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+            Ziehe die Module oben in der macOS-Menüleiste per Drag &amp; Drop an deine Wunschposition oder schalte sie hier ein/aus. Du kannst jederzeit zwischen <strong>Farbig (Skin/Ampel)</strong> und <strong>Monochrom (Apple-System-Weiss/Schwarz)</strong> wechseln:
+          </p>
+          <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+            <button class="btn active" id="btnColorMode" onclick="setMenubarColorMode(false)">🎨 Farbig (Skin- &amp; Temperatur-Ampel)</button>
+            <button class="btn" id="btnMonoMode" onclick="setMenubarColorMode(true)">⚪ Monochrom (Apple Clean Weiss/Schwarz)</button>
+          </div>
+          <div id="menubarBuilderList" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
+        <div class="card col-6">
+          <div class="card-header">
+            <span>🌡️ EINZEL-SENSOREN IN DIE MENÜLEISTE ZIEHEN (45+ APPLE SILICON PMU &amp; INTEL SMC)</span>
+            <span>Klicken zum Anpinnen in der Menubar</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;">
+            Klicke auf beliebige Einzelsensoren (z. B. <code>PMU tdie1</code>, <code>GPU Cluster</code>, <code>NVMe Composite</code> oder Legacy Intel <code>TC0D / F0Ac</code>), um sie direkt oben in die macOS-Menüleiste einzuklinken:
+          </p>
+          <div class="sensor-grid" id="pickerSensorList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: MULTI-MONITOR ULTRA-ECO SCREENSAVER SIMULATOR (< 2% CPU/GPU)  -->
+    <!-- ===================================================================== -->
+    <section id="view-screensaver" class="view-section">
+      <div class="card col-12">
+        <div class="card-header">
+          <span>🖥️ MULTI-MONITOR ULTRA-ECO SCREENSAVER ENGINE (macOS .saver · Ubuntu/Arch · NALA-OS · Windows .scr)</span>
+          <span id="saverCpuBadge" style="color:var(--accent-ok); font-weight:700;">⚡ LIVE SCREENSAVER LAST: 0.7% CPU · 1.1% GPU · 5 FPS ECO</span>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:14px;">
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <span style="font-size:11px; font-family:var(--font-mono); color:var(--text-secondary);">MULTI-MONITOR MODUS:</span>
+            <button class="btn active" id="modeIndepBtn" onclick="setMultiMonitorMode('independent')">🖥️🖥️🖥️ Unabhängig (Eigener Skin pro Bildschirm)</button>
+            <button class="btn" id="modeMirrorBtn" onclick="setMultiMonitorMode('mirror')">🪞 Alle Bildschirme spiegeln (Mirror)</button>
+            <button class="btn" id="modeDimBtn" onclick="setMultiMonitorMode('dim')">🌙 Nur Hauptmonitor (Nebenmonitore gedimmt 0W)</button>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <span style="font-size:11px; font-family:var(--font-mono); color:var(--text-secondary);">ECO-FPS DROSSELUNG:</span>
+            <button class="btn" onclick="setSaverFps(1, '0.3% CPU · 0.4% GPU')">1 FPS Ultra-Eco</button>
+            <button class="btn active" onclick="setSaverFps(5, '0.7% CPU · 1.1% GPU')">5 FPS Smart-Eco</button>
+            <button class="btn" onclick="setSaverFps(15, '1.6% CPU · 1.9% GPU')">15 FPS Smooth</button>
+            <button class="btn" style="background:var(--accent-primary); color:#fff; border-color:var(--accent-primary);" onclick="launchFullscreenScreensaver()">🚀 Vollbild-Screensaver jetzt live testen</button>
+          </div>
+        </div>
+
+        <!-- 3-Monitor Desk Simulation -->
+        <div class="desk-monitors">
+          <!-- Left Monitor -->
+          <div>
+            <div class="monitor-frame" id="monLeft" style="border-color:#ff1e42;">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#fda4af;">
+                <span>DISPLAY 1 · STUDIO DISPLAY 5K (LINKS)</span>
+                <span>SKIN: TERMINATOR T-800 HUD</span>
+              </div>
+              <canvas id="monCanvasLeft" width="340" height="175" style="width:100%; height:175px;"></canvas>
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#fda4af;">
+                <span>TARGET: M4 MAX 16C/40G</span>
+                <span>OLED PIXEL-SHIFT: ON</span>
+              </div>
+            </div>
+            <div class="monitor-stand"></div>
+          </div>
+
+          <!-- Center Primary Monitor -->
+          <div>
+            <div class="monitor-frame" id="monCenter" style="border-color:#d5001c; min-height:275px;">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#f4f5f7;">
+                <span>DISPLAY 2 · HAUPTMONITOR (MACBOOK PRO M4 MAX)</span>
+                <span>SKIN: PORSCHE v4 CHRONO &amp; TANK</span>
+              </div>
+              <canvas id="monCanvasCenter" width="380" height="195" style="width:100%; height:195px;"></canvas>
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#a0a8b8;">
+                <span>CPU 53.2% · SSD TANK 86.4%</span>
+                <span>🐾 KATZE-NALA SHIELD: &le;55°C</span>
+              </div>
+            </div>
+            <div class="monitor-stand"></div>
+          </div>
+
+          <!-- Right Monitor -->
+          <div>
+            <div class="monitor-frame" id="monRight" style="border-color:#10b981;">
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#6ee7b7;">
+                <span>DISPLAY 3 · 4K SIDE MONITOR (RECHTS)</span>
+                <span>SKIN: MATRIX CONSTRUCT + AI TOKENS</span>
+              </div>
+              <canvas id="monCanvasRight" width="340" height="175" style="width:100%; height:175px;"></canvas>
+              <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:#6ee7b7;">
+                <span>NALA CLUSTER: 94.6 t/s</span>
+                <span>PREFILL: 1'455 t/s</span>
+              </div>
+            </div>
+            <div class="monitor-stand"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: CAVEMAN-MATRIX, 3-CHAMBER COUNCIL & 4x25% CHARITYWARE LICENSE -->
+    <!-- ===================================================================== -->
+    <section id="view-matrix" class="view-section">
+      <div class="card col-12">
+        <div class="card-header">
+          <span>🏛️ CAVEMAN-ÜBERSICHTSMATRIX (GRAND NALATHEON · GRAND NEOP · 3 RUNDEN THEGREMIUM)</span>
+          <span>25% Upstream · 25% Master-MD · 25% ADHS · 25% Nala-Katzenhilfe</span>
+        </div>
+
+        <table class="caveman-table">
+          <thead>
+            <tr>
+              <th>Stufe / Phase</th>
+              <th>Plattform &amp; Ziel</th>
+              <th>Was wir aus HWSensors behalten vs. neu bauen</th>
+              <th>Killer-Features (Menubar · Skins · Screensaver · Widgets)</th>
+              <th>Ressourcen- &amp; Security-Garantie</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Stufe 1 (JETZT STARTKLAR)</strong></td>
+              <td><strong>🍎 macOS Apple Silicon</strong><br/>(M1 / M2 / M3 / M4 Max &amp; Ultra · macOS 11 bis macOS 26/27)</td>
+              <td>100 % User-Space HAL (<code>IOHIDEventSystemClient</code> 45+ PMU Sensoren + <code>IOAccelerator</code> 40-Core GPU + <code>AppleSmartBattery</code>). <strong>0 % FakeSMC.kext!</strong></td>
+              <td>• Drag &amp; Drop Menubar-Baukasten (Farbig &amp; Monochrom, Uhr, Kalender, Sensoren)<br/>• 8 Skins (Porsche Tankanzeige, Terminator, Umbrella, Matrix, DOOM, Blackmagic)<br/>• Schwebende Desktop-Widgets</td>
+              <td><code>&lt; 0.8 % CPU</code> · <code>SHA-256</code> Skin-Hash-Prüfung · <code>sHeriFF</code> + <code>SkillSpector</code></td>
+            </tr>
+            <tr>
+              <td><strong>Stufe 2</strong></td>
+              <td><strong>🖥️ macOS Screensaver (<code>.saver</code>) &amp; Legacy Intel Macs</strong><br/>(macOS 10.13 High Sierra bis macOS 15)</td>
+              <td>Aus dem alten Repo behalten wir <code>legacy-intel-macos/</code> (<code>HWMonitor</code> SMC-Keys <code>TC0D</code>, <code>TG0D</code>, <code>F0Ac</code> unter GPLv2). <code>FakeSMC.kext</code> ist wegen Kommerz-Verbot gelöscht.</td>
+              <td>• Nativer macOS Bildschirmschoner + Multi-Monitor-Steuerung (Pro Bildschirm eigener Skin ODER Spiegeln)<br/>• Ultra-Eco 1–15 FPS Modus + OLED Pixel-Shift</td>
+              <td><code>&lt; 1.5 % CPU</code> im Screensaver · 🐾 Katze-Nala Nacht-Schutz (&le;55°C)</td>
+            </tr>
+            <tr>
+              <td><strong>Stufe 3</strong></td>
+              <td><strong>🐧 Ubuntu &amp; Arch Linux</strong><br/>(Getestet auf Proxmox Dual-GPU VM 261)</td>
+              <td>Rust HAL liest <code>/sys/class/hwmon</code>, <code>NVML</code> (NVIDIA Blackwell/Quadro), <code>rocm_smi</code> / <code>amdgpu</code>, <code>smartctl</code> &amp; ZFS Pool Health.</td>
+              <td>• GNOME/KDE/Hyprland Top-Bar Tray + Conky-Style WebGL/Canvas Desktop-Widgets + Linux X11/Wayland Screensaver</td>
+              <td>Live verifiziert auf Proxmox VM 261 (Quadro RTX 4000 + P5000) &amp; Worker GTR9</td>
+            </tr>
+            <tr>
+              <td><strong>Stufe 4</strong></td>
+              <td><strong>🧠 NALA-OS Native Plugin</strong><br/>(Cluster &amp; Appliance Integration)</td>
+              <td>Direktes NALA-OS Modul mit bidirektionalem Sync (<code>POST /api/hwsensors/ingest</code>) für Dell .41, Beelink .175, Proxmox .178 &amp; MacBook M4 Max.</td>
+              <td>• Zeigt AI Token/s (<code>t/s</code>), Prefill/s, KV-Cache, VRAM-Wabenkarte &amp; EcoFlow USV 5-Minuten Safe-Shutdown</td>
+              <td>100 % Localhost / Tailscale HMAC-gesichert</td>
+            </tr>
+            <tr>
+              <td><strong>Stufe 5</strong></td>
+              <td><strong>🪟 Windows 10 / 11</strong><br/>(Desktop App, Tray, Gadget &amp; <code>.scr</code>)</td>
+              <td>Tauri v2 + Rust <code>sysinfo</code> + <code>NVML</code> + <code>LibreHardwareMonitor</code> (MPL 2.0) User-Space Bridge.</td>
+              <td>• Windows Taskbar Tray-Icons + Desktop Floating Gadgets + Windows <code>.scr</code> Multi-Monitor Bildschirmschoner</td>
+              <td>Signiertes All-in-One Setup ohne Kernel-Treiber-Zwang</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // STATE: MENUBAR ITEMS, 45+ SENSORS, SKINS & MULTI-MONITOR SCREENSAVER
+    // =========================================================================
+    let currentSkin = 'porsche-v4';
+    let menubarMonochrome = false;
+    let multiMonitorMode = 'independent';
+    let saverFps = 5;
+    let tick = 0;
+
+    const menubarModules = [
+      { id: 'mb-cpu', label: 'CPU', val: '53%', sub: '67°C', color: '#d5001c', enabled: true, style: 'bars', bars: [45, 72, 60, 82, 50, 38] },
+      { id: 'mb-gpu', label: 'GPU', val: '40C', sub: '3.7G', color: '#00a3e0', enabled: true, style: 'bars', bars: [20, 35, 28, 42, 30, 25] },
+      { id: 'mb-ai',  label: 'AI',  val: '94.6 t/s', sub: '1455 pre', color: '#10b981', enabled: true, style: 'pill', bars: [] },
+      { id: 'mb-ram', label: 'RAM', val: '46.5G', sub: '73%', color: '#a855f7', enabled: true, style: 'text', bars: [] },
+      { id: 'mb-ssd', label: '⛽ SSD', val: '86%', sub: '504G free', color: '#f59e0b', enabled: true, style: 'text', bars: [] },
+      { id: 'mb-net', label: 'NET', val: '↓890M', sub: '1.4ms', color: '#38bdf8', enabled: true, style: 'text', bars: [] },
+      { id: 'mb-fan', label: 'FAN', val: '1240 RPM', sub: '24.5W', color: '#22c55e', enabled: true, style: 'text', bars: [] },
+      { id: 'mb-cal', label: '📅 Fr 23. Okt', val: '11:42', sub: 'KW 43', color: '#e2e8f0', enabled: true, style: 'clock', bars: [] }
+    ];
+
+    const hardwareSensors = [
+      { id: 'pmu-tdie1', name: 'PMU tdie1 (M4 Max P-Core 0)', val: '67.2°C', src: 'Apple Silicon IOHID', pinned: true },
+      { id: 'pmu-tdie2', name: 'PMU tdie2 (M4 Max P-Core 1)', val: '68.3°C', src: 'Apple Silicon IOHID', pinned: false },
+      { id: 'pmu-tdie5', name: 'PMU tdie5 (40-Core GPU Die)', val: '51.5°C', src: 'Apple Silicon IOHID', pinned: true },
+      { id: 'pmu-ane',   name: 'PMU tdev3 (16-Core Neural ANE)', val: '44.8°C', src: 'Apple Silicon IOHID', pinned: false },
+      { id: 'nvme-01',   name: 'Apple Fabric NVMe SSD (3.7 TB)', val: '38.4°C', src: 'SMART User-Space', pinned: false },
+      { id: 'bat-01',    name: 'SmartBattery Package (24.5 W)', val: '33.1°C', src: 'AppleSmartBattery', pinned: false },
+      { id: 'smc-tc0d',  name: 'SMC TC0D (Legacy Intel CPU Die)', val: '54.0°C', src: 'Legacy HWMonitor SMC', pinned: false },
+      { id: 'smc-tg0d',  name: 'SMC TG0D (Legacy Intel GPU Diode)', val: '58.0°C', src: 'Legacy HWMonitor SMC', pinned: false },
+      { id: 'smc-f0ac',  name: 'SMC F0Ac (Left Blower Fan)', val: '1240 RPM', src: 'AppleSMC / HWMonitor', pinned: false },
+      { id: 'nala-gpu0', name: 'Dell .41 RTX PRO 4000 Blackwell #0', val: '32.0°C', src: 'NALA Cluster Sync', pinned: true },
+      { id: 'nala-gpu1', name: 'Dell .41 RTX PRO 4000 Blackwell #1', val: '33.0°C', src: 'NALA Cluster Sync', pinned: false },
+      { id: 'nala-gtr9', name: 'Worker .175 Radeon 8060S + XDNA2', val: '28.0°C', src: 'NALA Cluster Sync', pinned: false }
+    ];
+
+    let draggedIndex = null;
+
+    function renderMenubar() {
+      const container = document.getElementById('menubarItemsContainer');
+      container.className = 'menubar-right' + (menubarMonochrome ? ' menubar-mono' : '');
+      container.innerHTML = '';
+
+      // Render enabled standard modules (drag & drop sortable)
+      menubarModules.forEach((m, idx) => {
+        if (!m.enabled) return;
+        const pill = document.createElement('div');
+        pill.className = 'mb-pill';
+        pill.draggable = true;
+        pill.title = 'Ziehen zum Umsortieren · Klicken für Popover Details';
+        pill.ondragstart = () => { draggedIndex = idx; };
+        pill.ondragover = (e) => e.preventDefault();
+        pill.ondrop = () => {
+          if (draggedIndex === null || draggedIndex === idx) return;
+          const moved = menubarModules.splice(draggedIndex, 1)[0];
+          menubarModules.splice(idx, 0, moved);
+          draggedIndex = null;
+          renderMenubar();
+          renderMenubarBuilder();
+        };
+        pill.onclick = () => openSensorPopover(m);
+
+        let barsHtml = '';
+        if (m.style === 'bars' && m.bars.length) {
+          barsHtml = '<span class="mb-mini-bars">' + m.bars.map(b =>
+            `<span class="mb-bar"><span class="mb-bar-fill" style="height:${b}%; background:${m.color};"></span></span>`
+          ).join('') + '</span>';
+        }
+
+        const labelColor = menubarMonochrome ? 'inherit' : m.color;
+        pill.innerHTML = `${barsHtml}<span style="color:${labelColor}; font-weight:700;">${m.label}</span><span>${m.val}</span>`;
+        container.appendChild(pill);
+      });
+
+      // Render pinned individual sensors
+      hardwareSensors.filter(s => s.pinned).forEach(s => {
+        const pill = document.createElement('div');
+        pill.className = 'mb-pill';
+        pill.onclick = () => openSensorPopover({ label: s.name, val: s.val, sub: s.src });
+        const c = menubarMonochrome ? 'inherit' : 'var(--accent-secondary)';
+        pill.innerHTML = `<span style="color:${c};">🌡️ ${s.id.toUpperCase()}</span><span>${s.val}</span>`;
+        container.appendChild(pill);
+      });
+    }
+
+    function openSensorPopover(item) {
+      const pop = document.getElementById('menubarPopover');
+      document.getElementById('popoverTitle').textContent = `${item.label} — ${item.val}`;
+      document.getElementById('popoverBody').innerHTML = `
+        <div style="margin-bottom:6px;">• <strong>Aktueller Wert:</strong> ${item.val} (${item.sub || 'Live Sensor'})</div>
+        <div style="margin-bottom:6px;">• <strong>Hardware-Quelle:</strong> Apple M4 Max User-Space HAL + NALA Cluster</div>
+        <div style="margin-bottom:6px;">• <strong>Menubar-Modus:</strong> ${menubarMonochrome ? 'Monochrom (Apple Native)' : 'Farbig (Skin/Ampel)'}</div>
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-subtle); display:flex; justify-content:space-between;">
+          <span>👑 Katze-Nala Schutz: &le;55°C OK</span>
+          <span style="color:var(--accent-ok);">SHA-256 VERIFIED</span>
+        </div>
+      `;
+      pop.classList.add('open');
+    }
+
+    function togglePopover(state) {
+      document.getElementById('menubarPopover').classList.toggle('open', state);
+    }
+
+    function setMenubarColorMode(isMono) {
+      menubarMonochrome = isMono;
+      document.getElementById('btnColorMode').classList.toggle('active', !isMono);
+      document.getElementById('btnMonoMode').classList.toggle('active', isMono);
+      renderMenubar();
+    }
+
+    function renderMenubarBuilder() {
+      const list = document.getElementById('menubarBuilderList');
+      list.innerHTML = menubarModules.map((m, idx) => `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-radius:10px; border:1px solid var(--border-subtle); background:rgba(255,255,255,0.03);">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="cursor:grab; opacity:0.6;">⠿ #${idx + 1}</span>
+            <input type="checkbox" ${m.enabled ? 'checked' : ''} onchange="toggleMenubarModule(${idx}, this.checked)" />
+            <strong style="font-family:var(--font-mono); font-size:12px;">${m.label}</strong>
+            <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary);">(${m.val} · ${m.sub})</span>
+          </div>
+          <span class="badge" style="background:rgba(255,255,255,0.08);">${m.style.toUpperCase()}</span>
+        </div>
+      `).join('');
+
+      const sensorHtml = hardwareSensors.map((s, i) => `
+        <div class="sensor-item ${s.pinned ? 'pinned' : ''}" onclick="togglePinnedSensor(${i})">
+          <div>
+            <div style="font-weight:700;">${s.name}</div>
+            <div style="font-size:9.5px; color:var(--text-secondary);">${s.src}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="color:var(--accent-primary); font-weight:700;">${s.val}</div>
+            <div style="font-size:9px;">${s.pinned ? '📌 In Menubar' : '+ Anpinnen'}</div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('pickerSensorList').innerHTML = sensorHtml;
+      document.getElementById('liveSensorMatrixGrid').innerHTML = sensorHtml;
+    }
+
+    function toggleMenubarModule(idx, checked) {
+      menubarModules[idx].enabled = checked;
+      renderMenubar();
+      renderMenubarBuilder();
+    }
+
+    function togglePinnedSensor(idx) {
+      hardwareSensors[idx].pinned = !hardwareSensors[idx].pinned;
+      renderMenubar();
+      renderMenubarBuilder();
+    }
+
+    // =========================================================================
+    // SKIN & VIEW SWITCHING
+    // =========================================================================
+    function switchView(viewId, btn) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('view-' + viewId).classList.add('active');
+      btn.parentElement.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function setSkin(skinId, btn) {
+      currentSkin = skinId;
+      document.documentElement.setAttribute('data-skin', skinId);
+      if (btn) {
+        btn.parentElement.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      const badge = getComputedStyle(document.documentElement).getPropertyValue('--skin-badge').replace(/"/g, '').trim();
+      document.getElementById('activeSkinLabel').textContent = badge;
+      drawAllCanvases();
+    }
+
+    // =========================================================================
+    // CANVAS INSTRUMENTS (Porsche Tachometer, Fuel Tank, Terminator Reticle...)
+    // =========================================================================
+    function drawPrimaryInstrument(ctx, w, h, skin, t) {
+      ctx.clearRect(0, 0, w, h);
+      const cx = w / 2, cy = h / 2 + 10;
+      const r = Math.min(w, h) * 0.41;
+
+      if (skin === 'terminator-skynet') {
+        // Cyberdyne T-800 Target Acquisition Reticle
+        ctx.strokeStyle = '#ff1e42';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, cy, r * 0.68, t * 0.04, t * 0.04 + Math.PI * 1.4); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx - r - 12, cy); ctx.lineTo(cx + r + 12, cy);
+        ctx.moveTo(cx, cy - r - 12); ctx.lineTo(cx, cy + r + 12);
+        ctx.strokeStyle = 'rgba(255,30,66,0.35)';
+        ctx.stroke();
+        ctx.fillStyle = '#ffe4e8';
+        ctx.font = '700 15px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('T-800 LOCK · 53.2%', cx, cy + 5);
+        return;
+      }
+
+      if (skin === 'umbrella-corp') {
+        // Umbrella Biohazard Octagon
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(t * 0.01);
+        for (let i = 0; i < 8; i++) {
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, r, (i * Math.PI) / 4, ((i + 1) * Math.PI) / 4);
+          ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? '#dc2626' : '#f8fafc';
+          ctx.fill();
+          ctx.strokeStyle = '#09090b';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.beginPath(); ctx.arc(cx, cy, r * 0.42, 0, Math.PI * 2);
+        ctx.fillStyle = '#09090b'; ctx.fill();
+        ctx.fillStyle = '#ffffff'; ctx.font = '700 13px monospace'; ctx.textAlign = 'center';
+        ctx.fillText('BIO-LAB 67°C', cx, cy + 4);
+        return;
+      }
+
+      // Default / Porsche Sport Chrono 3-Tube Tachometer
+      const startAng = Math.PI * 0.75, endAng = Math.PI * 2.25;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAng, endAng);
+      ctx.strokeStyle = 'rgba(150,150,150,0.2)';
+      ctx.lineWidth = 10;
+      ctx.stroke();
+
+      // Redline zone
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAng + (endAng - startAng) * 0.8, endAng);
+      ctx.strokeStyle = 'rgba(213,0,28,0.45)';
+      ctx.stroke();
+
+      // Active arc
+      const loadRatio = 0.532 + Math.sin(t * 0.08) * 0.04;
+      const activeAng = startAng + (endAng - startAng) * loadRatio;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAng, activeAng);
+      ctx.strokeStyle = skin === 'matrix-construct' ? '#10b981' : '#d5001c';
+      ctx.lineWidth = 10;
+      ctx.stroke();
+
+      // Needle
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(activeAng) * (r - 12), cy + Math.sin(activeAng) * (r - 12));
+      ctx.strokeStyle = '#d5001c';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.fillStyle = skin === 'porsche-chalk' ? '#0d0f12' : '#f4f5f7';
+      ctx.font = '800 18px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${(loadRatio * 100).toFixed(1)}%`, cx, cy + 6);
+      ctx.font = '600 10px monospace';
+      ctx.fillStyle = '#a0a8b8';
+      ctx.fillText('911 GT3 CHRONO · M4 MAX', cx, cy + 24);
+    }
+
+    function drawFuelTankGauge(ctx, w, h, skin) {
+      ctx.clearRect(0, 0, w, h);
+      const cx = w / 2, cy = h * 0.68;
+      const r = Math.min(w, h) * 0.48;
+      const startAng = Math.PI * 1.1, endAng = Math.PI * 1.9;
+      const fuelRatio = 0.864;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAng, endAng);
+      ctx.strokeStyle = 'rgba(150,150,150,0.22)';
+      ctx.lineWidth = 12;
+      ctx.stroke();
+
+      // Reserve zone (E to 15%)
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAng, startAng + (endAng - startAng) * 0.15);
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 12;
+      ctx.stroke();
+
+      // Fuel level arc
+      const needleAng = startAng + (endAng - startAng) * fuelRatio;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, startAng, needleAng);
+      ctx.strokeStyle = skin === 'matrix-construct' ? '#10b981' : '#00a3e0';
+      ctx.lineWidth = 12;
+      ctx.stroke();
+
+      // Needle
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(needleAng) * (r - 10), cy + Math.sin(needleAng) * (r - 10));
+      ctx.strokeStyle = '#d5001c';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      const textCol = skin === 'porsche-chalk' ? '#0d0f12' : '#f4f5f7';
+      ctx.fillStyle = textCol;
+      ctx.font = '700 12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('E', cx - r + 14, cy + 16);
+      ctx.fillText('1/2', cx, cy - r - 10);
+      ctx.fillText('F', cx + r - 14, cy + 16);
+      ctx.font = '800 15px monospace';
+      ctx.fillText('⛽ 504.4 GB FREE (86.4%)', cx, cy + 22);
+    }
+
+    function drawTokenWave(ctx, w, h, skin, t) {
+      ctx.clearRect(0, 0, w, h);
+      const stroke = skin === 'matrix-construct' ? '#10b981' : (skin === 'terminator-skynet' ? '#ff1e42' : '#00a3e0');
+      ctx.beginPath();
+      for (let x = 0; x < w; x += 6) {
+        const y = h * 0.52 + Math.sin((x * 0.025) + t * 0.12) * 28 + Math.cos((x * 0.05) - t * 0.08) * 12;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    function drawAllCanvases() {
+      const c1 = document.getElementById('primaryGaugeCanvas');
+      const c2 = document.getElementById('fuelTankCanvas');
+      const c3 = document.getElementById('tokenWaveCanvas');
+      if (c1) drawPrimaryInstrument(c1.getContext('2d'), c1.width, c1.height, currentSkin, tick);
+      if (c2) drawFuelTankGauge(c2.getContext('2d'), c2.width, c2.height, currentSkin);
+      if (c3) drawTokenWave(c3.getContext('2d'), c3.width, c3.height, currentSkin, tick);
+
+      // Multi-monitor screensaver canvases
+      const mL = document.getElementById('monCanvasLeft');
+      const mC = document.getElementById('monCanvasCenter');
+      const mR = document.getElementById('monCanvasRight');
+      if (mL && mC && mR) {
+        const leftSkin = multiMonitorMode === 'mirror' ? currentSkin : 'terminator-skynet';
+        const centerSkin = currentSkin;
+        const rightSkin = multiMonitorMode === 'mirror' ? currentSkin : 'matrix-construct';
+        drawPrimaryInstrument(mL.getContext('2d'), mL.width, mL.height, leftSkin, tick);
+        drawFuelTankGauge(mC.getContext('2d'), mC.width, mC.height, centerSkin);
+        drawTokenWave(mR.getContext('2d'), mR.width, mR.height, rightSkin, tick);
+      }
+    }
+
+    function setMultiMonitorMode(mode) {
+      multiMonitorMode = mode;
+      document.getElementById('modeIndepBtn').classList.toggle('active', mode === 'independent');
+      document.getElementById('modeMirrorBtn').classList.toggle('active', mode === 'mirror');
+      document.getElementById('modeDimBtn').classList.toggle('active', mode === 'dim');
+      document.getElementById('monLeft').style.opacity = mode === 'dim' ? '0.18' : '1';
+      document.getElementById('monRight').style.opacity = mode === 'dim' ? '0.18' : '1';
+      drawAllCanvases();
+    }
+
+    function setSaverFps(fps, label) {
+      saverFps = fps;
+      document.getElementById('saverCpuBadge').textContent = `⚡ LIVE SCREENSAVER LAST: ${label} · ${fps} FPS ECO`;
+    }
+
+    function launchFullscreenScreensaver() {
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen();
+    }
+
+    // Initial render & Eco animation loop
+    renderMenubar();
+    renderMenubarBuilder();
+    drawAllCanvases();
+    setInterval(() => {
+      tick++;
+      drawAllCanvases();
+    }, 250);
+  </script>
+</body>
+</html>
