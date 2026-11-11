@@ -52,6 +52,14 @@ Community skins (`.nala-skin.json`) are protected by a **4-Layer Security Archit
 
 ---
 
+## Native macOS preview
+
+`macos-native/build_macos_app.sh` builds a universal menu-bar preview in `dist/NALA-HWSensors.app` without a Python or Node runtime. The preview displays local CPU load, memory and disk free space. Its Studio window contains demo data, not live telemetry. The bundled Studio copy removes external font references and has a restrictive content security policy; the preview has no remote-server feature. Additional sensors, remote monitoring, preferences, and the live Studio bridge are still to be implemented. The build refuses to overwrite an existing bundle; move it aside before building again.
+
+The sheriff audit is a useful pattern-based check, not a guarantee that files, Git history, or runtime traffic contain no personal information.
+
+---
+
 ## 🚀 Quickstart (macOS / Cross-Platform)
 
 ```bash

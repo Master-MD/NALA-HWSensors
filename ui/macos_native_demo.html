@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NALA-HWSensors.app — Native macOS Standalone Interactive Demo</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
+      background: radial-gradient(circle at 18% 22%, #1d2b44 0%, #0d1322 48%, #070a12 100%);
+      color: #f3f4f6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Authentic macOS Top Menu Bar */
+    .macos-menubar {
+      height: 30px;
+      background: rgba(28, 30, 38, 0.78);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      font-size: 12px;
+    }
+
+    /* Exact Stats.app / MenuMeters style Menu Bar Widgets from Mike's Screenshots */
+    .mb-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      height: 24px;
+      padding: 0 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 120ms ease, transform 100ms ease;
+      position: relative;
+    }
+    .mb-item:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .mb-item:active {
+      transform: scale(0.96);
+    }
+    .mb-item.active-pop {
+      background: rgba(10, 132, 255, 0.38);
+      box-shadow: inset 0 0 0 1px rgba(10, 132, 255, 0.7);
+    }
+
+    /* Vertical 3-letter stacked label (R-A-M, C-P-U, G-P-U, S-E-N, B-A-T) */
+    .v-stack-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 6.5px;
+      line-height: 6.6px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #ffffff;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    .v-stack-pill {
+      background: #ffffff;
+      color: #18181b;
+      border-radius: 3px;
+      padding: 1px 2.5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 6px;
+      line-height: 6.2px;
+      font-weight: 900;
+      height: 20px;
+    }
+
+    /* Rounded White Box with Bar(s) inside (Screenshot 383a1a5a.png) */
+    .stat-white-box {
+      background: #ffffff;
+      border-radius: 3.5px;
+      height: 20px;
+      padding: 2px;
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 1.5px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+    .stat-bar-col {
+      width: 8px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 1.5px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      width: 100%;
+      background: #007aff;
+      border-radius: 1.5px;
+      transition: height 300ms ease, background-color 250ms ease;
+    }
+
+    /* Rounded White Two-Line Text Pill (Screenshots 5ae9dba4.png & 2888ad32.png) */
+    .stat-twoline-pill {
+      background: #ffffff;
+      color: #18181b;
+      border-radius: 3.5px;
+      height: 20px;
+      padding: 1px 4px;
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 8.5px;
+      line-height: 9px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+    .stat-oneline-pill {
+      background: #ffffff;
+      color: #18181b;
+      border-radius: 3.5px;
+      height: 20px;
+      padding: 0 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Native macOS Window Chrome */
+    .macos-window {
+      background: rgba(24, 25, 32, 0.92);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      transition: all 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+
+    /* Traffic Lights */
+    .tl-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      display: inline-block;
+      border: 0.5px solid rgba(0, 0, 0, 0.25);
+    }
+    .tl-red { background: #ff5f57; }
+    .tl-yellow { background: #febc2e; }
+    .tl-green { background: #28c840; }
+
+    /* Stats.app Module Selector Card (Exact match to 5ae9dba4.png & 2888ad32.png) */
+    .stats-module-card {
+      background: #232429;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 11px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .stats-preview-tray {
+      background: #33343a;
+      border-radius: 8px;
+      padding: 9px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      overflow-x: auto;
+    }
+    .widget-style-btn {
+      padding: 3px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 100ms ease, box-shadow 120ms ease, opacity 120ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .widget-style-btn.selected {
+      box-shadow: 0 0 0 2px #0a84ff;
+      background: rgba(10, 132, 255, 0.2);
+    }
+    .widget-style-btn:not(.selected) {
+      opacity: 0.65;
+    }
+    .widget-style-btn:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+    .stats-blue-btn {
+      background: #007aff;
+       hover: #1a86ff;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 13px;
+      border-radius: 7px;
+      padding: 6px 0;
+      text-align: center;
+      cursor: pointer;
+      transition: background 120ms ease, transform 100ms ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+    .stats-blue-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Telemetry Cockpit V2 Cards (Exact match to 1cfc08f6.png) */
+    .cockpit-v2 {
+      background: #0d1017;
+      border: 1px solid #22293a;
+    }
+    .cockpit-card {
+      background: #121621;
+      border: 1px solid #232a3b;
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .cockpit-card:hover {
+      border-color: #38445e;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(16, 185, 129, 0.13);
+      border: 1px solid rgba(16, 185, 129, 0.42);
+      color: #6ee7b7;
+      transition: all 120ms ease;
+    }
+    .filter-chip.off {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: #9ca3af;
+    }
+
+    /* Native NSPopover Dropdown under Menu Bar */
+    .nspopover {
+      position: fixed;
+      top: 36px;
+      width: 320px;
+      background: rgba(30, 32, 42, 0.94);
+      backdrop-filter: blur(30px) saturate(190%);
+      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      z-index: 300;
+      padding: 12px;
+      animation: popIn 140ms cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .nspopover::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      right: 42px;
+      width: 13px;
+      height: 13px;
+      background: rgba(30, 32, 42, 0.94);
+      border-left: 1px solid rgba(255, 255, 255, 0.18);
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      transform: rotate(45deg);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(-5px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Ticker Marquee */
+    .ticker-wrap {
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .ticker-track {
+      display: inline-block;
+      white-space: nowrap;
+      animation: marquee 24s linear infinite;
+    }
+    .ticker-wrap:hover .ticker-track {
+      animation-play-state: paused;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Skin Variations for Cockpit V2 */
+    .skin-porsche .cockpit-card {
+      background: linear-gradient(145deg, #16171a 0%, #0e0f12 100%);
+      border-color: rgba(213, 0, 28, 0.45);
+    }
+    .skin-sequoia .cockpit-card {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(20px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .skin-terminator .cockpit-card {
+      background: #140709;
+      border-color: rgba(239, 68, 68, 0.55);
+    }
+    .skin-braun .cockpit-card {
+      background: #23221f;
+      border-color: #ea580c;
+    }
+
+    /* Nano / Compact Scaling when user drags scale slider down */
+    .compact-hide-details .card-subtext,
+    .compact-hide-details .card-canvas-wrap {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================================
+       1. REAL NATIVE macOS TOP MENU BAR (NSStatusBar Simulation)
+       Click any widget on the right to open its NSPopover! Drag to reorder!
+       ===================================================================== -->
+  <header class="macos-menubar">
+    <!-- Left Apple & App Menu -->
+    <div class="flex items-center gap-3.5 text-white/90">
+      <span class="font-bold text-sm cursor-pointer hover:text-white" title="Apple Menu"></span>
+      <span class="font-bold tracking-tight text-white flex items-center gap-1.5 cursor-pointer" onclick="switchWorkspaceMode('split')">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        NALA-HWSensors
+      </span>
+      <span class="hidden md:inline text-white/75 hover:text-white cursor-pointer" onclick="openLeftTab('modules')">Module</span>
+      <span class="hidden md:inline text-white/75 hover:text-white cursor-pointer" onclick="openLeftTab('keychain')">Remote-Keychain</span>
+      <span class="hidden md:inline text-white/75 hover:text-white cursor-pointer" onclick="openLeftTab('smc')">AppleSMC</span>
+      <span class="hidden lg:inline text-white/75 hover:text-white cursor-pointer" onclick="togglePrivacyMask()">
+        <span id="menubarPrivacyBadge" class="px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs">🔒 Zero-PII Mask: ON</span>
+      </span>
+    </div>
+
+    <!-- Right: Exact Native NSStatusItems from Mike's Screenshots (Draggable & Clickable!) -->
+    <div id="nsStatusBarTray" class="flex items-center gap-1.5">
+
+      <!-- 1. AI TOKENS PILL -->
+      <div id="mb-tokens" class="mb-item" draggable="true" onclick="togglePopover('tokens', this)" title="Klicken für AI Token Popover · Ziehen zum Verschieben">
+        <div class="v-stack-label"><span>T</span><span>O</span><span>K</span></div>
+        <div class="stat-twoline-pill">
+          <span id="mbTokVal" class="text-emerald-700 font-extrabold">94.6</span>
+          <span class="text-zinc-500" style="font-size:7px;">t/s</span>
+        </div>
+      </div>
+
+      <!-- 2. RAM WIDGET (Exact match to Screenshot 383a1a5a.png: vertical R-A-M + white box with blue vertical bar) -->
+      <div id="mb-ram" class="mb-item" draggable="true" onclick="togglePopover('ram', this)" title="RAM (AppleSMC + Cluster) · Klicken für Details">
+        <div class="v-stack-label"><span>R</span><span>A</span><span>M</span></div>
+        <div class="stat-white-box">
+          <div class="stat-bar-col">
+            <div id="mbRamBar" class="stat-bar-fill" style="height: 68%;"></div>
+          </div>
+        </div>
+        <div id="mbRamTextPill" class="stat-twoline-pill hidden">
+          <span id="mbRamPct">63%</span>
+          <span style="font-size:7px;">321G</span>
+        </div>
+      </div>
+
+      <!-- 3. CPU WIDGET (Exact match to Screenshot 383a1a5a.png: vertical C-P-U + white box with dual blue bars) -->
+      <div id="mb-cpu" class="mb-item" draggable="true" onclick="togglePopover('cpu', this)" title="CPU (P-Cores / E-Cores & 108 Cluster Cores) · Klicken für Details">
+        <div class="v-stack-label"><span>C</span><span>P</span><span>U</span></div>
+        <div class="stat-white-box">
+          <div class="stat-bar-col">
+            <div id="mbCpuBar1" class="stat-bar-fill" style="height: 38%;"></div>
+          </div>
+          <div class="stat-bar-col">
+            <div id="mbCpuBar2" class="stat-bar-fill" style="height: 22%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. GPU WIDGET (Exact match to Screenshot 383a1a5a.png: vertical G-P-U + white box with bar) -->
+      <div id="mb-gpu" class="mb-item" draggable="true" onclick="togglePopover('gpu', this)" title="GPU (M4 Max + Dual Blackwell + AMD) · Klicken für Details">
+        <div class="v-stack-label"><span>G</span><span>P</span><span>U</span></div>
+        <div class="stat-white-box">
+          <div class="stat-bar-col">
+            <div id="mbGpuBar" class="stat-bar-fill" style="height: 56%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. SENSORS WIDGET (Exact match to Screenshot 2888ad32.png: SEN pill + 38°/41° stacked pill + dual gray bar) -->
+      <div id="mb-sensors" class="mb-item" draggable="true" onclick="togglePopover('sensors', this)" title="AppleSMC Temperatures & Dell SMM Fans · Klicken für Details">
+        <div id="senStyleLabel" class="stat-twoline-pill">
+          <span style="font-size:7px;font-weight:600;">Sensors</span>
+          <span id="mbSenPct">12%</span>
+        </div>
+        <div class="v-stack-pill"><span>S</span><span>E</span><span>N</span></div>
+        <div class="stat-twoline-pill">
+          <span id="mbTemp1">38°</span>
+          <span id="mbTemp2">41°</span>
+        </div>
+      </div>
+
+      <!-- 6. BATTERY WIDGET (Exact match to Screenshot 5ae9dba4.png: 72% / 6:55 + BAT + 72%) -->
+      <div id="mb-battery" class="mb-item" draggable="true" onclick="togglePopover('battery', this)" title="MacBook Pro M4 Max Battery · Klicken für Details">
+        <div class="stat-twoline-pill">
+          <span id="mbBatPct">72%</span>
+          <span style="font-size:7.5px;">6:55</span>
+        </div>
+        <div class="v-stack-pill"><span>B</span><span>A</span><span>T</span></div>
+        <div class="stat-oneline-pill">72%</div>
+      </div>
+
+      <!-- 7. SMC FANS WIDGET -->
+      <div id="mb-fans" class="mb-item" draggable="true" onclick="togglePopover('fans', this)" title="SMC Lüfter (F0Ac / F1Ac) · Klicken für Lüfterkurve">
+        <div class="v-stack-label"><span>F</span><span>A</span><span>N</span></div>
+        <div class="stat-twoline-pill">
+          <span id="mbFan1">1031</span>
+          <span id="mbFan2" style="font-size:7.5px;">596</span>
+        </div>
+      </div>
+
+      <!-- macOS System Clock -->
+      <div class="pl-2 text-white/90 font-medium tracking-tight cursor-pointer hover:text-white" onclick="togglePopover('clock', this)">
+        <span id="macClock">Di. 3. Nov. 22:48</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       NATIVE macOS NSPopover (Opens when clicking any Menu Bar Widget above)
+       ===================================================================== -->
+  <div id="nsPopover" class="nspopover hidden" style="right: 18px;">
+    <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-2.5">
+      <div class="flex items-center gap-2">
+        <span id="popIcon" class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+        <span id="popTitle" class="font-bold text-sm text-white">AppleSMC & Cluster Telemetry</span>
+      </div>
+      <span class="text-xs px-2 py-0.5 rounded bg-white/10 text-white/70 cursor-pointer hover:bg-white/20" onclick="closePopover()">✕</span>
+    </div>
+    <div id="popBody" class="space-y-2 text-xs text-zinc-200"></div>
+    <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between">
+      <button onclick="openLeftTab('modules'); closePopover();" class="text-xs text-blue-400 hover:underline font-medium">⚙️ Menu Bar Stil ändern</button>
+      <button onclick="switchWorkspaceMode('cockpit'); closePopover();" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-md font-semibold">🎛️ Cockpit Vollbild</button>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       TOP INTERACTIVE MODE SWITCHER BAR (Explain & Test all features easily)
+       ===================================================================== -->
+  <div class="max-w-[1600px] mx-auto px-4 pt-3 pb-1 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex flex-wrap items-center gap-1.5">
+      <span class="text-xs uppercase tracking-wider text-zinc-400 font-bold mr-1">Ansicht wählen:</span>
+      <button id="modeBtn-split" onclick="switchWorkspaceMode('split')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow">
+        🖥️ Split: Stats.app Konfigurator + Telemetry Cockpit V2
+      </button>
+      <button id="modeBtn-settings" onclick="switchWorkspaceMode('settings')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 text-zinc-200 hover:bg-white/15">
+        🧩 Nur macOS Menu-Bar & Keychain Settings
+      </button>
+      <button id="modeBtn-cockpit" onclick="switchWorkspaceMode('cockpit')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 text-zinc-200 hover:bg-white/15">
+        🚀 Nur Telemetry Cockpit V2 (Gross)
+      </button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs text-zinc-400">Menu-Bar Farbe:</span>
+      <button onclick="setMenuBarColor('#007aff')" class="px-2 py-0.5 rounded text-xs bg-blue-600 text-white font-semibold">macOS Blau</button>
+      <button onclick="setMenuBarColor('#10b981')" class="px-2 py-0.5 rounded text-xs bg-emerald-600 text-white font-semibold">Emerald</button>
+      <button onclick="setMenuBarColor('#d5001c')" class="px-2 py-0.5 rounded text-xs bg-red-700 text-white font-semibold">Porsche Rot</button>
+      <button onclick="setMenuBarColor('#18181b')" class="px-2 py-0.5 rounded text-xs bg-zinc-200 text-zinc-900 font-semibold">Monochrom</button>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MAIN DESKTOP WORKSPACE (Two Native macOS Windows Side by Side)
+       ===================================================================== -->
+  <main id="desktopGrid" class="max-w-[1600px] mx-auto p-3 grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
+
+    <!-- ===================================================================
+         WINDOW 1 (LEFT, 5 COLS): NATIVE macOS "Stats / HWSensors" PREFERENCES
+         Exact replica of Mike's uploaded Battery & Sensors Screenshots + Keychain
+         =================================================================== -->
+    <section id="winSettings" class="macos-window xl:col-span-5 flex flex-col">
+      <!-- Window Title Bar -->
+      <div class="h-10 px-3.5 bg-zinc-900/90 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="tl-dot tl-red"></span>
+          <span class="tl-dot tl-yellow"></span>
+          <span class="tl-dot tl-green"></span>
+          <span class="ml-2 font-semibold text-xs text-zinc-200">NALA-HWSensors.app — Native macOS Einstellungen</span>
+        </div>
+        <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">
+          0 Kexts · User-Space
+        </span>
+      </div>
+
+      <!-- Tabs inside Settings Window -->
+      <div class="flex border-b border-white/10 bg-zinc-900/50 px-3 pt-2 gap-1 text-xs font-semibold">
+        <button id="tabBtn-modules" onclick="openLeftTab('modules')" class="px-3 py-1.5 rounded-t-lg bg-zinc-800 text-white border-t border-x border-white/15">
+          🧩 Menu Bar Module (Stats-Style)
+        </button>
+        <button id="tabBtn-keychain" onclick="openLeftTab('keychain')" class="px-3 py-1.5 rounded-t-lg text-zinc-400 hover:text-white">
+          🔐 Remote-Server (Keychain)
+        </button>
+        <button id="tabBtn-smc" onclick="openLeftTab('smc')" class="px-3 py-1.5 rounded-t-lg text-zinc-400 hover:text-white">
+          🌡️ AppleSMC & Zero-Clutter
+        </button>
+      </div>
+
+      <!-- TAB 1: STATS.APP MODULE CARDS (EXACT SCREENSHOT MATCH: 5ae9dba4.png & 2888ad32.png) -->
+      <div id="leftTab-modules" class="p-3.5 space-y-3 max-h-[760px] overflow-y-auto">
+        <div class="text-xs text-zinc-300 bg-blue-500/10 border border-blue-400/30 rounded-lg p-2.5">
+          💡 <strong>Klicke in den grauen Vorschau-Leisten</strong> auf die weissen Widgets, um sie oben in deiner echten <strong>macOS Menu Bar</strong> live ein-/auszuschalten!
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+          <!-- CARD 1: RAM / Memory (Matches Screenshot 383a1a5a.png) -->
+          <div class="stats-module-card">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-base text-white">RAM / Memory</span>
+              <span class="text-xs text-emerald-400 font-semibold">Aktiv in Menu Bar</span>
+            </div>
+            <div class="stats-preview-tray">
+              <!-- Style A: Vertical R-A-M + Blue Bar Box -->
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-ram', this)" title="Vertikal R-A-M + Balken (Screenshot-Stil)">
+                <div class="v-stack-label"><span>R</span><span>A</span><span>M</span></div>
+                <div class="stat-white-box">
+                  <div class="stat-bar-col"><div class="stat-bar-fill" style="height: 70%;"></div></div>
+                </div>
+              </div>
+              <div class="h-5 w-px bg-white/20"></div>
+              <!-- Style B: Two-line 63% / 321G -->
+              <div class="widget-style-btn" onclick="toggleRamTextPill(this)" title="2-Zeilen Prozent + GB">
+                <div class="stat-twoline-pill"><span>62.8%</span><span style="font-size:7px;">321G</span></div>
+              </div>
+              <!-- Style C: One-line 63% -->
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-ram', this)">
+                <div class="stat-oneline-pill">63%</div>
+              </div>
+            </div>
+            <div class="stats-blue-btn" onclick="togglePopover('ram', document.getElementById('mb-ram'))">Module</div>
+          </div>
+
+          <!-- CARD 2: CPU (Matches Screenshot 383a1a5a.png: C-P-U + Dual Blue Bar) -->
+          <div class="stats-module-card">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-base text-white">CPU</span>
+              <span class="text-xs text-emerald-400 font-semibold">Aktiv in Menu Bar</span>
+            </div>
+            <div class="stats-preview-tray">
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-cpu', this)" title="Vertikal C-P-U + Dual-Core Balken (Screenshot-Stil)">
+                <div class="v-stack-label"><span>C</span><span>P</span><span>U</span></div>
+                <div class="stat-white-box">
+                  <div class="stat-bar-col"><div class="stat-bar-fill" style="height: 42%;"></div></div>
+                  <div class="stat-bar-col"><div class="stat-bar-fill" style="height: 24%;"></div></div>
+                </div>
+              </div>
+              <div class="h-5 w-px bg-white/20"></div>
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-cpu', this)">
+                <div class="stat-twoline-pill"><span style="font-size:7px;">CPU</span><span>3.5%</span></div>
+              </div>
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-cpu', this)">
+                <div class="stat-oneline-pill">3.5%</div>
+              </div>
+            </div>
+            <div class="stats-blue-btn" onclick="togglePopover('cpu', document.getElementById('mb-cpu'))">Module</div>
+          </div>
+
+          <!-- CARD 3: Sensors (EXACT REPLICA OF SCREENSHOT 2888ad32.png!) -->
+          <div class="stats-module-card">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-base text-white">Sensors</span>
+              <span class="text-xs text-emerald-400 font-semibold">Aktiv in Menu Bar</span>
+            </div>
+            <div class="stats-preview-tray">
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-sensors', this)">
+                <div class="stat-twoline-pill">
+                  <span style="font-size:7px;font-weight:600;">Sensors</span>
+                  <span>12%</span>
+                </div>
+              </div>
+              <div class="h-5 w-px bg-white/20"></div>
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-sensors', this)">
+                <div class="v-stack-pill"><span>S</span><span>E</span><span>N</span></div>
+              </div>
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-sensors', this)">
+                <div class="stat-twoline-pill"><span>38°</span><span>41°</span></div>
+              </div>
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-sensors', this)">
+                <div class="stat-white-box" style="background:#3f3f46;border:1.5px solid #fff;">
+                  <div class="stat-bar-col" style="width:7px;"><div style="height:35%;width:100%;background:#a1a1aa;"></div></div>
+                  <div class="stat-bar-col" style="width:7px;"><div style="height:28%;width:100%;background:#a1a1aa;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="stats-blue-btn" onclick="togglePopover('sensors', document.getElementById('mb-sensors'))">Module</div>
+          </div>
+
+          <!-- CARD 4: Battery (EXACT REPLICA OF SCREENSHOT 5ae9dba4.png!) -->
+          <div class="stats-module-card">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-base text-white">Battery</span>
+              <span class="text-xs text-emerald-400 font-semibold">Aktiv in Menu Bar</span>
+            </div>
+            <div class="stats-preview-tray">
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-battery', this)">
+                <div class="stat-oneline-pill" style="padding:0 4px;">🔋</div>
+              </div>
+              <div class="h-5 w-px bg-white/20"></div>
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-battery', this)">
+                <div class="stat-twoline-pill"><span>72%</span><span style="font-size:7.5px;">6:55</span></div>
+              </div>
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-battery', this)">
+                <div class="v-stack-pill"><span>B</span><span>A</span><span>T</span></div>
+              </div>
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-battery', this)">
+                <div class="stat-oneline-pill">72%</div>
+              </div>
+            </div>
+            <div class="stats-blue-btn" onclick="togglePopover('battery', document.getElementById('mb-battery'))">Module</div>
+          </div>
+
+          <!-- CARD 5: GPU (Matches Screenshot 383a1a5a.png) -->
+          <div class="stats-module-card">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-base text-white">GPU (Apple + Remote)</span>
+              <span class="text-xs text-emerald-400 font-semibold">Aktiv in Menu Bar</span>
+            </div>
+            <div class="stats-preview-tray">
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-gpu', this)">
+                <div class="v-stack-label"><span>G</span><span>P</span><span>U</span></div>
+                <div class="stat-white-box">
+                  <div class="stat-bar-col"><div class="stat-bar-fill" style="height: 56%;"></div></div>
+                </div>
+              </div>
+              <div class="h-5 w-px bg-white/20"></div>
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-gpu', this)">
+                <div class="stat-twoline-pill"><span>56%</span><span style="font-size:7px;">35°C</span></div>
+              </div>
+              <div class="widget-style-btn" onclick="toggleWidgetVisibility('mb-gpu', this)">
+                <div class="stat-oneline-pill">31.4G</div>
+              </div>
+            </div>
+            <div class="stats-blue-btn" onclick="togglePopover('gpu', document.getElementById('mb-gpu'))">Module</div>
+          </div>
+
+          <!-- CARD 6: SMC Fans & AI Tokens -->
+          <div class="stats-module-card">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-base text-white">SMC Fans & AI Token/s</span>
+              <span class="text-xs text-emerald-400 font-semibold">Aktiv in Menu Bar</span>
+            </div>
+            <div class="stats-preview-tray">
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-fans', this)">
+                <div class="v-stack-label"><span>F</span><span>A</span><span>N</span></div>
+                <div class="stat-twoline-pill"><span>1031</span><span style="font-size:7px;">596</span></div>
+              </div>
+              <div class="h-5 w-px bg-white/20"></div>
+              <div class="widget-style-btn selected" onclick="toggleWidgetVisibility('mb-tokens', this)">
+                <div class="v-stack-label"><span>T</span><span>O</span><span>K</span></div>
+                <div class="stat-twoline-pill"><span class="text-emerald-700">94.6</span><span style="font-size:7px;">t/s</span></div>
+              </div>
+            </div>
+            <div class="stats-blue-btn" onclick="togglePopover('fans', document.getElementById('mb-fans'))">Module</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: REMOTE SERVERS via macOS KEYCHAIN VAULT (ZERO-SECRETS IN CODE!) -->
+      <div id="leftTab-keychain" class="p-4 space-y-3 hidden">
+        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-1">
+          <div class="font-bold text-emerald-300 flex items-center justify-between">
+            <span>🔐 Apple Keychain Tresor (`SecItemAdd` · `kSecClassGenericPassword`)</span>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-200 font-mono">AES-256 Secure Enclave</span>
+          </div>
+          <p class="text-zinc-300 leading-relaxed">
+            Server-IPs, Ports und API-Tokens werden <strong>ausschliesslich im lokalen macOS-Schlüsselbund</strong> gespeichert. Im Quellcode, in `.plist`-Dateien und auf GitHub stehen <strong>0 IPs und 0 Passwörter</strong>!
+          </p>
+        </div>
+
+        <!-- Connected Remote Nodes List -->
+        <div id="remoteServerList" class="space-y-2">
+          <div class="p-3 rounded-lg bg-zinc-800/80 border border-white/10 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-sm text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Dell Cluster Node (2× Blackwell RTX PRO)</span>
+              </div>
+              <div class="text-xs text-zinc-400 font-mono mt-0.5">
+                Endpoint: <span class="ip-masked text-amber-300">[KEYCHAIN-PROTECTED · NODE-01]</span> · 1031 RPM · 32°C
+              </div>
+            </div>
+            <span class="text-xs px-2 py-1 rounded bg-white/10 text-emerald-300 font-mono">Keychain ✓</span>
+          </div>
+
+          <div class="p-3 rounded-lg bg-zinc-800/80 border border-white/10 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-sm text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Worker Node (AMD 8060S 112G + XDNA2 NPU)</span>
+              </div>
+              <div class="text-xs text-zinc-400 font-mono mt-0.5">
+                Endpoint: <span class="ip-masked text-amber-300">[KEYCHAIN-PROTECTED · NODE-02]</span> · 50 TOPS · 34°C
+              </div>
+            </div>
+            <span class="text-xs px-2 py-1 rounded bg-white/10 text-emerald-300 font-mono">Keychain ✓</span>
+          </div>
+
+          <div class="p-3 rounded-lg bg-zinc-800/80 border border-white/10 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-sm text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Proxmox Hypervisor (8×16GB ECC DIMMs · ZFS)</span>
+              </div>
+              <div class="text-xs text-zinc-400 font-mono mt-0.5">
+                Endpoint: <span class="ip-masked text-amber-300">[KEYCHAIN-PROTECTED · NODE-03]</span> · 128 GB ECC OK
+              </div>
+            </div>
+            <span class="text-xs px-2 py-1 rounded bg-white/10 text-emerald-300 font-mono">Keychain ✓</span>
+          </div>
+        </div>
+
+        <!-- Add New Remote Server Form (Simulated macOS Keychain Save) -->
+        <div class="p-3 rounded-xl bg-zinc-900/90 border border-white/10 space-y-2.5">
+          <div class="font-bold text-xs text-white uppercase tracking-wider">+ Neuen Remote-Server zum macOS-Schlüsselbund hinzufügen</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input id="newSrvAlias" type="text" placeholder="Anzeigename (z.B. Backup-GPU-Server)" class="px-2.5 py-1.5 rounded bg-zinc-800 border border-white/15 text-xs text-white" />
+            <input id="newSrvUrl" type="password" placeholder="URL/IP (wird sofort maskiert)" class="px-2.5 py-1.5 rounded bg-zinc-800 border border-white/15 text-xs text-white" />
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <input id="newSrvToken" type="password" placeholder="Bearer Token / API-Key (nur in Keychain)" class="flex-1 px-2.5 py-1.5 rounded bg-zinc-800 border border-white/15 text-xs text-white" />
+            <button onclick="addKeychainServer()" class="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white">
+              🔐 In Keychain sichern
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: APPLESMC & ZERO-CLUTTER ARCHITECTURE -->
+      <div id="leftTab-smc" class="p-4 space-y-3 hidden text-xs">
+        <div class="p-3 rounded-xl bg-zinc-800/80 border border-white/10 space-y-2">
+          <div class="font-bold text-sm text-white">✅ Warum `NALA-HWSensors.app` dein macOS zu 0% zumüllt:</div>
+          <ul class="space-y-1.5 text-zinc-300 list-disc pl-4">
+            <li><strong>Keine Kernel-Extensions (`.kext`)</strong> in `/Library/Extensions`</li>
+            <li><strong>Keine Root-LaunchDaemons</strong> in `/Library/LaunchDaemons`</li>
+            <li><strong>Kein `sudo` / Root-Passwort nötig</strong>: Nutzt direkt `IOServiceOpen("AppleSMC")` aus Kozleks `smc.c` + Apple Silicon `IOHIDEventSystemClient` im User-Space.</li>
+            <li><strong>100% Rückstandsfrei</strong>: Liegt als einzelne `NALA-HWSensors.app` im Programme-Ordner.</li>
+          </ul>
+        </div>
+        <div class="p-3 rounded-xl bg-zinc-900 border border-white/10 font-mono space-y-1 text-zinc-300">
+          <div class="text-emerald-400 font-bold">Live AppleSMC + Dell SMM Register-Dump:</div>
+          <div>TC0P (CPU Proximity): <span class="text-white">38.0 °C</span></div>
+          <div>TG0P (GPU Die Temp):  <span class="text-white">35.0 °C</span></div>
+          <div>F0Ac (Fan 0 Actual):  <span class="text-white">1031 RPM</span></div>
+          <div>F1Ac (Fan 1 Actual):  <span class="text-white">596 RPM</span></div>
+          <div>PSTR (System Total):  <span class="text-white">376.0 W</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         WINDOW 2 (RIGHT, 7 COLS): TELEMETRY COCKPIT V2 (Frei skalierbar · Drag & Drop)
+         1:1 match to Mike's Screenshot 1cfc08f6.png + Skin Pulldown + Live Ticker
+         =================================================================== -->
+    <section id="winCockpit" class="macos-window cockpit-v2 xl:col-span-7 flex flex-col">
+
+      <!-- Authentic Cockpit V2 Title Bar (Exact match to Screenshot 1cfc08f6.png) -->
+      <div class="h-10 px-3.5 bg-[#0a0d14] border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="tl-dot tl-red"></span>
+          <span class="tl-dot tl-yellow"></span>
+          <span class="tl-dot tl-green"></span>
+          <span class="ml-1.5 font-mono font-bold text-xs text-white tracking-tight">
+            🐾 Telemetry Cockpit V2 (Frei skalierbar · Drag &amp; Drop)
+          </span>
+        </div>
+
+        <!-- Right Size & Mode Controls from Screenshot 1cfc08f6.png -->
+        <div class="flex items-center gap-1.5 text-xs">
+          <span class="text-zinc-400 mr-0.5">Grösse:</span>
+          <button onclick="setCockpitScale(65)" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 font-mono">S</button>
+          <button onclick="setCockpitScale(85)" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 font-mono">M</button>
+          <button onclick="setCockpitScale(100)" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 font-mono">L</button>
+          <button onclick="switchWorkspaceMode('cockpit')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10" title="Vollbild">⛶</button>
+          <span class="px-2 py-0.5 rounded bg-blue-950/90 text-blue-300 border border-blue-500/50 font-semibold">📌 Frei</span>
+          <button onclick="toggleCompactNanoMode()" id="nanoBtn" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-amber-400/30 font-semibold" title="Text ausblenden für Ultra-Kompakt-Modus">
+            🔍 Nano-Kompakt
+          </button>
+        </div>
+      </div>
+
+      <!-- LIVE TELEMETRY TICKER BANNER WITH SPEED SLIDER (Requested by Mike) -->
+      <div class="bg-[#080b11] border-b border-emerald-500/25 px-3 py-1.5 flex items-center justify-between gap-3 text-xs">
+        <span class="px-2 py-0.5 rounded bg-red-600/90 text-white font-bold tracking-wider uppercase shrink-0" style="font-size:10px;">
+          LIVE TELEMETRY BUS
+        </span>
+        <div class="ticker-wrap flex-1 text-zinc-200 font-mono">
+          <div id="tickerTrack" class="ticker-track">
+            ⚡ TOKEN SPEED: 94.6 t/s (Ø 87.6 t/s · Prefill 1'455 t/s) &nbsp;•&nbsp;
+            🧠 CPU CLUSTER (108 CORES): 3.5% @ 38°C &nbsp;•&nbsp;
+            🟢 NVIDIA DUAL-BLACKWELL + QUADRO: 31.4 / 56.0 GB VRAM @ 35°C &nbsp;•&nbsp;
+            🔴 AMD 8060S + PRO VII + XDNA2 NPU (50 TOPS): 88.2 / 128.0 GB @ 34°C &nbsp;•&nbsp;
+            🧬 TOTAL RAM: 321.7 / 512.0 GB (62.8% · 8×16GB ECC OK) &nbsp;•&nbsp;
+            🌀 SMC FANS: 1031 RPM CPU / 596 RPM SYS &nbsp;•&nbsp;
+            🛡️ WHITE-HAT v3.0: 85% PROD / 15% SEC (CVSS &lt;6 SILENT) &nbsp;&nbsp;&nbsp;&nbsp;
+            ⚡ TOKEN SPEED: 94.6 t/s (Ø 87.6 t/s · Prefill 1'455 t/s) &nbsp;•&nbsp;
+            🧠 CPU CLUSTER (108 CORES): 3.5% @ 38°C &nbsp;•&nbsp;
+            🟢 NVIDIA DUAL-BLACKWELL + QUADRO: 31.4 / 56.0 GB VRAM @ 35°C
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="text-zinc-400">Speed:</span>
+          <input id="tickerSpeed" type="range" min="0.4" max="3.0" step="0.2" value="1.0" oninput="updateTickerSpeed(this.value)" class="w-16 accent-emerald-400 cursor-pointer" />
+          <span id="tickerSpeedLabel" class="font-mono text-emerald-400">1.0x</span>
+        </div>
+      </div>
+
+      <!-- COCKPIT HEADER BAR: Cluster Badge + Skin Pulldown + Category Filter Chips + Scale Slider (Screenshot 1cfc08f6.png) -->
+      <div class="p-3.5 space-y-3 border-b border-white/10 bg-[#0e121b]">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="text-base font-extrabold text-white tracking-tight flex items-center gap-1.5">
+              🐾 NALA Cluster Telemetry
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-bold">
+              ● LIVE zusammengefasst
+            </span>
+          </div>
+
+          <!-- COMPACT SKIN PULLDOWN (<select>) requested by Mike -->
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-zinc-400 font-semibold">🎨 Skin:</label>
+            <select id="skinPulldown" onchange="changeCockpitSkin(this.value)" class="bg-zinc-900 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white font-semibold cursor-pointer">
+              <option value="default">NALA Cockpit V2 (Original Dark)</option>
+              <option value="skin-porsche">Porsche Design v4 (Chrono + Fuel Tank)</option>
+              <option value="skin-sequoia">macOS Sequoia Translucent Glass</option>
+              <option value="skin-terminator">Terminator Cyberdyne HUD</option>
+              <option value="skin-braun">Dieter Rams Braun 1960s</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Category Filter Chips (Click to show/hide cards - Exact match to Screenshot 1cfc08f6.png) -->
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button class="filter-chip" onclick="toggleCardChip('card-tokens', this)">✓ ⚡ Tokens &amp; Prefill</button>
+          <button class="filter-chip" onclick="toggleCardChip('card-cpu', this)">✓ 🧠 CPU (Ø 108 Cores)</button>
+          <button class="filter-chip" onclick="toggleCardChip('card-nvidia', this)">✓ 🟢 GPU NVIDIA (56 GB)</button>
+          <button class="filter-chip" onclick="toggleCardChip('card-amd', this)">✓ 🔴 GPU/NPU AMD (128 GB)</button>
+          <button class="filter-chip" onclick="toggleCardChip('card-ram', this)">✓ 🧬 Total RAM (512 GB)</button>
+          <button class="filter-chip" onclick="toggleCardChip('card-porsche', this)">✓ 🏎️ Porsche Chrono &amp; 3D-Rack</button>
+        </div>
+
+        <!-- Smooth Scale Slider (S M 100% L + Reset - Exact match to Screenshot 1cfc08f6.png) -->
+        <div class="flex flex-wrap items-center gap-3 pt-0.5">
+          <div class="flex items-center gap-2 bg-zinc-900/90 border border-white/10 rounded-lg px-3 py-1">
+            <span class="text-xs">🔍</span>
+            <span class="text-xs text-zinc-400 font-mono cursor-pointer" onclick="setCockpitScale(60)">S</span>
+            <span class="text-xs text-zinc-400 font-mono cursor-pointer" onclick="setCockpitScale(80)">M</span>
+            <span id="scalePctLabel" class="text-xs text-emerald-400 font-mono font-bold">100%</span>
+            <span class="text-xs text-zinc-400 font-mono cursor-pointer" onclick="setCockpitScale(110)">L</span>
+            <input id="cockpitScaleSlider" type="range" min="45" max="115" value="100" oninput="setCockpitScale(this.value)" class="w-28 accent-emerald-400 cursor-pointer" />
+          </div>
+          <button onclick="resetCockpitLayout()" class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/15 text-xs text-zinc-200 font-semibold">
+            ↺ Reset
+          </button>
+          <span class="text-xs text-zinc-400 hidden sm:inline">
+            ⠿ Karten am Griff ziehen (Drag &amp; Drop) · Klicke <strong>[▸ Details]</strong> für Deep-Inspector
+          </span>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           DRAGGABLE & SCALABLE TELEMETRY CARDS (Exact match to 1cfc08f6.png)
+           ================================================================= -->
+      <div id="cockpitCardsWrapper" class="p-3.5 space-y-3.5 origin-top-left transition-transform duration-150">
+
+        <!-- CARD 1: TOKEN SPEED & VOLUMEN (Full Width) -->
+        <div id="card-tokens" class="cockpit-card" draggable="true">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="cursor-grab text-zinc-500 hover:text-white font-bold" title="Ziehen zum Verschieben">⠿</span>
+              <span class="font-mono font-extrabold text-sm text-emerald-400 tracking-wide">
+                ⚡ 1. TOKEN SPEED &amp; VOLUMEN (TOTAL · Ø · AKTUELL T/S · PREFILL T/S)
+              </span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-semibold">✓ Aktuell t/s</span>
+              <span class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/40 text-amber-300 font-semibold">✓ Ø Token/s</span>
+              <span class="px-2 py-0.5 rounded bg-sky-500/15 border border-sky-500/40 text-sky-300 font-semibold">✓ Prefill t/s</span>
+              <span class="px-2 py-0.5 rounded bg-purple-500/15 border border-purple-500/40 text-purple-300 font-semibold">✓ Total Tokens</span>
+            </div>
+          </div>
+
+          <!-- 4 Sub-Boxes inside Card 1 (Exact match to 1cfc08f6.png) -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-3">
+            <div class="p-2.5 rounded-lg bg-[#0c1018] border border-emerald-500/30">
+              <div class="text-xs text-zinc-400 font-mono">⚡ AKTUELL TOKEN/S</div>
+              <div class="text-2xl font-extrabold font-mono text-emerald-400 mt-0.5">
+                <span id="liveTokNow">94.6</span> <span class="text-sm font-normal">t/s</span>
+              </div>
+              <div class="card-subtext text-xs text-zinc-400 mt-0.5">Peak: 112.8 t/s</div>
+            </div>
+
+            <div class="p-2.5 rounded-lg bg-[#0c1018] border border-amber-500/30">
+              <div class="text-xs text-zinc-400 font-mono">📊 Ø DURCHSCHNITT</div>
+              <div class="text-2xl font-extrabold font-mono text-amber-400 mt-0.5">
+                87.6 <span class="text-sm font-normal">t/s</span>
+              </div>
+              <div class="card-subtext text-xs text-zinc-400 mt-0.5">Ø über 343 Anfragen</div>
+            </div>
+
+            <div class="p-2.5 rounded-lg bg-[#0c1018] border border-sky-500/30">
+              <div class="text-xs text-zinc-400 font-mono">🚀 PREFILL SPEED</div>
+              <div class="text-2xl font-extrabold font-mono text-sky-400 mt-0.5">
+                <span id="livePrefill">1'455</span> <span class="text-xs font-normal">prefill t/s</span>
+              </div>
+              <div class="card-subtext text-xs text-zinc-400 mt-0.5">Ø Prefill: 1'311 t/s</div>
+            </div>
+
+            <div class="p-2.5 rounded-lg bg-[#0c1018] border border-purple-500/30">
+              <div class="text-xs text-zinc-400 font-mono">⚪ TOTAL TOKENS</div>
+              <div class="text-2xl font-extrabold font-mono text-white mt-0.5">
+                <span id="liveTotalTok">1'483'060</span>
+              </div>
+              <div class="card-subtext text-xs text-zinc-400 mt-0.5">Prompt: 942k · Out: 541k</div>
+            </div>
+          </div>
+
+          <!-- Live Canvas Graph for Card 1 -->
+          <div class="card-canvas-wrap bg-[#090c12] rounded-lg p-2 border border-white/5">
+            <canvas id="canvasTokens" height="90" class="w-full"></canvas>
+          </div>
+        </div>
+
+        <!-- 2x2 GRID FOR CARDS 2, 3, 4, 5 (Exact match to Screenshot 1cfc08f6.png) -->
+        <div id="cardsGrid2x2" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+
+          <!-- CARD 2: CPU GESAMT (ALLE 108 CORES ZUSAMMENGELEGT) -->
+          <div id="card-cpu" class="cockpit-card" draggable="true">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="cursor-grab text-zinc-500 hover:text-white font-bold">⠿</span>
+                <span class="font-mono font-extrabold text-xs text-sky-400">
+                  🧠 2. CPU GESAMT (ALLE 108 CORES ZUSAMMENGELEGT)
+                </span>
+              </div>
+              <button onclick="openInspector('CPU Cluster (108 Threads)', 'Dell Xeon (44T): 8% @ 41°C | Worker Ryzen AI Max+ (32T): 0% @ 34°C | Proxmox (32T): 1% @ 38°C | Apple M4 Max (16C): 4.2% @ 39°C')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-white/10">
+                ▸ Details
+              </button>
+            </div>
+            <div class="flex items-baseline justify-between my-2">
+              <div>
+                <div class="text-xs text-zinc-400 font-mono">Ø DURCHSCHNITT ALLER 108 CORES</div>
+                <div id="liveCpuClusterPct" class="text-2xl font-extrabold text-white font-mono mt-0.5">3.5%</div>
+                <div class="card-subtext text-xs text-emerald-400 font-mono">~3.8 / 108 Threads aktiv</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-400 font-mono">Ø CLUSTER-TEMP</div>
+                <div class="text-xl font-extrabold text-emerald-400 font-mono mt-0.5">38°C</div>
+                <div class="card-subtext text-xs text-zinc-400">3 Server · 4 Sockets</div>
+              </div>
+            </div>
+            <div class="card-subtext flex justify-between text-xs font-mono text-zinc-400 mb-1.5">
+              <span>Verlauf: Ø Alle 108 Cores kombiniert</span>
+              <span class="text-sky-400">Dell 8% · Worker 0% · Proxmox 1%</span>
+            </div>
+            <div class="card-canvas-wrap bg-[#090c12] rounded-lg p-1.5 border border-white/5">
+              <canvas id="canvasCpu" height="65" class="w-full"></canvas>
+            </div>
+          </div>
+
+          <!-- CARD 3: GPU ALLE NVIDIA (3 GPUS ZUSAMMENGELEGT) -->
+          <div id="card-nvidia" class="cockpit-card" draggable="true">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="cursor-grab text-zinc-500 hover:text-white font-bold">⠿</span>
+                <span class="font-mono font-extrabold text-xs text-emerald-400">
+                  🟢 3. GPU ALLE NVIDIA (3 GPUS ZUSAMMENGELEGT)
+                </span>
+              </div>
+              <button onclick="openInspector('NVIDIA Dual-Blackwell + Quadro (56 GB VRAM)', 'GPU0 RTX PRO 4000 Blackwell (24G): 16.2 GB warm (gemma4-26b) @ 32°C | GPU1 RTX PRO 4000 Blackwell (24G): 11.4 GB warm (zcode-turbo) @ 32°C | Quadro RTX (8G): 3.8 GB @ 41°C')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-white/10">
+                ▸ Details
+              </button>
+            </div>
+            <div class="flex items-baseline justify-between my-2">
+              <div>
+                <div class="text-xs text-zinc-400 font-mono">TOTAL NVIDIA VRAM &amp; Ø LOAD</div>
+                <div class="text-2xl font-extrabold text-emerald-400 font-mono mt-0.5">31.4 / 56.0 GB</div>
+                <div class="card-subtext text-xs text-zinc-300">Ø VRAM/Compute: 56% (2× RTX PRO + Quadro)</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-400 font-mono">Ø GPU-TEMP</div>
+                <div class="text-xl font-extrabold text-emerald-400 font-mono mt-0.5">35°C</div>
+                <div class="card-subtext text-xs text-zinc-400">56.0% VRAM belegt</div>
+              </div>
+            </div>
+            <div class="card-subtext flex justify-between text-xs font-mono text-zinc-400 mb-1.5">
+              <span>Verlauf: Ø Alle 3 NVIDIA GPUs</span>
+              <span class="text-emerald-400">Blackwell #0 · Blackwell #1 · Quadro</span>
+            </div>
+            <div class="card-canvas-wrap bg-[#090c12] rounded-lg p-1.5 border border-white/5">
+              <canvas id="canvasNvidia" height="65" class="w-full"></canvas>
+            </div>
+          </div>
+
+          <!-- CARD 4: GPU & NPU ALLE AMD (128 GB ZUSAMMENGELEGT) -->
+          <div id="card-amd" class="cockpit-card" draggable="true">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="cursor-grab text-zinc-500 hover:text-white font-bold">⠿</span>
+                <span class="font-mono font-extrabold text-xs text-amber-400">
+                  🔴 4. GPU &amp; NPU ALLE AMD (128 GB ZUSAMMENGELEGT)
+                </span>
+              </div>
+              <button onclick="openInspector('AMD Radeon 8060S (112G) + Pro VII (16G) + XDNA2 NPU', 'Beelink GTR9 Worker UMA Pool: 88.2 / 128.0 GB aktiv | XDNA 2 NPU: ONLINE (50 TOPS) | Linger=yes aktiv')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-white/10">
+                ▸ Details
+              </button>
+            </div>
+            <div class="flex items-baseline justify-between my-2">
+              <div>
+                <div class="text-xs text-zinc-400 font-mono">TOTAL AMD VRAM (8060S + PRO VII)</div>
+                <div class="text-2xl font-extrabold text-amber-400 font-mono mt-0.5">88.2 / 128.0 GB</div>
+                <div class="card-subtext text-xs text-emerald-400 font-mono">🧠 XDNA 2 NPU: ONLINE (50 TOPS)</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-400 font-mono">Ø AMD-TEMP</div>
+                <div class="text-xl font-extrabold text-amber-400 font-mono mt-0.5">34°C</div>
+                <div class="card-subtext text-xs text-zinc-400">69% Pool aktiv</div>
+              </div>
+            </div>
+            <div class="card-subtext flex justify-between text-xs font-mono text-zinc-400 mb-1.5">
+              <span>Verlauf: Alle AMD GPUs &amp; NPU</span>
+              <span class="text-amber-400">Radeon 8060S (112G) + Pro VII (16G)</span>
+            </div>
+            <div class="card-canvas-wrap bg-[#090c12] rounded-lg p-1.5 border border-white/5">
+              <canvas id="canvasAmd" height="65" class="w-full"></canvas>
+            </div>
+          </div>
+
+          <!-- CARD 5: TOTAL RAM (ALLE 512.0 GB ZUSAMMENGELEGT) -->
+          <div id="card-ram" class="cockpit-card" draggable="true">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="cursor-grab text-zinc-500 hover:text-white font-bold">⠿</span>
+                <span class="font-mono font-extrabold text-xs text-white">
+                  🧬 5. TOTAL RAM (ALLE 512.0 GB ZUSAMMENGELEGT)
+                </span>
+              </div>
+              <button onclick="openInspector('Cluster Memory & Proxmox ECC DIMMs (512 GB)', 'Dell NALA-Brain: 150.53 / 256 GB | Worker GTR9: 82.58 / 128 GB | Proxmox PVE: 88.57 / 128 GB (8×16GB ECC DIMMs 0 Errors)')" class="px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-200 border border-white/10">
+                ▸ Details &amp; DIMMs
+              </button>
+            </div>
+            <div class="flex items-baseline justify-between my-2">
+              <div>
+                <div class="text-xs text-zinc-400 font-mono">CLUSTER MEMORY GESAMT (3 SERVER)</div>
+                <div class="text-2xl font-extrabold text-white font-mono mt-0.5">321.7 / 512.0 GB</div>
+                <div class="card-subtext text-xs text-emerald-400 font-mono">✓ Alle 8×16GB Proxmox ECC DIMMs OK</div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-zinc-400 font-mono">Ø AUSLASTUNG</div>
+                <div class="text-xl font-extrabold text-sky-400 font-mono mt-0.5">62.8%</div>
+                <div class="card-subtext text-xs text-zinc-400">190.3 GB frei</div>
+              </div>
+            </div>
+            <!-- 3-Segment RAM Bar (Exact match to Screenshot 1cfc08f6.png) -->
+            <div class="w-full h-3.5 rounded-full bg-zinc-800 overflow-hidden flex my-3">
+              <div class="bg-emerald-500 h-full" style="width: 30%;" title="Dell 150.53G"></div>
+              <div class="bg-amber-500 h-full" style="width: 16%;" title="Worker 82.58G"></div>
+              <div class="bg-sky-500 h-full" style="width: 17%;" title="Proxmox 88.57G"></div>
+            </div>
+            <div class="card-subtext flex flex-wrap justify-between text-xs font-mono pt-1">
+              <span class="text-emerald-400">■ Dell: 150.53/256G</span>
+              <span class="text-amber-400">■ Worker: 82.58/128G</span>
+              <span class="text-sky-400">■ Proxmox: 88.57/128G</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CARD 6: PORSCHE v4 SPORT CHRONO + FUEL TANK RESERVE + 3D EXPLODE RACK -->
+        <div id="card-porsche" class="cockpit-card" draggable="true">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="cursor-grab text-zinc-500 hover:text-white font-bold">⠿</span>
+              <span class="font-mono font-extrabold text-xs text-red-400">
+                🏎️ 6. PORSCHE v4 SPORT CHRONO · 911 FUEL-TANK VRAM RESERVE · 3D RACK EXPLODE
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleRackExplode()" id="explodeBtn" class="px-2.5 py-1 rounded bg-red-600/20 hover:bg-red-600/35 border border-red-500/50 text-xs font-bold text-red-300">
+                💥 Enable 3D Rack Explode
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+            <!-- Tube 1: Porsche Tachometer -->
+            <div class="p-3 rounded-xl bg-[#0b0d13] border border-white/10 flex flex-col items-center">
+              <div class="text-xs text-zinc-400 font-mono uppercase">911 GT3 AI Tachometer</div>
+              <div class="text-2xl font-black font-mono text-white mt-1"><span id="porscheTacho">94.6</span> <span class="text-xs text-red-500">t/s</span></div>
+              <div class="w-full h-2 rounded-full bg-zinc-800 mt-2 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-600" style="width:78%;"></div>
+              </div>
+              <div class="text-xs text-zinc-400 mt-1 font-mono">Redline: 120 t/s · Prefill 1'455</div>
+            </div>
+
+            <!-- Tube 2: Porsche 911 Fuel-Tank Gauge with Red Reserve Warning -->
+            <div class="p-3 rounded-xl bg-[#0b0d13] border border-white/10 flex flex-col items-center">
+              <div class="text-xs text-zinc-400 font-mono uppercase">⛽ VRAM &amp; Storage Tank</div>
+              <div class="text-2xl font-black font-mono text-emerald-400 mt-1">37.2% <span class="text-xs text-zinc-400">FREI</span></div>
+              <div class="w-full h-2.5 rounded-full bg-zinc-800 mt-2 overflow-hidden flex">
+                <div class="bg-red-600 h-full" style="width:15%;" title="Reserve 15%"></div>
+                <div class="bg-emerald-400 h-full" style="width:48%;"></div>
+              </div>
+              <div class="text-xs text-amber-300 mt-1 font-mono">Reserve-Warnung ab &lt;15% frei</div>
+            </div>
+
+            <!-- Tube 3: Interactive 3D Hardware Explode View -->
+            <div id="rackExplodeBox" class="p-3 rounded-xl bg-[#0b0d13] border border-white/10 space-y-1.5 transition-all duration-300">
+              <div class="text-xs font-mono font-bold text-sky-400 flex justify-between">
+                <span>🧊 3D Server-Rack Twin</span>
+                <span id="rackStateLabel" class="text-emerald-400">KOMPAKT</span>
+              </div>
+              <div class="rack-layer p-1.5 rounded bg-zinc-900 border border-emerald-500/40 text-xs font-mono flex justify-between transition-transform duration-300">
+                <span>Slot 1: 2× Blackwell GPU</span>
+                <span class="text-emerald-400">32°C · 48G</span>
+              </div>
+              <div class="rack-layer p-1.5 rounded bg-zinc-900 border border-amber-500/40 text-xs font-mono flex justify-between transition-transform duration-300">
+                <span>Slot 2: AMD 8060S + NPU</span>
+                <span class="text-amber-400">34°C · 128G</span>
+              </div>
+              <div class="rack-layer p-1.5 rounded bg-zinc-900 border border-sky-500/40 text-xs font-mono flex justify-between transition-transform duration-300">
+                <span>Slot 3: 8×16G ECC DIMMs</span>
+                <span class="text-sky-400">1031 RPM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================================
+       MODAL INSPECTOR FOR [ ▸ Details ] DRILL-DOWN
+       ===================================================================== -->
+  <div id="inspectorModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="macos-window max-w-lg w-full p-4 space-y-3">
+      <div class="flex items-center justify-between border-b border-white/10 pb-2">
+        <span id="inspTitle" class="font-bold text-sm text-white">Hardware Inspector</span>
+        <button onclick="closeInspector()" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-xs">✕</button>
+      </div>
+      <div id="inspBody" class="text-xs font-mono text-zinc-200 leading-relaxed bg-black/40 p-3 rounded-lg border border-white/10"></div>
+      <div class="flex justify-end">
+        <button onclick="closeInspector()" class="px-3 py-1 rounded bg-blue-600 text-xs font-bold text-white">Schliessen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       LIVE TELEMETRY SIMULATION, CANVAS GRAPHS & INTERACTION ENGINE
+       ===================================================================== -->
+  <script>
+    let privacyMasked = true;
+    let rackExploded = false;
+    let compactNano = false;
+
+    // History arrays for live Canvas charts
+    const histTokens = Array.from({ length: 36 }, (_, i) => 84 + Math.sin(i * 0.3) * 8);
+    const histAvg = Array.from({ length: 36 }, () => 87.6);
+    const histCpu = Array.from({ length: 36 }, (_, i) => 3.2 + Math.cos(i * 0.4) * 1.1);
+    const histNvidia = Array.from({ length: 36 }, () => 56);
+    const histAmd = Array.from({ length: 36 }, () => 69);
+
+    function drawChart(canvasId, series, strokeColor, fillColor, maxVal = 120) {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = (c.width = c.clientWidth || 320);
+      const h = (c.height = c.clientHeight || 70);
+      ctx.clearRect(0, 0, w, h);
+
+      // Subtle grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      for (let y = h * 0.25; y < h; y += h * 0.25) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Area fill
+      ctx.beginPath();
+      series.forEach((v, idx) => {
+        const x = (idx / (series.length - 1)) * w;
+        const y = h - Math.min(1, Math.max(0, v / maxVal)) * (h - 8) - 4;
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+    }
+
+    function renderAllCharts() {
+      drawChart('canvasTokens', histTokens, '#10b981', 'rgba(16,185,129,0.18)', 125);
+      drawChart('canvasCpu', histCpu, '#38bdf8', 'rgba(56,189,248,0.18)', 25);
+      drawChart('canvasNvidia', histNvidia, '#10b981', 'rgba(16,185,129,0.22)', 100);
+      drawChart('canvasAmd', histAmd, '#f59e0b', 'rgba(245,158,11,0.22)', 100);
+    }
+
+    // Live 1.2s heartbeat updating both the macOS Menu Bar AND the Cockpit V2
+    setInterval(() => {
+      const tok = +(91 + Math.random() * 7).toFixed(1);
+      const cpu = +(3.1 + Math.random() * 1.4).toFixed(1);
+      const fan1 = Math.round(1028 + (Math.random() - 0.5) * 12);
+      const fan2 = Math.round(594 + (Math.random() - 0.5) * 8);
+
+      histTokens.push(tok); histTokens.shift();
+      histCpu.push(cpu); histCpu.shift();
+
+      document.getElementById('liveTokNow').textContent = tok;
+      document.getElementById('porscheTacho').textContent = tok;
+      document.getElementById('mbTokVal').textContent = tok;
+      document.getElementById('liveCpuClusterPct').textContent = cpu + '%';
+      document.getElementById('mbFan1').textContent = fan1;
+      document.getElementById('mbFan2').textContent = fan2;
+
+      // Animate Menu Bar vertical bars slightly
+      document.getElementById('mbCpuBar1').style.height = Math.min(95, 25 + cpu * 6) + '%';
+      document.getElementById('mbCpuBar2').style.height = Math.min(95, 15 + cpu * 4) + '%';
+
+      renderAllCharts();
+    }, 1300);
+
+    // Popover Details Data for Menu Bar Click
+    const POPOVER_DATA = {
+      tokens: {
+        title: '⚡ AI Token & Prefill Engine',
+        html: `
+          <div class="flex justify-between"><span>Aktuell Output:</span><strong class="text-emerald-400">94.6 t/s (Peak 112.8)</strong></div>
+          <div class="flex justify-between"><span>Prefill Speed:</span><strong class="text-sky-400">1'455 prefill t/s</strong></div>
+          <div class="flex justify-between"><span>Aktive Modelle (24h Warm):</span><strong class="text-white">gemma4-26b · zcode-turbo</strong></div>
+        `
+      },
+      ram: {
+        title: '🧬 Memory (Local Mac + 512 GB Cluster)',
+        html: `
+          <div class="flex justify-between"><span>MacBook Pro M4 Max:</span><strong class="text-white">42.4 / 128.0 GB (Pressure: Grün)</strong></div>
+          <div class="flex justify-between"><span>Dell NALA-Brain:</span><strong class="text-emerald-400">150.53 / 256.0 GB</strong></div>
+          <div class="flex justify-between"><span>Worker GTR9 UMA:</span><strong class="text-amber-400">82.58 / 128.0 GB</strong></div>
+          <div class="flex justify-between"><span>Proxmox (8×16G ECC):</span><strong class="text-sky-400">88.57 / 128.0 GB (ECC OK)</strong></div>
+        `
+      },
+      cpu: {
+        title: '🧠 CPU (Apple Silicon + 108 Cluster Cores)',
+        html: `
+          <div class="flex justify-between"><span>Apple M4 Max (12P + 4E):</span><strong class="text-sky-400">4.2% @ 39°C</strong></div>
+          <div class="flex justify-between"><span>Dell Xeon (44 Threads):</span><strong class="text-white">8.0% @ 41°C</strong></div>
+          <div class="flex justify-between"><span>Worker Ryzen AI Max+ (32T):</span><strong class="text-white">0.4% @ 34°C</strong></div>
+          <div class="flex justify-between"><span>Proxmox VE (32 Threads):</span><strong class="text-white">1.1% @ 38°C</strong></div>
+        `
+      },
+      gpu: {
+        title: '🟢 GPU & NPU Pool (184 GB VRAM Total)',
+        html: `
+          <div class="flex justify-between"><span>RTX PRO 4000 Blackwell #0:</span><strong class="text-emerald-400">16.2 / 24 GB @ 32°C</strong></div>
+          <div class="flex justify-between"><span>RTX PRO 4000 Blackwell #1:</span><strong class="text-emerald-400">11.4 / 24 GB @ 32°C</strong></div>
+          <div class="flex justify-between"><span>Radeon 8060S + Pro VII:</span><strong class="text-amber-400">88.2 / 128 GB @ 34°C</strong></div>
+          <div class="flex justify-between"><span>AMD XDNA 2 NPU:</span><strong class="text-emerald-300">ONLINE (50 TOPS)</strong></div>
+        `
+      },
+      sensors: {
+        title: '🌡️ AppleSMC & Thermal Sensors (User-Space)',
+        html: `
+          <div class="flex justify-between"><span>TC0P (CPU Package Die):</span><strong class="text-emerald-400">38.0 °C</strong></div>
+          <div class="flex justify-between"><span>TG0P (GPU Cluster Die):</span><strong class="text-emerald-400">41.0 °C</strong></div>
+          <div class="flex justify-between"><span>PSTR (System Total Power):</span><strong class="text-amber-300">376 W (USV 100%)</strong></div>
+        `
+      },
+      battery: {
+        title: '🔋 MacBook Pro M4 Max Battery (SMC)',
+        html: `
+          <div class="flex justify-between"><span>Ladestand:</span><strong class="text-emerald-400">72% (6:55 verbleibend)</strong></div>
+          <div class="flex justify-between"><span>Batterie-Gesundheit:</span><strong class="text-white">98% (44 Zyklen)</strong></div>
+          <div class="flex justify-between"><span>Temperatur:</span><strong class="text-white">29.4 °C</strong></div>
+        `
+      },
+      fans: {
+        title: '🌀 AppleSMC & Dell SMM Lüftersteuerung',
+        html: `
+          <div class="flex justify-between"><span>F0Ac (CPU Fan 1):</span><strong class="text-emerald-400">1031 RPM (Optimal)</strong></div>
+          <div class="flex justify-between"><span>F1Ac (SYS Fan 2):</span><strong class="text-emerald-400">596 RPM (Silent)</strong></div>
+          <div class="flex justify-between"><span>Profil:</span><strong class="text-sky-400">Auto-Silent (&lt;45°C)</strong></div>
+        `
+      },
+      clock: {
+        title: '📅 NALA-OS Kalender & White-Hat Security Status',
+        html: `
+          <div class="flex justify-between"><span>White-Hat Audit v3.0:</span><strong class="text-emerald-400">85% Prod / 15% Security</strong></div>
+          <div class="flex justify-between"><span>CVSS Status:</span><strong class="text-emerald-400">🟢 &lt;6.0 Silent Watchlist</strong></div>
+          <div class="flex justify-between"><span>Keychain Vault:</span><strong class="text-sky-400">3 Remote-Server geschützt</strong></div>
+        `
+      }
+    };
+
+    function togglePopover(key, el) {
+      const pop = document.getElementById('nsPopover');
+      document.querySelectorAll('.mb-item').forEach(i => i.classList.remove('active-pop'));
+      const item = POPOVER_DATA[key] || POPOVER_DATA.sensors;
+      document.getElementById('popTitle').textContent = item.title;
+      document.getElementById('popBody').innerHTML = item.html;
+      pop.classList.remove('hidden');
+      if (el && el.classList.contains('mb-item')) el.classList.add('active-pop');
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const rightOffset = Math.max(12, window.innerWidth - rect.right - 20);
+        pop.style.right = rightOffset + 'px';
+      }
+    }
+
+    function closePopover() {
+      document.getElementById('nsPopover').classList.add('hidden');
+      document.querySelectorAll('.mb-item').forEach(i => i.classList.remove('active-pop'));
+    }
+
+    // Toggle visibility of Menu Bar widgets when clicking inside Stats.app Module Cards
+    function toggleWidgetVisibility(mbId, btnEl) {
+      const target = document.getElementById(mbId);
+      if (!target) return;
+      const isHidden = target.classList.toggle('hidden');
+      if (btnEl) btnEl.classList.toggle('selected', !isHidden);
+    }
+
+    function toggleRamTextPill(btnEl) {
+      const pill = document.getElementById('mbRamTextPill');
+      const hidden = pill.classList.toggle('hidden');
+      btnEl.classList.toggle('selected', !hidden);
+    }
+
+    function setMenuBarColor(hex) {
+      document.querySelectorAll('.stat-bar-fill').forEach(el => {
+        el.style.background = hex;
+      });
+    }
+
+    // Left Window Tabs
+    function openLeftTab(tab) {
+      ['modules', 'keychain', 'smc'].forEach(t => {
+        document.getElementById('leftTab-' + t).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('tabBtn-' + t);
+        if (t === tab) {
+          btn.className = 'px-3 py-1.5 rounded-t-lg bg-zinc-800 text-white border-t border-x border-white/15';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-t-lg text-zinc-400 hover:text-white';
+        }
+      });
+    }
+
+    // Workspace Mode Switcher (Split vs Settings-Only vs Cockpit-Only)
+    function switchWorkspaceMode(mode) {
+      const wSet = document.getElementById('winSettings');
+      const wCock = document.getElementById('winCockpit');
+      ['split', 'settings', 'cockpit'].forEach(m => {
+        const b = document.getElementById('modeBtn-' + m);
+        b.className = m === mode
+          ? 'px-3 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white shadow'
+          : 'px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 text-zinc-200 hover:bg-white/15';
+      });
+      if (mode === 'split') {
+        wSet.classList.remove('hidden');
+        wCock.classList.remove('hidden');
+        wSet.className = 'macos-window xl:col-span-5 flex flex-col';
+        wCock.className = 'macos-window cockpit-v2 xl:col-span-7 flex flex-col';
+      } else if (mode === 'settings') {
+        wSet.classList.remove('hidden');
+        wCock.classList.add('hidden');
+        wSet.className = 'macos-window xl:col-span-12 flex flex-col';
+      } else {
+        wSet.classList.add('hidden');
+        wCock.classList.remove('hidden');
+        wCock.className = 'macos-window cockpit-v2 xl:col-span-12 flex flex-col';
+      }
+      setTimeout(renderAllCharts, 60);
+    }
+
+    // Cockpit V2 Controls: Skin Pulldown, Scale Slider, Nano Mode, Filter Chips, Ticker Speed
+    function changeCockpitSkin(skinClass) {
+      const wCock = document.getElementById('winCockpit');
+      wCock.classList.remove('skin-porsche', 'skin-sequoia', 'skin-terminator', 'skin-braun');
+      if (skinClass !== 'default') wCock.classList.add(skinClass);
+    }
+
+    function setCockpitScale(val) {
+      const pct = Number(val);
+      document.getElementById('cockpitScaleSlider').value = pct;
+      document.getElementById('scalePctLabel').textContent = pct + '%';
+      const wrap = document.getElementById('cockpitCardsWrapper');
+      wrap.style.transform = `scale(${pct / 100})`;
+      wrap.style.width = `${10000 / pct}%`;
+      // Automatically hide subtext when scaled very small (<65%) as requested by Mike
+      wrap.classList.toggle('compact-hide-details', pct < 65 || compactNano);
+    }
+
+    function toggleCompactNanoMode() {
+      compactNano = !compactNano;
+      const wrap = document.getElementById('cockpitCardsWrapper');
+      wrap.classList.toggle('compact-hide-details', compactNano);
+      document.getElementById('nanoBtn').classList.toggle('bg-amber-500/30', compactNano);
+    }
+
+    function resetCockpitLayout() {
+      compactNano = false;
+      setCockpitScale(100);
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('off'));
+      ['card-tokens', 'card-cpu', 'card-nvidia', 'card-amd', 'card-ram', 'card-porsche'].forEach(id => {
+        document.getElementById(id).classList.remove('hidden');
+      });
+    }
+
+    function toggleCardChip(cardId, btn) {
+      const card = document.getElementById(cardId);
+      const isHidden = card.classList.toggle('hidden');
+      btn.classList.toggle('off', isHidden);
+    }
+
+    function updateTickerSpeed(mult) {
+      document.getElementById('tickerSpeedLabel').textContent = Number(mult).toFixed(1) + 'x';
+      const duration = (24 / Number(mult)).toFixed(1);
+      document.getElementById('tickerTrack').style.animationDuration = duration + 's';
+    }
+
+    function toggleRackExplode() {
+      rackExploded = !rackExploded;
+      const layers = document.querySelectorAll('.rack-layer');
+      document.getElementById('rackStateLabel').textContent = rackExploded ? 'EXPLODED 3D' : 'KOMPAKT';
+      layers.forEach((l, i) => {
+        l.style.transform = rackExploded ? `translateX(${(i - 1) * 10}px) scale(1.03)` : 'none';
+      });
+    }
+
+    function togglePrivacyMask() {
+      privacyMasked = !privacyMasked;
+      const badge = document.getElementById('menubarPrivacyBadge');
+      badge.textContent = privacyMasked ? '🔒 Zero-PII Mask: ON' : '🔓 Local Lab Mode (Keychain)';
+      document.querySelectorAll('.ip-masked').forEach((el, idx) => {
+        el.textContent = privacyMasked
+          ? `[KEYCHAIN-PROTECTED · NODE-0${idx + 1}]`
+          : `[KEYCHAIN-ID #0${idx + 1} · TLS-VERIFIED]`;
+      });
+    }
+
+    function addKeychainServer() {
+      const alias = document.getElementById('newSrvAlias').value.trim() || 'Custom-GPU-Node';
+      const list = document.getElementById('remoteServerList');
+      const div = document.createElement('div');
+      div.className = 'p-3 rounded-lg bg-zinc-800/80 border border-emerald-500/40 flex items-center justify-between';
+      div.innerHTML = `
+        <div>
+          <div class="font-bold text-sm text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>${alias}</span>
+          </div>
+          <div class="text-xs text-zinc-400 font-mono mt-0.5">
+            Endpoint: <span class="ip-masked text-amber-300">[KEYCHAIN-PROTECTED · NEW-NODE]</span> · Gesichert in macOS Keychain
+          </div>
+        </div>
+        <span class="text-xs px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 font-mono">SecItemAdd ✓</span>
+      `;
+      list.prepend(div);
+      document.getElementById('newSrvAlias').value = '';
+      document.getElementById('newSrvUrl').value = '';
+      document.getElementById('newSrvToken').value = '';
+    }
+
+    function openInspector(title, body) {
+      document.getElementById('inspTitle').textContent = title;
+      document.getElementById('inspBody').textContent = body;
+      const m = document.getElementById('inspectorModal');
+      m.classList.remove('hidden');
+      m.classList.add('flex');
+    }
+
+    function closeInspector() {
+      const m = document.getElementById('inspectorModal');
+      m.classList.add('hidden');
+      m.classList.remove('flex');
+    }
+
+    // Native HTML5 Drag & Drop for Menu Bar Widgets AND Cockpit Cards
+    function enableDragSort(containerSelector, itemSelector) {
+      const container = document.querySelector(containerSelector);
+      if (!container) return;
+      let dragged = null;
+      container.addEventListener('dragstart', e => {
+        const item = e.target.closest(itemSelector);
+        if (!item) return;
+        dragged = item;
+        item.style.opacity = '0.45';
+      });
+      container.addEventListener('dragend', () => {
+        if (dragged) dragged.style.opacity = '1';
+        dragged = null;
+      });
+      container.addEventListener('dragover', e => {
+        e.preventDefault();
+        const over = e.target.closest(itemSelector);
+        if (over && dragged && over !== dragged && over.parentNode === container) {
+          const rect = over.getBoundingClientRect();
+          const after = (e.clientX - rect.left) > rect.width / 2 || (e.clientY - rect.top) > rect.height / 2;
+          container.insertBefore(dragged, after ? over.nextSibling : over);
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAllCharts();
+      enableDragSort('#nsStatusBarTray', '.mb-item');
+      enableDragSort('#cardsGrid2x2', '.cockpit-card');
+    });
+    window.addEventListener('resize', renderAllCharts);
+  </script>
+</body>
+</html>

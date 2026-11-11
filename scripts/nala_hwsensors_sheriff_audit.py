@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-VERSION_SSOT = "2.0.0-NCSP"
+VERSION_SSOT = "2.6.0-NCSP"
 
 # ---------------------------------------------------------------------------
 # 7 OFFICIAL SKINS DEFINITION (Canonical Tokens -> SHA-256 Sealed)
@@ -343,11 +343,11 @@ def run_triple_check_audit(repo_root: Path) -> int:
     findings_check2: List[str] = []
     findings_check3: List[str] = []
 
-    text_extensions = {".py", ".rs", ".toml", ".json", ".html", ".css", ".js", ".ts", ".md", ".sh", ".command", ".yml", ".yaml"}
+    text_extensions = {".swift", ".py", ".rs", ".toml", ".json", ".html", ".css", ".js", ".ts", ".md", ".sh", ".command", ".yml", ".yaml"}
     scanned_files = 0
 
     for root, dirs, files in os.walk(repo_root):
-        dirs[:] = [d for d in dirs if d not in {".git", "node_modules", "target", "__pycache__", ".venv"}]
+        dirs[:] = [d for d in dirs if d not in {".git", ".ncsp_snapshots", "node_modules", "target", "__pycache__", ".venv"}]
         for fname in files:
             fpath = Path(root) / fname
             rel_path = fpath.relative_to(repo_root)
