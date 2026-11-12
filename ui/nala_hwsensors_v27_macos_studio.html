@@ -1,0 +1,2642 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NALA-HWSensors v2.6 — LIVE HARDWARE TELEMETRY · 3D PERFORMANCE RELIEF</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --bg-deep: #05080f;
+      --bg-panel: #0b101b;
+      --bg-card: #101726;
+      --bg-card-2: #0c121e;
+      --border-subtle: rgba(148, 163, 184, 0.14);
+      --border-glow: rgba(56, 189, 248, 0.42);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      background: radial-gradient(circle at 18% 12%, #0f1c32 0%, #070b14 55%, #03050a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-size: 12px;
+    }
+
+    /* Self-contained Fallback Layout Utilities (works 100% offline in macOS WKWebView!) */
+    .top-menubar {
+      height: 34px;
+      background: rgba(10, 14, 22, 0.92);
+      backdrop-filter: blur(24px) saturate(190%);
+      -webkit-backdrop-filter: blur(24px) saturate(190%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      position: sticky;
+      top: 0;
+      z-index: 300;
+    }
+    .menubar-left, .menubar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nala-capsule-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 25px;
+      padding: 0 11px;
+      border-radius: 999px;
+      background: rgba(30, 36, 48, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 11.5px;
+      transition: border-color 140ms ease;
+    }
+    .nala-capsule-pill:hover {
+      border-color: #38bdf8;
+    }
+    .pill-divider {
+      width: 1px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Main Window Frame */
+    .app-frame {
+      max-width: 1660px;
+      margin: 8px auto;
+      background: linear-gradient(180deg, #0b101b 0%, #070b13 100%);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(56, 189, 248, 0.08);
+      display: grid;
+      grid-template-columns: 215px 1fr;
+      min-height: 880px;
+      overflow: hidden;
+    }
+    @media (max-width: 1024px) {
+      .app-frame { grid-template-columns: 1fr; }
+    }
+
+    /* Left Sidebar (Exact match to Images 1, 2, 3) */
+    .sidebar {
+      background: linear-gradient(180deg, #080c15 0%, #05080f 100%);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .tl { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    .tl.r { background: #ff5f57; }
+    .tl.y { background: #febc2e; }
+    .tl.g { background: #28c840; }
+
+    /* Neon NALA Cat Avatar Box (Top-left of Images 2 & 3) */
+    .cat-hero-card {
+      position: relative;
+      border-radius: 14px;
+      padding: 3px;
+      background: linear-gradient(135deg, #00f0ff 0%, #a855f7 50%, #f97316 100%);
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.25), 0 0 22px rgba(236, 72, 153, 0.18);
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+    .cat-hero-inner {
+      background: #060911;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+    }
+    .cat-hero-inner img {
+      width: 100%;
+      height: 118px;
+      object-fit: cover;
+      display: block;
+    }
+    .cat-hero-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(0deg, rgba(4,6,12,0.96) 0%, rgba(4,6,12,0.5) 70%, transparent 100%);
+      padding: 14px 6px 5px;
+    }
+
+    .side-section-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      padding: 6px 8px 4px;
+    }
+    .side-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 120ms ease;
+      border: 1px solid transparent;
+    }
+    .side-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #f8fafc;
+    }
+    .side-btn.active {
+      background: linear-gradient(90deg, rgba(14, 165, 233, 0.22) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border-color: rgba(56, 189, 248, 0.45);
+      color: #ffffff;
+      box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.12);
+    }
+    .host-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      color: #cbd5e1;
+      cursor: pointer;
+      border: 1px solid transparent;
+      margin-bottom: 2px;
+    }
+    .host-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .host-item.active {
+      background: rgba(37, 99, 235, 0.25);
+      border-color: rgba(59, 130, 246, 0.55);
+      color: #ffffff;
+    }
+    .dot-online {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Right Workspace Area */
+    .workspace {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-x: hidden;
+    }
+
+    /* Header Bar with Top Icon Pills (Image 2 & Image 3) */
+    .ws-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pill-group {
+      display: inline-flex;
+      align-items: center;
+      background: #0c121e;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .pill-tab {
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #94a3b8;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: all 120ms ease;
+    }
+    .pill-tab:hover { color: #ffffff; }
+    .pill-tab.active {
+      background: rgba(56, 189, 248, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    }
+
+    /* 8-CARD TOP GAUGE + MINI HISTOGRAM STRIP (Exact match to Images 2 & 3!) */
+    .top-gauge-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 8px;
+    }
+    @media (max-width: 1400px) {
+      .top-gauge-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 768px) {
+      .top-gauge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .gauge-card {
+      background: linear-gradient(180deg, #111827 0%, #0b101b 100%);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 12px;
+      padding: 8px 9px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      min-height: 142px;
+      transition: border-color 150ms ease, transform 150ms ease;
+    }
+    .gauge-card:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      transform: translateY(-1px);
+    }
+    .gauge-card-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    .ring-wrap {
+      position: relative;
+      width: 92px;
+      height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ring-wrap svg {
+      width: 88px;
+      height: 88px;
+      transform: rotate(135deg);
+    }
+    .ring-center-lbl {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 2px;
+    }
+    .ring-val {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.05;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    .ring-sub {
+      font-size: 9px;
+      color: #94a3b8;
+      margin-top: 1px;
+      white-space: nowrap;
+    }
+    .mini-hist-canvas {
+      width: 100%;
+      height: 24px;
+      display: block;
+      margin-top: 2px;
+    }
+    .gauge-foot {
+      text-align: center;
+      font-size: 10px;
+      color: #94a3b8;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      margin-top: 2px;
+    }
+
+    /* CENTER HERO: 3D PERFORMANCE RELIEF CONTAINER (Images 1, 2, 3) */
+    .relief-container {
+      background: linear-gradient(180deg, #0c121e 0%, #070b13 100%);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 14px;
+      padding: 12px;
+      position: relative;
+    }
+    .relief-split {
+      display: grid;
+      grid-template-columns: 1fr 235px;
+      gap: 12px;
+      align-items: stretch;
+    }
+    @media (max-width: 1200px) {
+      .relief-split { grid-template-columns: 1fr; }
+    }
+    .relief-viewport {
+      position: relative;
+      background: radial-gradient(ellipse at 52% 55%, #16192b 0%, #080b13 65%, #04060b 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 272px;
+    }
+    #relief3dCanvas {
+      width: 100%;
+      height: 272px;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Right Inspector Panel inside 3D Relief (Exact match to Images 2 & 3) */
+    .relief-inspector {
+      background: rgba(11, 16, 27, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 11px;
+      padding: 11px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .insp-row {
+      display: flex;
+       flex-direction: column;
+      gap: 3px;
+    }
+    .insp-lbl {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #cbd5e1;
+    }
+    .ios-toggle {
+      appearance: none;
+      width: 32px;
+      height: 18px;
+      background: #1e293b;
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+    .ios-toggle:checked { background: #3b82f6; }
+    .ios-toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: transform 150ms ease;
+    }
+    .ios-toggle:checked::after {
+      transform: translateX(14px);
+    }
+
+    /* Bottom Strip Layouts for Image 1, Image 2, and Image 3 */
+    .bottom-grid-7 {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .bottom-grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .bottom-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 1300px) {
+      .bottom-grid-7, .bottom-grid-5, .bottom-grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .b-card {
+      background: linear-gradient(180deg, #101726 0%, #0a0f1a 100%);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 12px;
+      padding: 10px 11px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 192-Channel Thread Matrix (Image 1) */
+    .matrix-192 {
+      display: grid;
+      grid-template-columns: repeat(48, minmax(0, 1fr));
+      gap: 2px;
+    }
+    .m-cell {
+      height: 10px;
+      border-radius: 1.5px;
+    }
+
+    /* Popover Dropdown (Image 4 / cdc25cb8.jpg) */
+    .sys-popover {
+      position: fixed;
+      top: 38px;
+      right: 16px;
+      width: 335px;
+      background: rgba(20, 23, 30, 0.97);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.85);
+      z-index: 500;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================================
+       1. REAL NATIVE macOS TOP MENU BAR + CAPSULE PILL (Image 5 / cdc25cb8.jpg)
+       ===================================================================== -->
+  <header class="top-menubar">
+    <div class="menubar-left">
+      <span style="font-weight:800;font-size:14px;"></span>
+      <span style="font-weight:800;color:#fff;cursor:pointer;" onclick="switchPresetLayout('img2')">
+        NALA-HWSensors <span style="color:#38bdf8;font-family:monospace;">v2.7</span>
+      </span>
+      <span style="color:#6ee7b7;font-weight:700;cursor:pointer;" onclick="setPalette('himalaya')">🏔️ Himalaya</span>
+      <span style="color:#93c5fd;font-weight:700;cursor:pointer;" onclick="setPalette('snowpeaks')">❄️ Schnee-Gipfel</span>
+      <span style="color:#86efac;font-weight:700;cursor:pointer;" onclick="setPalette('forest')">🌲 Tannenwald</span>
+      <span style="color:#fca5a5;font-weight:700;cursor:pointer;" onclick="setPalette('hyperlava')">🌋 Hyper-Magma</span>
+      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img1')">Bild 1: Alpine</span>
+      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img2')">Bild 2: Lava</span>
+      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img3')">Bild 3: Aurora</span>
+      <span style="color:#fbbf24;font-weight:700;cursor:pointer;" onclick="switchPresetLayout('dream')">🌙 2-Klick RSI</span>
+    </div>
+
+    <div class="menubar-right">
+      <button onclick="toggleNativeFullscreen()" style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.55);color:#6ee7b7;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;" title="Echtes macOS Vollbild umschalten">
+        ⛶ Vollbild
+      </button>
+      <button onclick="exportOrInstallScreensaver()" style="background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.5);color:#7dd3fc;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;" title="macOS .saver Bildschirmschoner installieren / exportieren">
+        💾 .saver
+      </button>
+      <div class="nala-capsule-pill" onclick="toggleSysPopover()" title="Klicken für macOS System-Popover">
+        <span style="color:#4ade80;">💻 <strong id="mbCpu">42%</strong></span>
+        <span style="color:#86efac;" id="mbTemp">56°C</span>
+        <span style="color:#34d399;">25W</span>
+        <span class="pill-divider"></span>
+        <span style="color:#4ade80;">📟 <strong id="mbRam">63%</strong></span>
+        <span class="pill-divider"></span>
+        <span style="color:#fff;">🔋 <strong>78%</strong> <span style="color:#94a3b8;font-size:10px;">6:45</span></span>
+        <span class="pill-divider"></span>
+        <span style="color:#fb923c;">↑ <strong id="mbUp">51KB/s</strong></span>
+        <span class="pill-divider"></span>
+        <span style="color:#38bdf8;">↓ <strong id="mbDown">102KB/s</strong></span>
+      </div>
+      <span style="color:#e2e8f0;font-weight:600;cursor:pointer;" onclick="toggleSysPopover()">Mi. 22:55</span>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       NATIVE macOS POPOVER DROPDOWN (Exact match to Screenshot cdc25cb8.jpg)
+       ===================================================================== -->
+  <aside id="sysPopover" class="sys-popover hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <strong style="font-size:13.5px;color:#fff;">NALA-HWSensors v2.6 · System</strong>
+      <div style="display:flex;gap:8px;color:#94a3b8;">
+        <span style="cursor:pointer;" onclick="openScreensaver();toggleSysPopover();" title="Screensaver">🖥️</span>
+        <span style="cursor:pointer;" onclick="toggleSysPopover()">✕</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="background:#222631;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <div><strong style="color:#fff;font-size:13px;">CPU</strong><div style="color:#94a3b8;font-size:11px;">Processor load · 192 Threads</div></div>
+        <div style="text-align:right;"><span style="color:#f59e0b;font-weight:700;margin-right:6px;">56°C</span><span style="color:#4ade80;font-weight:800;">42%</span></div>
+      </div>
+      <div style="background:#222631;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <div><strong style="color:#fff;font-size:13px;">GPU</strong><div style="color:#94a3b8;font-size:11px;">Apple Metal M4 Max / RTX 4000</div></div>
+        <div style="text-align:right;color:#c084fc;font-weight:800;">68%</div>
+      </div>
+      <div style="background:#222631;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <div><strong style="color:#fff;font-size:13px;">RAM</strong><div style="color:#94a3b8;font-size:11px;">81.2 GiB / 128.0 GiB</div></div>
+        <div style="text-align:right;color:#818cf8;font-weight:800;">63%</div>
+      </div>
+      <div style="background:#222631;border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+        <div><strong style="color:#fff;font-size:13px;">Battery (macOS SMC)</strong><div style="color:#94a3b8;font-size:11px;">Health 98% · 1031 RPM</div></div>
+        <div style="text-align:right;color:#34d399;font-weight:800;">78% (6:45)</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:#222631;border-radius:12px;padding:10px;">
+          <div style="color:#94a3b8;font-size:11px;">↑ Upload</div>
+          <div style="color:#4ade80;font-size:18px;font-weight:800;margin:4px 0;">51 <span style="font-size:11px;">KB/s</span></div>
+          <div style="height:18px;background:rgba(16,185,129,0.22);border-top:2px solid #10b981;border-radius:3px;"></div>
+        </div>
+        <div style="background:#222631;border-radius:12px;padding:10px;">
+          <div style="color:#94a3b8;font-size:11px;">↓ Download</div>
+          <div style="color:#38bdf8;font-size:18px;font-weight:800;margin:4px 0;">102 <span style="font-size:11px;">KB/s</span></div>
+          <div style="height:18px;background:rgba(56,189,248,0.22);border-top:2px solid #38bdf8;border-radius:3px;"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- =====================================================================
+       2. MAIN NALA-HWSENSORS v2.6 WINDOW (Exact match to Images 1, 2 & 3)
+       ===================================================================== -->
+  <div class="app-frame">
+
+    <!-- LEFT SIDEBAR (With Real Photorealistic Neon NALA Cat Portrait!) -->
+    <aside class="sidebar">
+      <div>
+        <div class="traffic-lights">
+          <span class="tl r" style="cursor:pointer;" onclick="closeScreensaver()" title="Schließen / Zurück"></span>
+          <span class="tl y" style="cursor:pointer;" onclick="toggleOrbit360()" title="360° Orbit umschalten"></span>
+          <span class="tl g" style="cursor:pointer;" onclick="toggleNativeFullscreen()" title="Echtes macOS Vollbild (Fullscreen) umschalten"></span>
+          <span style="margin-left:auto;font-family:monospace;font-size:10px;color:#38bdf8;">v2.7 UNI</span>
+        </div>
+
+        <!-- Real Photorealistic Neon Black Cat Avatar Card (Top-Left of Images 2 & 3) -->
+        <div class="cat-hero-card" onclick="switchPresetLayout('img3')" title="Klicken zum Wechseln zwischen Lava, Aurora & Alpine">
+          <div class="cat-hero-inner">
+            <img src="data:image/jpeg;base64,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" alt="NALA Neon Cat" />
+            <div class="cat-hero-overlay">
+              <div style="font-weight:900;font-size:14px;letter-spacing:0.08em;color:#fff;">NALA</div>
+              <div style="font-size:9.5px;color:#38bdf8;font-weight:700;letter-spacing:0.06em;">HWSENSORS · v2.6</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-section-title">Monitoring</div>
+        <div id="snav-img2" class="side-btn active" onclick="switchPresetLayout('img2')">
+          <span>🏠</span><span>Dashboard (Bild 2 Lava)</span>
+        </div>
+        <div id="snav-img3" class="side-btn" onclick="switchPresetLayout('img3')">
+          <span>🌌</span><span>Relief 3D (Bild 3 Aurora)</span>
+        </div>
+        <div id="snav-img1" class="side-btn" onclick="switchPresetLayout('img1')">
+          <span>🏔️</span><span>Command Center (Bild 1)</span>
+        </div>
+        <div class="side-btn" onclick="openScreensaver(true)">
+          <span>🖥️</span><span>Screensaver (360° Full)</span>
+        </div>
+        <div class="side-btn" style="color:#6ee7b7;" onclick="exportOrInstallScreensaver()">
+          <span>💾</span><span>.saver installieren</span>
+        </div>
+        <div class="side-btn" style="color:#38bdf8;" onclick="toggleNativeFullscreen()">
+          <span>⛶</span><span>Echtes Vollbild (Mac)</span>
+        </div>
+        <div id="snav-dream" class="side-btn" style="color:#fbbf24;" onclick="switchPresetLayout('dream')">
+          <span>🌙</span><span>Dream / REA / RSI (2-Klick)</span>
+        </div>
+
+        <div class="side-section-title" style="margin-top:10px;">Hosts (Keychain Secure)</div>
+        <div id="hostList">
+          <div class="host-item active" onclick="selectHost(this, 'MacBook Pro (Local · Online)', 42, 68, 63, 'lava')">
+            <div>
+              <div style="font-weight:700;">💻 MacBook Pro</div>
+              <div style="font-size:10px;color:#38bdf8;">Local · Online</div>
+            </div>
+            <span class="dot-online"></span>
+          </div>
+          <div class="host-item" onclick="selectHost(this, 'NALA-cORe (192 Threads)', 48, 72, 63, 'aurora')">
+            <div>
+              <div style="font-weight:700;">🖥️ NALA-cORe</div>
+              <div style="font-size:10px;color:#64748b;">Keychain · Node-01</div>
+            </div>
+            <span class="dot-online"></span>
+          </div>
+          <div class="host-item" onclick="selectHost(this, 'NALA-bRaiN (Dual Blackwell)', 44, 56, 65, 'alpine')">
+            <div>
+              <div style="font-weight:700;">🧠 NALA-bRaiN</div>
+              <div style="font-size:10px;color:#64748b;">Keychain · Node-02</div>
+            </div>
+            <span class="dot-online"></span>
+          </div>
+          <div class="host-item" onclick="selectHost(this, 'NALA-WorKeR1 (AMD 8060S)', 35, 69, 64, 'lava')">
+            <div>
+              <div style="font-weight:700;">⚡ NALA-WorKeR1</div>
+              <div style="font-size:10px;color:#64748b;">Keychain · Node-03</div>
+            </div>
+            <span class="dot-online"></span>
+          </div>
+          <div class="host-item" onclick="selectHost(this, 'Proxmox VE (ECC ZFS)', 28, 35, 69, 'emerald')">
+            <div>
+              <div style="font-weight:700;">🗄️ Proxmox</div>
+              <div style="font-size:10px;color:#64748b;">Keychain · Node-04</div>
+            </div>
+            <span class="dot-online"></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid rgba(255,255,255,0.08);padding-top:10px;font-size:11px;">
+        <div style="display:flex;align-items:center;gap:6px;color:#10b981;font-weight:700;">
+          <span class="dot-online"></span><span>NALA-OS &amp; macOS</span>
+        </div>
+        <div style="color:#64748b;font-size:10px;margin-top:2px;">Local · Remote · Keychain Secure</div>
+      </div>
+    </aside>
+
+    <!-- RIGHT WORKSPACE -->
+    <main class="workspace">
+
+      <!-- TOP HEADER (Exact match to Images 1, 2 & 3) -->
+      <div class="ws-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <h1 id="mainHeaderTitle" style="margin:0;font-size:22px;font-weight:900;letter-spacing:-0.02em;color:#fff;">
+              NALA-HWSensors <span style="color:#38bdf8;font-weight:400;">v2.6</span>
+            </h1>
+            <span id="hostBadge" style="background:rgba(56,189,248,0.14);border:1px solid rgba(56,189,248,0.4);color:#7dd3fc;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;">
+              MacBook Pro · 192 Cluster Threads
+            </span>
+          </div>
+          <div id="mainHeaderSub" style="color:#94a3b8;font-size:11px;letter-spacing:0.04em;margin-top:2px;">
+            LIVE · 3D PERFORMANCE RELIEF · WIDGETS · REMOTE · SCREENSAVER
+          </div>
+        </div>
+
+        <!-- Layout & Palette Switcher Buttons -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+          <div class="pill-group">
+            <button id="layoutBtn-img1" class="pill-tab" onclick="switchPresetLayout('img1')">🏔️ Bild 1 (Alpine)</button>
+            <button id="layoutBtn-img2" class="pill-tab active" onclick="switchPresetLayout('img2')">🌋 Bild 2 (Lava)</button>
+            <button id="layoutBtn-img3" class="pill-tab" onclick="switchPresetLayout('img3')">🌌 Bild 3 (Aurora)</button>
+            <button id="layoutBtn-dream" class="pill-tab" style="color:#fbbf24;" onclick="switchPresetLayout('dream')">🌙 2-Klick RSI</button>
+          </div>
+
+          <div class="pill-group">
+            <button id="palBtn-himalaya" class="pill-tab" onclick="setPalette('himalaya')" title="Grün (Wald) → Feldbraun → Graufels → Gletscher-Schnee">🏔️ Himalaya</button>
+            <button id="palBtn-snowpeaks" class="pill-tab" onclick="setPalette('snowpeaks')" title="Schneebedeckte Hochalpen & Matterhorn">❄️ Schnee-Gipfel</button>
+            <button id="palBtn-forest" class="pill-tab" onclick="setPalette('forest')" title="Grüner Tannenwald mit 3D-Bäumen & Schneespitzen">🌲 Tannenwald</button>
+            <button id="palBtn-hyperlava" class="pill-tab" onclick="setPalette('hyperlava')" title="Krakatau Hyper-Magma mit Lava-Flüssen & Glut-Funken">🌋 Hyper-Magma</button>
+            <button id="palBtn-lava" class="pill-tab active" onclick="setPalette('lava')">Lava</button>
+            <button id="palBtn-aurora" class="pill-tab" onclick="setPalette('aurora')">NALA Aurora</button>
+            <button id="palBtn-alpine" class="pill-tab" onclick="setPalette('alpine')">Alpine Gold</button>
+            <button id="palBtn-emerald" class="pill-tab" onclick="setPalette('emerald')">Emerald</button>
+            <button id="palBtn-ice" class="pill-tab" onclick="setPalette('ice')">Ice</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           TOP 8-CARD NEON RADIAL GAUGE + MINI HISTOGRAM STRIP
+           (Exact match to Images 2 & 3: Circular Ring + Mini Spectrum Bars!)
+           ================================================================= -->
+      <div id="top8Strip" class="top-gauge-grid">
+
+        <!-- CARD 1: CPU (Cyan Ring + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>⚙️ CPU</span><span>›</span></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#1e293b" stroke-width="5" stroke-dasharray="162 220" stroke-linecap="round" />
+              <circle id="ringCpu" cx="40" cy="40" r="34.5" fill="none" stroke="#38bdf8" stroke-width="5" stroke-dasharray="75 220" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #38bdf8);" />
+            </svg>
+            <div class="ring-center-lbl">
+              <span id="valCpuTop" class="ring-val">42%</span>
+              <span class="ring-sub">192 Threads</span>
+            </div>
+          </div>
+          <canvas id="histTopCpu" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot">2.52 GHz</div>
+        </div>
+
+        <!-- CARD 2: GPU (Purple Ring + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>🎮 GPU</span><span>›</span></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#1e293b" stroke-width="5" stroke-dasharray="162 220" stroke-linecap="round" />
+              <circle id="ringGpu" cx="40" cy="40" r="34.5" fill="none" stroke="#a855f7" stroke-width="5" stroke-dasharray="112 220" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #a855f7);" />
+            </svg>
+            <div class="ring-center-lbl">
+              <span id="valGpuTop" class="ring-val">68%</span>
+              <span class="ring-sub">RTX / Metal</span>
+            </div>
+          </div>
+          <canvas id="histTopGpu" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot">2130 MHz</div>
+        </div>
+
+        <!-- CARD 3: MEMORY (Amber/Green Ring + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>📟 Memory</span><span>›</span></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#1e293b" stroke-width="5" stroke-dasharray="162 220" stroke-linecap="round" />
+              <circle id="ringRam" cx="40" cy="40" r="34.5" fill="none" stroke="#f59e0b" stroke-width="5" stroke-dasharray="104 220" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #f59e0b);" />
+            </svg>
+            <div class="ring-center-lbl">
+              <span id="valRamTop" class="ring-val">63%</span>
+              <span class="ring-sub">81.2 / 128 GB</span>
+            </div>
+          </div>
+          <canvas id="histTopRam" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot">ECC / Unified</div>
+        </div>
+
+        <!-- CARD 4: DISK (Emerald/Cyan Ring + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>💾 Disk</span><span>›</span></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#1e293b" stroke-width="5" stroke-dasharray="162 220" stroke-linecap="round" />
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#10b981" stroke-width="5" stroke-dasharray="52 220" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #10b981);" />
+            </svg>
+            <div class="ring-center-lbl">
+              <span class="ring-val">28%</span>
+              <span class="ring-sub">1.2 / 4.0 TB</span>
+            </div>
+          </div>
+          <canvas id="histTopDisk" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot" style="color:#34d399;">↓125 ↑98 MB/s</div>
+        </div>
+
+        <!-- CARD 5: NETWORK (Up/Down Arrows + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>🌐 Network</span><span>›</span></div>
+          <div style="margin:auto 0;padding:4px 2px;font-family:ui-monospace,monospace;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:#38bdf8;">
+              <span>↑</span><span>1.4 GB/s</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:#60a5fa;margin-top:4px;">
+              <span>↓</span><span>280 MB/s</span>
+            </div>
+          </div>
+          <canvas id="histTopNet" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot">10GbE · Tailscale</div>
+        </div>
+
+        <!-- CARD 6: THERMAL (Orange Ring + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>🌡️ Thermal</span><span>›</span></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#1e293b" stroke-width="5" stroke-dasharray="162 220" stroke-linecap="round" />
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#f97316" stroke-width="5" stroke-dasharray="94 220" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #f97316);" />
+            </svg>
+            <div class="ring-center-lbl">
+              <span id="valTempTop" class="ring-val">56°C</span>
+              <span class="ring-sub">CPU Package</span>
+            </div>
+          </div>
+          <canvas id="histTopTemp" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot">Max 78°C</div>
+        </div>
+
+        <!-- CARD 7: FANS & POWER (Cyan Ring / Lightning + Histogram) -->
+        <div class="gauge-card">
+          <div class="gauge-card-hdr"><span>🌀 Fans · Power</span><span>›</span></div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#1e293b" stroke-width="5" stroke-dasharray="162 220" stroke-linecap="round" />
+              <circle cx="40" cy="40" r="34.5" fill="none" stroke="#06b6d4" stroke-width="5" stroke-dasharray="88 220" stroke-linecap="round" style="filter:drop-shadow(0 0 6px #06b6d4);" />
+            </svg>
+            <div class="ring-center-lbl">
+              <span id="valFanTop" class="ring-val" style="font-size:13.5px;">1280</span>
+              <span class="ring-sub">RPM · 212 W</span>
+            </div>
+          </div>
+          <canvas id="histTopPower" class="mini-hist-canvas" width="140" height="24"></canvas>
+          <div class="gauge-foot">🔋 Bat 78% (6:45)</div>
+        </div>
+
+        <!-- CARD 8: REAL NEON NALA CAT STATUS CARD (Top-Right of Images 2 & 3!) -->
+        <div class="gauge-card" style="padding:3px;background:linear-gradient(135deg,#00f0ff 0%,#a855f7 55%,#f97316 100%);">
+          <div style="background:#070b14;border-radius:10px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:6px;text-align:center;">
+            <img src="data:image/jpeg;base64,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" alt="NALA" style="width:100%;height:78px;object-fit:cover;border-radius:7px;" />
+            <div>
+              <div style="font-weight:900;font-size:14px;color:#fff;letter-spacing:0.05em;">NALA</div>
+              <div style="font-size:10px;color:#34d399;font-weight:700;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span>All Systems Online</span><span class="dot-online"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =================================================================
+           CENTER HERO: TRUE 3D MOUNTAIN PERFORMANCE RELIEF (60 FPS)
+           (With Y-Axis 0..100%, X-Axis -60s..Now, Glowing Ridges & Peaks,
+           Laser Thread Callout, Right Sliders & Bottom Playback Controls!)
+           ================================================================= -->
+      <div id="heroReliefSection" class="relief-container">
+        <!-- Relief Top Bar -->
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:14px;font-weight:800;color:#fff;">CPU · 192 Threads · 60 Sekunden</span>
+            <span style="background:#2563eb;color:#fff;font-weight:700;font-size:10.5px;padding:2px 9px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;">
+              <span style="width:6px;height:6px;border-radius:50%;background:#fff;"></span>Live
+            </span>
+          </div>
+
+          <!-- Preset Pills from Image 1 & Image 2 + v2.7 Biomes -->
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            <div class="pill-group">
+              <button class="pill-tab" onclick="setPalette('himalaya')" title="Grün → Feldbraun → Graufels → Gletscher-Schnee">🏔️ Himalaya</button>
+              <button class="pill-tab" onclick="setPalette('snowpeaks')" title="Schneebedeckte Gipfel">❄️ Schnee</button>
+              <button class="pill-tab" onclick="setPalette('forest')" title="Grüner Tannenwald & Gipfel">🌲 Wald</button>
+              <button class="pill-tab" onclick="setPalette('hyperlava')" title="Hyper-Magma & Lava-Flüsse">🌋 Hyper-Magma</button>
+              <button class="pill-tab" onclick="setPalette('alpine')">🏔️ Alpine</button>
+              <button class="pill-tab" onclick="toggleWireframeOnly()">🕸️ Wireframe</button>
+              <button class="pill-tab" onclick="setPalette('lava')">🟧 Lava</button>
+              <button class="pill-tab" onclick="setPalette('aurora')">🌌 Aurora</button>
+            </div>
+            <button id="btnOrbitTop" onclick="toggleOrbit360()" style="background:#131c2e;border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;padding:5px 10px;border-radius:7px;font-weight:700;cursor:pointer;" title="Langsame 360°-Planeten-Rotation um die Berglandschaft">
+              🪐 360° Orbit
+            </button>
+            <button onclick="toggleNativeFullscreen()" style="background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.5);color:#7dd3fc;padding:5px 10px;border-radius:7px;font-weight:700;cursor:pointer;">
+              ⛶ Vollbild
+            </button>
+            <button onclick="openScreensaver(true)" style="background:rgba(16,185,129,0.22);border:1px solid rgba(16,185,129,0.55);color:#6ee7b7;padding:5px 11px;border-radius:7px;font-weight:700;cursor:pointer;">
+              🖥️ Screensaver
+            </button>
+          </div>
+        </div>
+
+        <div class="relief-split">
+          <!-- 3D Mountain Viewport + Clean Bottom Control Strip (Matches Image 2) -->
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="relief-viewport">
+              <canvas id="relief3dCanvas"></canvas>
+            </div>
+            <!-- Bottom Playback Bar below Viewport (Exact match to Image 2: ⏸ | Live | Pause | Reset ... Kamera zurücksetzen | Perspektive | ⛶) -->
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;">
+              <div class="pill-group" style="background:rgba(10,14,23,0.88);backdrop-filter:blur(10px);">
+                <button class="pill-tab" onclick="toggleReliefPause()">⏸</button>
+                <button id="btnLiveState" class="pill-tab active" onclick="setReliefLive(true)">Live</button>
+                <button id="btnPauseState" class="pill-tab" onclick="setReliefLive(false)">Pause</button>
+                <button class="pill-tab" onclick="triggerMountainSpike()">⚡ Spike</button>
+                <button id="btnOrbitBottom" class="pill-tab" onclick="toggleOrbit360()" style="color:#7dd3fc;">🪐 360° Rotation</button>
+              </div>
+
+              <div class="pill-group" style="background:rgba(10,14,23,0.88);backdrop-filter:blur(10px);">
+                <button class="pill-tab" onclick="resetCameraAndOrbit()">📷 Kamera zurücksetzen</button>
+                <button class="pill-tab" onclick="rotatePerspective()">📐 Perspektive</button>
+                <button class="pill-tab" onclick="toggleNativeFullscreen()" title="Echtes macOS Vollbild">⛶ Vollbild</button>
+                <button class="pill-tab" onclick="openScreensaver(true)" style="color:#6ee7b7;">🖥️ Screensaver</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 3D Inspector Sidebar (Exact match to Images 2 & 3) -->
+          <div class="relief-inspector">
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px;">
+                <strong style="color:#fff;font-size:12px;">3D Ansicht · CPU Threads</strong>
+                <span id="lblThreadCount" style="color:#38bdf8;font-family:monospace;font-size:11px;">192 Ch</span>
+              </div>
+
+              <div class="insp-row">
+                <div class="insp-lbl"><span>360° Orbit-Speed</span><span id="lblOrbitSpeed" style="font-family:monospace;color:#38bdf8;">1.0x</span></div>
+                <input type="range" min="2" max="25" value="10" oninput="orbitSpeed=this.value/10;document.getElementById('lblOrbitSpeed').textContent=orbitSpeed.toFixed(1)+'x';" style="width:100%;accent-color:#38bdf8;" />
+              </div>
+
+              <div class="insp-row">
+                <div class="insp-lbl"><span>Höhe (Auslastung)</span><span id="lblHeightPct" style="font-family:monospace;color:#38bdf8;">100%</span></div>
+                <input type="range" min="50" max="160" value="105" oninput="heightGain=this.value/100;document.getElementById('lblHeightPct').textContent=this.value+'%';" style="width:100%;accent-color:#38bdf8;" />
+              </div>
+
+              <div class="insp-row">
+                <div class="insp-lbl"><span>Tiefe (Threads)</span><span style="font-family:monospace;color:#38bdf8;">192</span></div>
+                <input type="range" min="64" max="192" value="192" style="width:100%;accent-color:#38bdf8;" />
+              </div>
+
+              <div class="insp-row">
+                <div class="insp-lbl"><span>Glättung</span><span id="lblSmoothVal" style="font-family:monospace;color:#38bdf8;">0.4</span></div>
+                <input type="range" min="1" max="8" value="4" oninput="smoothFactor=this.value/10;document.getElementById('lblSmoothVal').textContent=smoothFactor.toFixed(1);" style="width:100%;accent-color:#38bdf8;" />
+              </div>
+
+              <div class="insp-row">
+                <div class="insp-lbl"><span>Biom / Farbe</span></div>
+                <select id="inspectorPaletteSelect" onchange="setPalette(this.value)" style="background:#161f30;border:1px solid rgba(255,255,255,0.16);color:#fff;padding:5px 8px;border-radius:6px;font-size:11.5px;">
+                  <option value="himalaya">🏔️ Himalaya (Grün → Braun → Fels → Schnee)</option>
+                  <option value="snowpeaks">❄️ Matterhorn Schnee-Gipfel</option>
+                  <option value="forest">🌲 Tannenwald &amp; Alpengipfel</option>
+                  <option value="hyperlava">🌋 Hyper-Magma (Lava-Flüsse &amp; Glut)</option>
+                  <option value="lava">🟧 Lava (Bild 2)</option>
+                  <option value="aurora">🌌 NALA Aurora (Bild 3)</option>
+                  <option value="alpine">🏔️ Alpine Gold (Bild 1)</option>
+                  <option value="emerald">🟢 Emerald Matrix</option>
+                  <option value="ice">❄️ Arctic Ice</option>
+                </select>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:6px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.08);">
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                  <span>360° Planeten-Orbit</span>
+                  <input id="chkOrbit360" type="checkbox" class="ios-toggle" onchange="setOrbit360(this.checked)" />
+                </label>
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                  <span>Gitterlinien (3D Mesh)</span>
+                  <input type="checkbox" class="ios-toggle" checked onchange="showGrid=this.checked" />
+                </label>
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                  <span>Peaks markieren</span>
+                  <input type="checkbox" class="ios-toggle" checked onchange="showPeaks=this.checked" />
+                </label>
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                  <span>Höhenlinien &amp; Callout</span>
+                  <input type="checkbox" class="ios-toggle" checked onchange="showCallout=this.checked" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           BOTTOM SECTION A (BILD 2): 7 DETAILED RING + GRAPH CARDS
+           (Exact match to Image 2 bottom row!)
+           ================================================================= -->
+      <div id="bottomSectionImg2" class="bottom-grid-7">
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>⚙️ CPU Threads</span><span>›</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+            <div style="width:46px;height:46px;border-radius:10px;background:radial-gradient(circle,#f9731644,#090d16);border:1px solid #f9731688;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fb923c;">3D</div>
+            <div><div style="font-size:18px;font-weight:900;color:#fff;">42%</div><div style="font-size:10px;color:#94a3b8;">Avg Load</div></div>
+          </div>
+          <canvas id="botChart1" width="160" height="28" style="width:100%;height:28px;"></canvas>
+          <div style="text-align:right;font-size:9.5px;color:#94a3b8;font-family:monospace;">192 / 192</div>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>🎮 GPU Compute</span><span>›</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+            <div style="width:46px;height:46px;border-radius:50%;border:4px solid #38bdf8;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;box-shadow:0 0 10px #38bdf866;">68%</div>
+            <div style="font-size:10.5px;color:#cbd5e1;"><div>RTX 4000</div><div style="color:#94a3b8;">2130 MHz</div><div style="color:#38bdf8;">12.1 / 24 GB</div></div>
+          </div>
+          <canvas id="botChart2" width="160" height="28" style="width:100%;height:28px;"></canvas>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>📟 Memory</span><span>›</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+            <div style="width:46px;height:46px;border-radius:50%;border:4px solid #f59e0b;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;box-shadow:0 0 10px #f59e0b66;">63%</div>
+            <div style="font-size:10.5px;color:#cbd5e1;"><div>81.2 / 128 GB</div><div style="color:#94a3b8;">Swap 1.1 GB</div></div>
+          </div>
+          <canvas id="botChart3" width="160" height="28" style="width:100%;height:28px;"></canvas>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>💾 Disk &amp; I/O</span><span>›</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+            <div style="width:46px;height:46px;border-radius:50%;border:4px solid #06b6d4;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;">28%</div>
+            <div style="font-size:10.5px;color:#cbd5e1;"><div>1.2 / 4.0 TB</div><div style="color:#34d399;">R: 125 MB/s</div><div style="color:#38bdf8;">W: 98 MB/s</div></div>
+          </div>
+          <canvas id="botChart4" width="160" height="28" style="width:100%;height:28px;"></canvas>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>🌐 Network</span><span>›</span></div>
+          <div style="margin:6px 0;font-family:monospace;">
+            <div style="color:#38bdf8;font-weight:800;font-size:13px;">↑ 1.4 GB/s <span style="font-size:9.5px;color:#94a3b8;">Down</span></div>
+            <div style="color:#60a5fa;font-weight:800;font-size:13px;margin-top:3px;">↓ 280 MB/s <span style="font-size:9.5px;color:#94a3b8;">Up</span></div>
+          </div>
+          <canvas id="botChart5" width="160" height="28" style="width:100%;height:28px;"></canvas>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>🌡️ Thermal</span><span>›</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+            <div style="width:46px;height:46px;border-radius:50%;border:4px solid #f97316;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;box-shadow:0 0 10px #f9731666;">56°C</div>
+            <div style="font-size:10.5px;color:#cbd5e1;"><div>CPU Package</div><div style="color:#fdba74;">Max 78°C</div></div>
+          </div>
+          <canvas id="botChart6" width="160" height="28" style="width:100%;height:28px;"></canvas>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;color:#cbd5e1;font-weight:700;"><span>⚡ Power</span><span>›</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin:8px 0;">
+            <div style="font-size:24px;color:#facc15;">⚡</div>
+            <div><div style="font-size:17px;font-weight:900;color:#fff;">212 W</div><div style="font-size:10px;color:#94a3b8;">System Total</div></div>
+          </div>
+          <canvas id="botChart7" width="160" height="28" style="width:100%;height:28px;"></canvas>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           BOTTOM SECTION B (BILD 3): 5 VISUAL SHOWCASE CARDS
+           (Exact match to Image 3: Mini Gauges, Screensaver 22:24,
+           4 Theme Previews, Cluster Network Topology SVG, Icon & Menu!)
+           ================================================================= -->
+      <div id="bottomSectionImg3" class="bottom-grid-5 hidden">
+        <!-- 1. Widget Library -->
+        <div class="b-card">
+          <div style="font-weight:700;color:#fff;margin-bottom:6px;">🧩 Widget Library</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center;margin-bottom:8px;">
+            <div style="background:#090d16;padding:6px 2px;border-radius:8px;border:1px solid #38bdf855;"><div style="font-size:9px;color:#94a3b8;">CPU</div><strong style="color:#38bdf8;">43%</strong></div>
+            <div style="background:#090d16;padding:6px 2px;border-radius:8px;border:1px solid #a855f755;"><div style="font-size:9px;color:#94a3b8;">GPU</div><strong style="color:#c084fc;">68%</strong></div>
+            <div style="background:#090d16;padding:6px 2px;border-radius:8px;border:1px solid #f59e0b55;"><div style="font-size:9px;color:#94a3b8;">RAM</div><strong style="color:#fbbf24;">59%</strong></div>
+            <div style="background:#090d16;padding:6px 2px;border-radius:8px;border:1px solid #10b98155;"><div style="font-size:9px;color:#94a3b8;">DISK</div><strong style="color:#34d399;">34%</strong></div>
+          </div>
+          <div style="text-align:center;font-weight:700;color:#e2e8f0;font-size:11.5px;">Frei anordbare &amp; skalierbare Widgets</div>
+          <div style="text-align:center;color:#94a3b8;font-size:10px;">60+ Designs (MacPulse, Sci-Fi, NALA)</div>
+        </div>
+
+        <!-- 2. Screensaver 22:24 -->
+        <div class="b-card" style="cursor:pointer;" onclick="openScreensaver()">
+          <div style="font-weight:700;color:#fff;margin-bottom:6px;">🖥️ Screensaver</div>
+          <div style="height:64px;border-radius:8px;background:radial-gradient(circle at 50% 70%,#ec489955,#38bdf833,#050811);border:1px solid rgba(56,189,248,0.4);position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;margin-bottom:6px;">
+            <span style="position:absolute;top:5px;right:8px;font-family:monospace;font-weight:800;font-size:14px;color:#fff;">22:24</span>
+            <div style="width:100%;height:26px;background:linear-gradient(90deg,#06b6d4,#a855f7,#f97316,#10b981);clip-path:polygon(0 100%,10% 55%,22% 72%,36% 25%,50% 60%,65% 15%,80% 58%,92% 35%,100% 100%);"></div>
+          </div>
+          <div style="text-align:center;font-weight:700;color:#e2e8f0;font-size:11.5px;">3D Performance Relief Screensaver</div>
+          <div style="text-align:center;color:#94a3b8;font-size:10px;">Einzeln oder auf allen Displays</div>
+        </div>
+
+        <!-- 3. Auto Theme -->
+        <div class="b-card">
+          <div style="font-weight:700;color:#fff;margin-bottom:6px;">🎨 Auto Theme</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:6px;">
+            <div onclick="setPalette('aurora')" style="cursor:pointer;height:58px;border-radius:6px;background:linear-gradient(180deg,#090d16,#7e22ce,#06b6d4);border:1px solid #38bdf8;display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:9px;font-weight:700;">Aurora</div>
+            <div onclick="setPalette('lava')" style="cursor:pointer;height:58px;border-radius:6px;background:linear-gradient(180deg,#090d16,#dc2626,#f97316);border:1px solid #ef444466;display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:9px;font-weight:700;">Crimson</div>
+            <div onclick="setPalette('emerald')" style="cursor:pointer;height:58px;border-radius:6px;background:linear-gradient(180deg,#090d16,#047857,#10b981);border:1px solid #10b98166;display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:9px;font-weight:700;">Emerald</div>
+            <div onclick="setPalette('alpine')" style="cursor:pointer;height:58px;border-radius:6px;background:linear-gradient(180deg,#090d16,#b45309,#facc15);border:1px solid #facc1566;display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-size:9px;font-weight:700;">Gold</div>
+          </div>
+          <div style="text-align:center;font-weight:700;color:#e2e8f0;font-size:11.5px;">Mehrere Farbthemen</div>
+          <div style="text-align:center;color:#94a3b8;font-size:10px;">Automatisch, Dark/Light, NALA Style</div>
+        </div>
+
+        <!-- 4. Remote Cluster Topology -->
+        <div class="b-card">
+          <div style="font-weight:700;color:#fff;margin-bottom:4px;">🌐 Remote Cluster</div>
+          <svg viewBox="0 0 220 68" style="width:100%;height:64px;display:block;margin-bottom:4px;">
+            <line x1="110" y1="34" x2="36" y2="18" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2" />
+            <line x1="110" y1="34" x2="184" y2="18" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2" />
+            <line x1="110" y1="34" x2="46" y2="56" stroke="#10b981" stroke-width="1.5" />
+            <line x1="110" y1="34" x2="174" y2="56" stroke="#10b981" stroke-width="1.5" />
+            <circle cx="110" cy="34" r="18" fill="#0c192c" stroke="#38bdf8" stroke-width="2" />
+            <text x="110" y="32" text-anchor="middle" fill="#fff" font-size="7.5" font-weight="bold">NALA</text>
+            <text x="110" y="41" text-anchor="middle" fill="#38bdf8" font-size="7">cORe</text>
+            <circle cx="36" cy="18" r="9" fill="#111827" stroke="#38bdf8" />
+            <text x="36" y="21" text-anchor="middle" fill="#cbd5e1" font-size="6">Mac</text>
+            <circle cx="184" cy="18" r="9" fill="#111827" stroke="#38bdf8" />
+            <text x="184" y="21" text-anchor="middle" fill="#cbd5e1" font-size="6">WorkR</text>
+            <circle cx="46" cy="56" r="9" fill="#111827" stroke="#10b981" />
+            <text x="46" y="59" text-anchor="middle" fill="#cbd5e1" font-size="6">bRaiN</text>
+            <circle cx="174" cy="56" r="9" fill="#111827" stroke="#10b981" />
+            <text x="174" y="59" text-anchor="middle" fill="#cbd5e1" font-size="6">PVE</text>
+          </svg>
+          <div style="text-align:center;font-weight:700;color:#e2e8f0;font-size:11.5px;">Multi-Host Monitoring</div>
+          <div style="text-align:center;color:#94a3b8;font-size:10px;">Sicher über Keychain / Tailscale / SSH</div>
+        </div>
+
+        <!-- 5. Official Icon & macOS Menu -->
+        <div class="b-card" style="cursor:pointer;" onclick="toggleSysPopover()">
+          <div style="font-weight:700;color:#fff;margin-bottom:6px;">🍎 Icon &amp; Menü</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <img src="data:image/jpeg;base64,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" alt="NALA-HWSensors Icon" style="width:58px;height:58px;border-radius:12px;border:1px solid #38bdf888;" />
+            <div style="flex:1;background:#080c14;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:4px 7px;font-size:9.5px;font-family:monospace;">
+              <div style="display:flex;justify-content:space-between;"><span>CPU</span><span style="color:#38bdf8;">48%</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>GPU</span><span style="color:#c084fc;">72%</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>RAM</span><span style="color:#fbbf24;">63%</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Temp</span><span style="color:#f97316;">56°C</span></div>
+            </div>
+          </div>
+          <div style="text-align:center;font-weight:700;color:#e2e8f0;font-size:11.5px;">macOS Menüleisten-App &amp; Dock Icon</div>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           BOTTOM SECTION C (BILD 1): 4 BIG DONUT CARDS + 192-CHANNEL MATRIX
+           (Exact match to Image 1: 35293e36.jpg!)
+           ================================================================= -->
+      <div id="bottomSectionImg1" class="space-y-3 hidden">
+        <div class="bottom-grid-4">
+          <div class="b-card" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:68px;height:68px;border-radius:50%;border:6px solid #10b981;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 14px #10b98155;">
+              <strong style="font-size:14px;color:#fff;">44.0%</strong><span style="font-size:8px;color:#94a3b8;">CPU LOAD</span>
+            </div>
+            <div style="flex:1;font-size:11px;font-family:monospace;">
+              <div style="font-weight:800;color:#fff;margin-bottom:3px;">CPU · Cores &amp; Threads</div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Threads</span><span style="color:#fff;">192</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Peak</span><span style="color:#fff;">91.6 %</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Temp</span><span style="color:#34d399;">57.6°C</span></div>
+            </div>
+          </div>
+
+          <div class="b-card" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:68px;height:68px;border-radius:50%;border:6px solid #06b6d4;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 14px #06b6d455;">
+              <strong style="font-size:14px;color:#fff;">35.0%</strong><span style="font-size:8px;color:#94a3b8;">GPU LOAD</span>
+            </div>
+            <div style="flex:1;font-size:11px;font-family:monospace;">
+              <div style="font-weight:800;color:#fff;margin-bottom:3px;">GPU · Compute Engines</div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Engines</span><span style="color:#fff;">24</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Frame</span><span style="color:#fff;">7.2 ms</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Source</span><span style="color:#38bdf8;">Metal</span></div>
+            </div>
+          </div>
+
+          <div class="b-card" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:68px;height:68px;border-radius:50%;border:6px solid #f59e0b;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 14px #f59e0b55;">
+              <strong style="font-size:14px;color:#fff;">64.9%</strong><span style="font-size:8px;color:#94a3b8;">RAM USED</span>
+            </div>
+            <div style="flex:1;font-size:11px;font-family:monospace;">
+              <div style="font-weight:800;color:#fff;margin-bottom:3px;">Memory · Kapazität</div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Used</span><span style="color:#fff;">83.1 GB</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Total</span><span style="color:#fff;">128.0 GB</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Swap</span><span style="color:#fbbf24;">1.1 GB</span></div>
+            </div>
+          </div>
+
+          <div class="b-card" style="display:flex;align-items:center;gap:12px;">
+            <div style="width:68px;height:68px;border-radius:50%;border:6px solid #2dd4bf;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 14px #2dd4bf55;">
+              <strong style="font-size:14px;color:#fff;">18.9%</strong><span style="font-size:8px;color:#94a3b8;">IO BUSY</span>
+            </div>
+            <div style="flex:1;font-size:11px;font-family:monospace;">
+              <div style="font-weight:800;color:#fff;margin-bottom:3px;">Disk · NVMe &amp; IO</div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Read</span><span style="color:#fff;">200 MB/s</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Write</span><span style="color:#fff;">90 MB/s</span></div>
+              <div style="display:flex;justify-content:space-between;color:#94a3b8;"><span>Devices</span><span style="color:#2dd4bf;">12</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="b-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-weight:700;">
+            <span>🟩 CPU Thread Matrix · 192 Channels (Eine Kachel pro logischem Thread)</span>
+            <span style="font-family:monospace;color:#94a3b8;">0–47 · 48–95 · 96–143 · 144–191</span>
+          </div>
+          <div id="matrix192Grid" class="matrix-192"></div>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           BOTTOM SECTION D: DREAM / REA / RSI 2-KLICK COCKPIT & IDE PROMPTS
+           ================================================================= -->
+      <div id="bottomSectionDream" class="b-card hidden" style="border-color:rgba(251,191,36,0.45);">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+          <div>
+            <div style="color:#fbbf24;font-family:monospace;font-size:11px;font-weight:700;">
+              🌙 NALA DREAM-PHASE · SOFTWARE-PERLEN · REA &amp; RSI EVOLUTION ENGINE (5 RUNDEN TRIPLE-COUNCIL)
+            </div>
+            <strong style="font-size:16px;color:#fff;">Lösungsmatrix inkl. Delta-Übersichts-Matrix (Δ Performance / Δ Features / Δ Sicherheit)</strong>
+          </div>
+          <button onclick="openTwoClickModal('v2.6 Real-Time 3D Mountain Relief (Bild 1–3) + Native macOS App')" style="background:#10b981;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-weight:800;cursor:pointer;">
+            🚀 1. Klick: Installieren / Umsetzen
+          </button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <button onclick="buildIdePrompt('OpenAI Codex')" style="background:#2563eb;color:#fff;border:none;padding:5px 11px;border-radius:6px;font-weight:700;cursor:pointer;">Prompt für Codex</button>
+          <button onclick="buildIdePrompt('Antigravity')" style="background:#7c3aed;color:#fff;border:none;padding:5px 11px;border-radius:6px;font-weight:700;cursor:pointer;">Prompt für Antigravity</button>
+          <button onclick="buildIdePrompt('ZCode / OpenCode')" style="background:#059669;color:#fff;border:none;padding:5px 11px;border-radius:6px;font-weight:700;cursor:pointer;">Prompt für ZCode / OpenCode</button>
+        </div>
+        <textarea id="idePromptArea" rows="6" readonly style="width:100%;background:#05080f;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#e2e8f0;padding:8px;font-family:monospace;font-size:11px;"></textarea>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- =====================================================================
+       FULLSCREEN 360° ORBIT 3D PERFORMANCE RELIEF SCREENSAVER (v2.7)
+       ===================================================================== -->
+  <div id="screensaverModal" class="hidden" style="position:fixed;inset:0;background:#020409;z-index:600;overflow:hidden;">
+    <!-- Full-Bleed 100vw x 100vh 3D Canvas -->
+    <canvas id="screensaver3dCanvas" style="position:absolute;inset:0;width:100vw;height:100vh;display:block;cursor:grab;"></canvas>
+
+    <!-- Top Floating Translucent HUD Header -->
+    <div style="position:relative;z-index:610;display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:linear-gradient(180deg,rgba(2,4,9,0.88) 0%,rgba(2,4,9,0.35) 70%,transparent 100%);pointer-events:none;">
+      <div style="display:flex;align-items:center;gap:14px;pointer-events:auto;">
+        <img src="data:image/jpeg;base64,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" alt="Icon" style="width:48px;height:48px;border-radius:11px;border:1px solid rgba(56,189,248,0.5);" />
+        <div>
+          <div style="font-size:18px;font-weight:900;color:#fff;display:flex;align-items:center;gap:10px;">
+            <span>NALA-HWSensors v2.7 · 360° 3D Performance Relief Screensaver</span>
+            <span id="saverBiomeBadge" style="font-size:11px;background:rgba(16,185,129,0.22);border:1px solid rgba(16,185,129,0.55);color:#6ee7b7;padding:2px 9px;border-radius:999px;">🏔️ Himalaya</span>
+            <span id="saverOrbitBadge" style="font-size:11px;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;padding:2px 9px;border-radius:999px;font-family:monospace;">🪐 Orbit 0°</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;font-family:monospace;">192 CPU Threads · 60 FPS Echtzeit-3D-Mesh · Langsamer 360°-Planeten-Orbit · Universal macOS (Apple Silicon &amp; Intel)</div>
+        </div>
+      </div>
+      <div id="saverClock" style="font-size:48px;font-weight:900;font-family:monospace;color:#fff;text-shadow:0 0 24px rgba(56,189,248,0.35);">22:55</div>
+    </div>
+
+    <!-- Optional Toast inside Screensaver / Studio -->
+    <div id="saverToast" class="hidden" style="position:fixed;top:86px;left:50%;transform:translateX(-50%);z-index:650;background:rgba(6,78,59,0.95);border:1px solid #34d399;color:#ecfdf5;padding:10px 18px;border-radius:12px;font-weight:700;box-shadow:0 16px 40px rgba(0,0,0,0.75);">
+      ✅ NALA-HWSensors.saver installiert in ~/Library/Screen Savers/ (Universal Binary arm64 + x86_64)
+    </div>
+
+    <!-- Bottom Interactive Glassmorphic Control Dock (Clicking here controls the 3D scene without closing!) -->
+    <div style="position:absolute;bottom:16px;left:24px;right:24px;z-index:610;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:rgba(8,12,21,0.86);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:10px 16px;">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+        <span style="font-size:11px;font-weight:800;color:#94a3b8;margin-right:4px;">BIOM:</span>
+        <button class="pill-tab" onclick="setPalette('himalaya')">🏔️ Himalaya</button>
+        <button class="pill-tab" onclick="setPalette('snowpeaks')">❄️ Schnee-Gipfel</button>
+        <button class="pill-tab" onclick="setPalette('forest')">🌲 Tannenwald</button>
+        <button class="pill-tab" onclick="setPalette('hyperlava')">🌋 Hyper-Magma</button>
+        <button class="pill-tab" onclick="setPalette('aurora')">🌌 Aurora</button>
+        <button class="pill-tab" onclick="setPalette('alpine')">🏔️ Alpine Gold</button>
+        <button class="pill-tab" onclick="setPalette('lava')">🟧 Lava</button>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+        <button id="btnOrbitSaver" onclick="toggleOrbit360()" style="background:rgba(56,189,248,0.22);border:1px solid #38bdf8;color:#fff;padding:5px 11px;border-radius:8px;font-weight:700;cursor:pointer;">
+          🪐 360° Orbit: EIN
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#cbd5e1;">
+          <span>Speed:</span>
+          <input type="range" min="2" max="25" value="10" oninput="orbitSpeed=this.value/10;document.getElementById('lblOrbitSpeed').textContent=orbitSpeed.toFixed(1)+'x';" style="width:76px;accent-color:#38bdf8;" />
+        </div>
+        <button onclick="toggleNativeFullscreen()" style="background:rgba(16,185,129,0.22);border:1px solid #10b981;color:#6ee7b7;padding:5px 12px;border-radius:8px;font-weight:700;cursor:pointer;">
+          ⛶ Echtes Vollbild
+        </button>
+        <button onclick="exportOrInstallScreensaver()" style="background:rgba(168,85,247,0.24);border:1px solid #a855f7;color:#e9d5ff;padding:5px 12px;border-radius:8px;font-weight:700;cursor:pointer;">
+          💾 .saver installieren
+        </button>
+        <button onclick="closeScreensaver()" style="background:rgba(239,68,68,0.24);border:1px solid #ef4444;color:#fecaca;padding:5px 12px;border-radius:8px;font-weight:800;cursor:pointer;">
+          ✕ Beenden (ESC)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MANDATORY 2-CLICK APPROVAL MODAL ("Wollen Sie wirklich?" -> Abbrechen / AUSFÜHREN)
+       ===================================================================== -->
+  <div id="twoClickModal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);z-index:700;display:flex;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#0d1322;border:1px solid #10b981;border-radius:16px;max-width:440px;width:100%;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,0.85);">
+      <div style="font-size:16px;font-weight:900;color:#34d399;margin-bottom:8px;">🛡️ Wollen Sie wirklich? (2-Klick Freigabe)</div>
+      <p id="twoClickText" style="color:#cbd5e1;line-height:1.5;margin-bottom:14px;"></p>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <button onclick="closeTwoClickModal()" style="background:#1e293b;color:#e2e8f0;border:none;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;">Abbrechen</button>
+        <button onclick="confirmTwoClickExecute()" style="background:#10b981;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:900;cursor:pointer;">✅ AUSFÜHREN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       TRUE 3D MOUNTAIN RELIEF SHADER ENGINE (Matches Images 1, 2, and 3!)
+       ===================================================================== -->
+  <script>
+    // =========================================================================
+    // TRUE REAL-TIME 3D WIREFRAME & SHADED MOUNTAIN TERRAIN ENGINE (ROUND 4 MASTER)
+    // Domain-Warped Dendritic 3D Mountain Massifs + Triangulated Wireframe Mesh
+    // NZ=66 depth rows x NX=132 lateral cols = 17,424 3D triangles (Zero static images!)
+    // =========================================================================
+    const NZ = 66;
+    const NX = 132;
+
+    let currentPalette = 'aurora';
+    let isLive = true;
+    let heightGain = 1.06;
+    let smoothFactor = 0.36;
+    let showGrid = true;
+    let showPeaks = true;
+    let showCallout = true;
+    let wireOnly = false;
+    let cameraAngle = 0;      // Horizontal yaw (-55 .. +55)
+    let cameraPitch = 0.0;    // Vertical pitch (-0.12 .. +0.15)
+    let orbitEnabled = false; // v2.7: Slow 360° Planetary / Landscape Orbit
+    let orbitSpeed = 1.0;     // v2.7: Orbit angular speed multiplier
+    let orbitTheta = 0.0;     // v2.7: Current 360° angle in radians (0 .. 2*PI)
+    let liveCoreLoads = null; // v2.7: Real per-core CPU thread loads from macOS Mach / Cluster
+    let isDragging3D = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let phaseTick = 0;
+    let spikeBoost = 0.0;
+    let hoveredPeak = { thread: 104, pct: 87, ghz: '2.63', temp: 68 };
+
+    // Hierarchical 3D Mountain Massifs [cx, cz, rx, rz, height, phase]:
+    // 1 Dominant Central-Right Cathedral Summit (96%) + 2 Secondary Massifs + Cascading Foothills & Valleys
+    // (Matches the exact dramatic skyline composition of Images 2, 3, 4, and 5!)
+    const PYRAMID_PEAKS = [
+      // --- Dominant Central-Right Cathedral Spire & Flanking Ridges (96% Peak!) ---
+      [ 0.08, 0.45, 0.22, 0.24, 95, 1.0],
+      [ 0.01, 0.52, 0.17, 0.19, 76, 2.1],
+      [ 0.16, 0.50, 0.16, 0.19, 78, 0.4],
+      [-0.06, 0.42, 0.16, 0.18, 70, 1.6],
+      [ 0.06, 0.65, 0.15, 0.16, 52, 3.2],
+      [ 0.18, 0.66, 0.14, 0.15, 46, 2.5],
+
+      // --- Left-Center Golden / Amber Secondary Massif (74% Peak + Cascading Spurs) ---
+      [-0.27, 0.49, 0.20, 0.22, 74, 2.8],
+      [-0.36, 0.54, 0.16, 0.18, 62, 0.7],
+      [-0.20, 0.62, 0.15, 0.16, 50, 1.4],
+      [-0.32, 0.37, 0.16, 0.17, 54, 3.0],
+      [-0.14, 0.75, 0.12, 0.13, 32, 0.9],
+
+      // --- Far-Left Crimson Foothills & Low Ridges (28-48%) ---
+      [-0.52, 0.47, 0.17, 0.19, 48, 1.2],
+      [-0.64, 0.54, 0.15, 0.17, 36, 2.4],
+      [-0.76, 0.44, 0.15, 0.16, 28, 0.3],
+      [-0.46, 0.66, 0.14, 0.15, 30, 3.6],
+
+      // --- Right-Center Magenta / Violet Mid-Ground & Foreground Spurs (42-66%) ---
+      [ 0.29, 0.56, 0.17, 0.18, 64, 1.5],
+      [ 0.37, 0.66, 0.15, 0.16, 52, 0.8],
+      [ 0.26, 0.75, 0.12, 0.13, 34, 2.9],
+      [ 0.45, 0.58, 0.15, 0.16, 46, 2.0],
+
+      // --- Back-Right Tall Cyan / Emerald / Blue Massif (84% Peak like Top-Right of Image 2 & 5!) ---
+      [ 0.56, 0.34, 0.22, 0.22, 84, 2.1],
+      [ 0.46, 0.32, 0.18, 0.19, 72, 0.6],
+      [ 0.67, 0.38, 0.18, 0.19, 68, 1.3],
+      [ 0.62, 0.52, 0.16, 0.17, 50, 3.4],
+      [ 0.77, 0.46, 0.16, 0.17, 44, 0.5],
+      [ 0.84, 0.58, 0.14, 0.15, 28, 2.7],
+
+      // --- Deep Horizon Atmospheric Range (nz: 0.14 .. 0.24) ---
+      [-0.56, 0.19, 0.22, 0.15, 38, 0.9],
+      [-0.18, 0.17, 0.24, 0.15, 48, 2.0],
+      [ 0.14, 0.16, 0.25, 0.15, 54, 1.4],
+      [ 0.80, 0.22, 0.20, 0.15, 42, 0.5]
+    ];
+
+    const heightField = Array.from({ length: NZ }, () => new Float32Array(NX));
+
+    function hash2D(ix, iz) {
+      const n = Math.sin(ix * 127.1 + iz * 311.7) * 43758.5453123;
+      return n - Math.floor(n);
+    }
+
+    // Domain-Warped Dendritic 3D Mountain & Ridged Multifractal Generator (Zero straight "teepee" cones!)
+    function sampleMountainHeight(z, x, tick) {
+      const nx = (x / (NX - 1)) * 2 - 1; // -1.0 (left) .. +1.0 (right)
+      const nz = z / (NZ - 1);           // 0.0 (back horizon) .. 1.0 (front telemetry floor)
+
+      const t = tick * 0.10;
+
+      // 1. Domain Warping: curve the spatial coordinates so mountain ridges wind organically like real rock chains!
+      const warpX = nx + 0.045 * Math.sin(nz * 6.5 + nx * 3.2 - t * 0.4) + 0.022 * Math.cos(nz * 13.0 - nx * 7.5);
+      const warpZ = nz + 0.040 * Math.cos(nx * 5.8 - nz * 4.1 + t * 0.3) + 0.020 * Math.sin(nx * 11.5 + nz * 8.2);
+
+      // 2. Evaluate Hierarchical Mountain Massifs with Dendritic Ridge Modulation
+      let m1 = 0.0;
+      let m2 = 0.0;
+
+      for (let i = 0; i < PYRAMID_PEAKS.length; i++) {
+        const p = PYRAMID_PEAKS[i];
+        const dx = (warpX - p[0]) / p[2];
+        const dz = (warpZ - p[1]) / p[3];
+        // Radial distance modulated by angular ridge spurs (creates 4-6 rocky arêtes radiating from each peak!)
+        const angle = Math.atan2(dz, dx);
+        const spurMod = 1.0 - 0.16 * Math.abs(Math.sin(angle * 2.5 + p[5])) - 0.09 * Math.abs(Math.cos(angle * 4.0 - p[5]));
+        const dist = Math.hypot(dx, dz) * spurMod;
+        if (dist < 1.0) {
+          const pulse = 1.0 + Math.sin(t + p[5]) * 0.06;
+          const hVal = p[4] * pulse * Math.pow(1.0 - dist, 1.55);
+          if (hVal > m1) {
+            m2 = m1;
+            m1 = hVal;
+          } else if (hVal > m2) {
+            m2 = hVal;
+          }
+        }
+      }
+
+      const massifBase = m1 + m2 * 0.26;
+
+      // 3. Multi-Octave Sharp Ridged Multifractal Erosion (Carves sharp crags, gullies, and sub-peaks into every slope!)
+      const r1 = 1.0 - Math.abs(Math.sin(warpX * 8.5 + warpZ * 6.8 - t * 0.6));
+      const r2 = 1.0 - Math.abs(Math.cos(warpX * 15.2 - warpZ * 12.4 + t * 0.8));
+      const r3 = 1.0 - Math.abs(Math.sin(warpX * 26.5 + warpZ * 21.0 - t * 0.5));
+      const r4 = 1.0 - Math.abs(Math.cos(nx * 42.0 - nz * 34.0 + t));
+
+      const ridgeFractal =
+        Math.pow(r1, 1.85) * 18.0 +
+        Math.pow(r2, 2.15) * 12.0 +
+        Math.pow(r3, 2.45) * 7.5 +
+        Math.pow(r4, 2.80) * 3.5;
+
+      // 4. Carve deep eroded gullies into the massif flanks while boosting sharp ridge crests
+      const weight = Math.min(1.25, 0.06 + Math.pow(massifBase / 52.0, 0.88));
+      const frontApron = nz > 0.82 ? Math.pow(Math.max(0, 1.0 - (nz - 0.82) / 0.18), 1.75) : 1.0;
+      const sideApron  = Math.max(0.04, 1.0 - Math.pow(Math.abs(nx), 3.8) * 0.90);
+
+      // Optional live per-core CPU thread modulation from macOS Mach host_processor_info
+      let liveMod = 0.0;
+      if (liveCoreLoads && liveCoreLoads.length > 0) {
+        const coreIdx = x % liveCoreLoads.length;
+        liveMod = (liveCoreLoads[coreIdx] - 35.0) * 0.16 * weight;
+      }
+
+      const combined = (massifBase * 0.74 + ridgeFractal * weight + liveMod) * frontApron * sideApron;
+      return Math.min(98.0, Math.max(0.8, combined + spikeBoost * weight * 16.0));
+    }
+
+    function rebuildHeightField(tick, instant) {
+      for (let z = 0; z < NZ; z++) {
+        for (let x = 0; x < NX; x++) {
+          const target = sampleMountainHeight(z, x, tick);
+          heightField[z][x] = instant
+            ? target
+            : heightField[z][x] * smoothFactor + target * (1.0 - smoothFactor);
+        }
+      }
+    }
+
+    rebuildHeightField(0, true);
+
+    function mixRGB(c1, c2, t) {
+      const u = Math.max(0, Math.min(1, t));
+      const s = u * u * (3 - 2 * u);
+      return [
+        c1[0] + (c2[0] - c1[0]) * s,
+        c1[1] + (c2[1] - c1[1]) * s,
+        c1[2] + (c2[2] - c1[2]) * s
+      ];
+    }
+
+    // Vibrant 3D Spectrum Shader for NALA Aurora & Wireframe (1:1 Match to Image 2 a326b098.webp & Image 5 1c28b675.jpg!)
+    function getAuroraColor(nx, nz, hNorm, crest) {
+      const s = nx - (nz - 0.50) * 0.16;
+
+      const colFloorNavy  = [24,  62, 138];
+      const colLeftCrim   = [239, 45,  82];
+      const colLeftAmber  = [255, 148, 24];
+      const colLeftGold   = [255, 224, 65];
+      const colCenterRose = [244, 63, 128];
+      const colCenterPeak = [255, 245, 155];
+      const colRightMag   = [225, 60, 245];
+      const colRightViol  = [135, 85, 250];
+      const colFarBlue    = [38, 108, 245];
+      const colBackCyan   = [20, 235, 205];
+
+      let rgb;
+      if (s < -0.42) {
+        rgb = mixRGB(colLeftCrim, colLeftAmber, (s + 0.88) / 0.46);
+      } else if (s < -0.12) {
+        rgb = mixRGB(colLeftAmber, colLeftGold, (s + 0.42) / 0.30);
+      } else if (s < 0.12) {
+        rgb = mixRGB(colLeftGold, colCenterRose, (s + 0.12) / 0.24);
+      } else if (s < 0.36) {
+        rgb = mixRGB(colCenterRose, colRightMag, (s - 0.12) / 0.24);
+      } else if (s < 0.60) {
+        rgb = mixRGB(colRightMag, colRightViol, (s - 0.36) / 0.24);
+      } else {
+        rgb = mixRGB(colRightViol, colFarBlue, (s - 0.60) / 0.35);
+      }
+
+      // Back-right Emerald/Cyan mountain range highlight (Top-right of Image 2 & Image 5!)
+      const backRightW = Math.exp(-Math.pow((nx - 0.56) / 0.28, 2) - Math.pow((nz - 0.34) / 0.24, 2));
+      if (backRightW > 0.04 && hNorm > 0.15) {
+        rgb = mixRGB(rgb, colBackCyan, Math.min(1, backRightW * (0.45 + hNorm * 0.85)));
+      }
+
+      // High elevation incandescence near summit spires
+      if (hNorm > 0.44) {
+        const apexW = Math.pow((hNorm - 0.44) / 0.50, 1.35);
+        const targetApex = nx > 0.35 ? [145, 255, 240] : colCenterPeak;
+        rgb = mixRGB(rgb, targetApex, Math.min(0.88, apexW * 0.80));
+      }
+
+      // Flat floor apron transitions cleanly to deep telemetry grid navy/cobalt
+      if (hNorm < 0.11) {
+        const ft = hNorm / 0.11;
+        rgb = mixRGB(colFloorNavy, rgb, 0.18 + ft * 0.82);
+      }
+
+      const cb = Math.max(0, crest * 3.5);
+      return [
+        Math.min(255, Math.round(rgb[0] + cb * 12)),
+        Math.min(255, Math.round(rgb[1] + cb * 12)),
+        Math.min(255, Math.round(rgb[2] + cb * 14))
+      ];
+    }
+
+    // =========================================================================
+    // v2.7 NEW ELEVATION-STRATIFIED BIOME SHADERS:
+    // 1. HIMALAYA (Grün / Tannenwald -> Feldbraun -> Graufels -> Gletscher-Schneeweiß)
+    //    "von grün auf feldbraun und dann graufels und dann weißes ... umso höher, umso weißer!"
+    // 2. SNOWPEAKS (Matterhorn / Schneebedeckte Hochalpen)
+    // 3. FOREST (Schwarzwald / Tannenwald & Alpengipfel mit 3D-Bäumen)
+    // 4. HYPERLAVA (Krakatau / Lava-Flüsse im Tal + Weißglühende Gipfel + Glut-Funken)
+    // =========================================================================
+    function getHimalayaRGB(nx, nz, hNorm, slopeX, light, crestBoost) {
+      if (hNorm < 0.038) return [7, 14, 18];
+
+      // Organic snowline & treeline jitter so elevation bands look like natural mountain strata
+      const strataJitter = Math.sin(nx * 14.0 + nz * 11.0) * 0.022 + Math.cos(nx * 27.0 - nz * 19.0) * 0.012;
+      const h = Math.max(0, Math.min(1, hNorm + strataJitter));
+
+      const colValleyDeep  = [16,  64,  34];  // Deep sub-alpine pine forest green
+      const colMeadowGreen = [46, 136,  64];  // Lush alpine meadow green
+      const colFeldBraun   = [132, 86,  46];  // Earthy Himalayan Feldbraun / ochre-brown
+      const colTerrazzoBrn = [164, 114, 68];  // Sunlit dry alpine earth
+      const colGrauFelsDk  = [76,  86, 100];  // Dark Himalayan granite cliff
+      const colGrauFelsLt  = [138, 150, 168]; // Craggy Graufels
+      const colGlacierBlue = [196, 224, 248]; // Shadowed glacier ice-snow
+      const colPureSnow    = [255, 255, 255]; // Blinding summit snow ("umso höher, umso weißer")
+
+      let rgb;
+      if (h < 0.21) {
+        // Zone 1: Green Pine Valley -> Meadow Green (0% .. 21%)
+        const t = Math.max(0, (h - 0.038) / 0.172);
+        rgb = mixRGB(colValleyDeep, colMeadowGreen, t);
+      } else if (h < 0.39) {
+        // Zone 2: Waldgrenze -> Feldbraun (21% .. 39%)
+        const t = (h - 0.21) / 0.18;
+        const brn = light > 0 ? mixRGB(colFeldBraun, colTerrazzoBrn, Math.min(1, light * 1.2)) : colFeldBraun;
+        rgb = mixRGB(colMeadowGreen, brn, t);
+      } else if (h < 0.57) {
+        // Zone 3: Feldbraun -> Graufels (39% .. 57%)
+        const t = (h - 0.39) / 0.18;
+        const rock = mixRGB(colGrauFelsDk, colGrauFelsLt, Math.max(0, Math.min(1, 0.45 + light * 0.75)));
+        rgb = mixRGB(colFeldBraun, rock, t);
+      } else {
+        // Zone 4: Graufels -> Eternal Glacier & Blinding White Snow (57% .. 100%)
+        // "Umso höher dann, umso weißer!"
+        const snowProgress = Math.min(1, (h - 0.57) / 0.26);
+        const snowShade = mixRGB(colGlacierBlue, colPureSnow, Math.min(1, 0.35 + Math.max(0, light) * 0.55 + snowProgress * 0.45 + crestBoost * 0.6));
+        const rock = mixRGB(colGrauFelsDk, colGrauFelsLt, 0.5);
+        // Steep vertical rock cliffs poke slightly through lower snow, while high summits are 100% pure white!
+        const steepCliffExposure = (Math.abs(slopeX) > 4.6 && h < 0.78 && crestBoost < 0.14) ? 0.38 : 0.0;
+        rgb = mixRGB(rock, snowShade, Math.max(0, Math.min(1, snowProgress * 1.15 - steepCliffExposure)));
+      }
+
+      // Directional sunlight & shadow relief
+      const sunMul = h > 0.58
+        ? (0.86 + Math.max(-0.20, light) * 0.26 + crestBoost * 0.25)
+        : (0.72 + Math.max(-0.35, light) * 0.48 + crestBoost * 0.22);
+
+      return [
+        Math.min(255, Math.max(6, Math.round(rgb[0] * sunMul))),
+        Math.min(255, Math.max(10, Math.round(rgb[1] * sunMul))),
+        Math.min(255, Math.max(14, Math.round(rgb[2] * sunMul)))
+      ];
+    }
+
+    function getSnowPeaksRGB(nx, nz, hNorm, slopeX, light, crestBoost) {
+      if (hNorm < 0.04) return [6, 10, 18];
+      const jitter = Math.sin(nx * 16.0 - nz * 12.0) * 0.025;
+      const h = Math.max(0, Math.min(1, hNorm + jitter));
+
+      const colDarkGranite = [24, 34, 52];
+      const colMidSlate    = [68, 84, 110];
+      const colGlacierIce  = [178, 218, 250];
+      const colSummitSnow  = [255, 255, 255];
+
+      let rgb;
+      if (h < 0.38) {
+        rgb = mixRGB(colDarkGranite, colMidSlate, h / 0.38);
+      } else {
+        const snowT = Math.min(1, (h - 0.38) / 0.24);
+        const snowCol = mixRGB(colGlacierIce, colSummitSnow, Math.min(1, 0.30 + Math.max(0, light) * 0.65 + snowT * 0.45 + crestBoost * 0.7));
+        rgb = mixRGB(colMidSlate, snowCol, snowT);
+      }
+      const mul = 0.78 + Math.max(-0.3, light) * 0.42 + crestBoost * 0.25;
+      return [
+        Math.min(255, Math.round(rgb[0] * mul)),
+        Math.min(255, Math.round(rgb[1] * mul)),
+        Math.min(255, Math.round(rgb[2] * mul))
+      ];
+    }
+
+    function getForestRGB(nx, nz, hNorm, slopeX, light, crestBoost) {
+      if (hNorm < 0.04) return [5, 13, 10];
+      const jitter = Math.cos(nx * 15.0 + nz * 13.0) * 0.022;
+      const h = Math.max(0, Math.min(1, hNorm + jitter));
+
+      const colDeepPine   = [12, 54, 28];
+      const colSpruceGrn  = [34, 124, 58];
+      const colBrownRock  = [108, 84, 62];
+      const colGreySummit = [142, 152, 166];
+      const colSnowCap    = [250, 253, 255];
+
+      let rgb;
+      if (h < 0.44) {
+        rgb = mixRGB(colDeepPine, colSpruceGrn, h / 0.44);
+      } else if (h < 0.62) {
+        rgb = mixRGB(colSpruceGrn, mixRGB(colBrownRock, colGreySummit, 0.5), (h - 0.44) / 0.18);
+      } else {
+        rgb = mixRGB(colGreySummit, colSnowCap, Math.min(1, (h - 0.62) / 0.22));
+      }
+      const mul = 0.76 + Math.max(-0.3, light) * 0.45 + crestBoost * 0.22;
+      return [
+        Math.min(255, Math.round(rgb[0] * mul)),
+        Math.min(255, Math.round(rgb[1] * mul)),
+        Math.min(255, Math.round(rgb[2] * mul))
+      ];
+    }
+
+    function getHyperLavaRGB(nx, nz, hNorm, slopeX, light, crest, crestBoost) {
+      // Glowing molten lava rivers winding across the dark valley canyons + white-hot magma craters on high peaks!
+      const riverWave = Math.sin(nx * 9.5 + Math.sin(nz * 7.0 + phaseTick * 0.08) * 1.8);
+      const isLavaRiver = hNorm < 0.22 && Math.abs(riverWave) < 0.24 && nz > 0.16 && nz < 0.88;
+      if (isLavaRiver) {
+        const riverCore = 1.0 - Math.abs(riverWave) / 0.24;
+        return [
+          255,
+          Math.min(255, Math.round(95 + riverCore * 145)),
+          Math.min(255, Math.round(15 + riverCore * 90))
+        ];
+      }
+
+      const gullyFissure = (hNorm > 0.12 && hNorm < 0.65 && crest < -0.35)
+        ? Math.min(0.95, Math.abs(crest) * 0.28)
+        : 0.0;
+      const heat = Math.pow(Math.max(0, hNorm - 0.12), 1.15) * 0.88 + crestBoost * 1.75 + gullyFissure + Math.max(0, light) * 0.28;
+
+      if (heat < 0.28) {
+        const base = 10 + hNorm * 22 + Math.max(0, light) * 24;
+        return [Math.round(base * 1.35 + heat * 110), Math.round(base * 0.72), Math.round(base * 0.95)];
+      } else if (heat < 0.62) {
+        const t = (heat - 0.28) / 0.34;
+        return [Math.round(165 + t * 90), Math.round(20 + t * 115), Math.round(18 + t * 10)];
+      } else {
+        const t = Math.min(1, (heat - 0.62) / 0.42);
+        return [255, Math.round(140 + t * 115), Math.round(30 + t * 215)];
+      }
+    }
+
+    // Solid 3D Quad Fill (Provides Hidden-Surface Occlusion + Authentic Rock/Magma/Alpine/Himalaya Shading!)
+    function getQuadFillStyle(hNorm, slopeX, slopeZ, crest, nx, nz, palName, isWireMode) {
+      const light = Math.max(-0.65, Math.min(0.85, slopeX * 0.105 - slopeZ * 0.042));
+      const crestBoost = Math.max(0, crest * 0.095);
+
+      if (!isWireMode && palName === 'himalaya') {
+        const [r, g, b] = getHimalayaRGB(nx, nz, hNorm, slopeX, light, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (!isWireMode && palName === 'snowpeaks') {
+        const [r, g, b] = getSnowPeaksRGB(nx, nz, hNorm, slopeX, light, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (!isWireMode && palName === 'forest') {
+        const [r, g, b] = getForestRGB(nx, nz, hNorm, slopeX, light, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (!isWireMode && palName === 'hyperlava') {
+        const [r, g, b] = getHyperLavaRGB(nx, nz, hNorm, slopeX, light, crest, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (isWireMode || palName === 'aurora') {
+        if (hNorm < 0.055) return 'rgb(5, 8, 16)';
+        const [sr, sg, sb] = getAuroraColor(nx, nz, hNorm, crestBoost);
+        const shade = (isWireMode ? 0.09 : 0.14) + Math.max(0, light) * 0.18 + Math.pow(hNorm, 1.65) * (isWireMode ? 0.15 : 0.24);
+        return `rgb(${Math.round(5 + sr * shade)},${Math.round(7 + sg * shade)},${Math.round(15 + sb * shade)})`;
+      } else if (palName === 'lava') {
+        // Image 4 (Vulkan / Lava):
+        // Dark volcanic basalt rock across the outer/background mountains & shadow slopes;
+        // Incandescent crimson/orange/yellow magma concentrated on sharp ridge crests, central spires, and glowing inner volcanic gullies!
+        const baseRock = 10 + hNorm * 16;
+        const litRock = baseRock + Math.max(0, light) * 36;
+        const shadowMul = light < 0 ? Math.max(0.40, 1.0 + light * 0.65) : 1.0;
+
+        const volcanicCore = Math.exp(-Math.pow((nx - 0.04) / 0.56, 2) - Math.pow((nz - 0.52) / 0.32, 2));
+        const gullyMagma = (hNorm > 0.14 && hNorm < 0.52 && crest < -0.5)
+          ? Math.min(0.65, Math.abs(crest) * 0.18 * volcanicCore)
+          : 0.0;
+        const ridgeMagma =
+          (Math.pow(Math.max(0, hNorm - 0.20), 1.35) * 0.72 + crestBoost * 1.45 + Math.max(0, light) * 0.26) *
+          (0.28 + volcanicCore * 0.88) + gullyMagma;
+
+        if (ridgeMagma < 0.34 || (light < -0.08 && crestBoost < 0.16 && gullyMagma < 0.12)) {
+          const r = Math.round(litRock * 0.88 * shadowMul + Math.max(0, ridgeMagma) * 75);
+          const g = Math.round(litRock * 1.02 * shadowMul + Math.max(0, ridgeMagma) * 20);
+          const b = Math.round(litRock * 1.38 * shadowMul + 8);
+          return `rgb(${r},${g},${b})`;
+        } else if (ridgeMagma < 0.68) {
+          const t = (ridgeMagma - 0.34) / 0.34;
+          return `rgb(${Math.round(115 + t * 140)}, ${Math.round(22 + t * 96)}, ${Math.round(16 - t * 6)})`;
+        } else {
+          const t = Math.min(1, (ridgeMagma - 0.68) / 0.42);
+          return `rgb(255, ${Math.round(125 + t * 125)}, ${Math.round(22 + t * 175)})`;
+        }
+      } else if (palName === 'alpine') {
+        // Image 3 (Alpine / Black & Gold):
+        // 80% of the mountain surface is deep dark slate/obsidian rock;
+        // Blazing golden sunlight catches the razor-sharp ridge crests, upper summit spires, and steepest sunlit arêtes!
+        const baseSlate = 10 + hNorm * 16;
+        const litSlate = baseSlate + Math.max(0, light) * 32;
+        const sh = light < 0 ? Math.max(0.42, 1.0 + light * 0.68) : 1.0;
+
+        const centerSun = Math.exp(-Math.pow((nx - 0.04) / 0.62, 2) - Math.pow((nz - 0.48) / 0.36, 2));
+        const goldRim =
+          ( crestBoost * 1.65 + Math.max(0, light) * 0.48 + Math.pow(Math.max(0, hNorm - 0.28), 1.4) * 0.68 ) *
+          (0.42 + centerSun * 0.72);
+
+        if (goldRim < 0.38 || (light < -0.04 && crestBoost < 0.18)) {
+          const r = Math.round(litSlate * 0.84 * sh + Math.max(0, goldRim) * 52);
+          const g = Math.round(litSlate * 1.02 * sh + Math.max(0, goldRim) * 38);
+          const b = Math.round(litSlate * 1.40 * sh + 8);
+          return `rgb(${r},${g},${b})`;
+        } else if (goldRim < 0.72) {
+          const t = (goldRim - 0.38) / 0.34;
+          return `rgb(${Math.round(68 + t * 178)}, ${Math.round(52 + t * 124)}, ${Math.round(32 - t * 8)})`;
+        } else {
+          const t = Math.min(1, (goldRim - 0.72) / 0.40);
+          return `rgb(255, ${Math.round(182 + t * 68)}, ${Math.round(55 + t * 155)})`;
+        }
+      } else if (palName === 'emerald') {
+        const shade = 0.12 + Math.max(0, light) * 0.32 + Math.pow(hNorm, 1.55) * 0.42;
+        return `rgb(${Math.round(5 + 28 * shade)}, ${Math.round(12 + 215 * shade)}, ${Math.round(16 + 135 * shade)})`;
+      } else {
+        const shade = 0.12 + Math.max(0, light) * 0.32 + Math.pow(hNorm, 1.55) * 0.42;
+        return `rgb(${Math.round(6 + 85 * shade)}, ${Math.round(15 + 195 * shade)}, ${Math.round(28 + 245 * shade)})`;
+      }
+    }
+
+    // Compute 3D Wireframe Edge Color
+    function getQuadWireStyle(hNorm, slopeX, crest, nx, nz, palName, isWireMode) {
+      const crestBoost = Math.max(0, crest * 0.085);
+      const intensity = Math.min(1, hNorm * 0.92 + crestBoost);
+
+      if (!isWireMode && palName === 'himalaya') {
+        if (hNorm < 0.21) return `rgba(74, 222, 128, ${(0.18 + nz * 0.22).toFixed(2)})`;
+        if (hNorm < 0.39) return `rgba(217, 155, 92, 0.34)`;
+        if (hNorm < 0.57) return `rgba(186, 200, 218, 0.38)`;
+        return `rgba(255, 255, 255, ${(0.55 + Math.min(0.42, (hNorm - 0.55) * 1.1)).toFixed(2)})`;
+      } else if (!isWireMode && palName === 'snowpeaks') {
+        if (hNorm > 0.38) return `rgba(240, 249, 255, ${(0.52 + intensity * 0.44).toFixed(2)})`;
+        return `rgba(125, 211, 252, ${(0.14 + nz * 0.18).toFixed(2)})`;
+      } else if (!isWireMode && palName === 'forest') {
+        if (hNorm < 0.44) return `rgba(52, 211, 153, ${(0.22 + nz * 0.22).toFixed(2)})`;
+        if (hNorm < 0.62) return `rgba(203, 213, 225, 0.35)`;
+        return `rgba(255, 255, 255, 0.78)`;
+      } else if (!isWireMode && palName === 'hyperlava') {
+        if (intensity > 0.20 || crest > 0.5) {
+          const t = Math.min(1, Math.max(0, intensity - 0.15) / 0.55);
+          return `rgba(255, ${Math.round(135 + t * 120)}, ${Math.round(35 + t * 185)}, ${(0.38 + t * 0.58).toFixed(2)})`;
+        }
+        return `rgba(249, 115, 22, ${(0.16 + nz * 0.18).toFixed(2)})`;
+      } else if (isWireMode || palName === 'aurora') {
+        const [r, g, b] = getAuroraColor(nx, nz, hNorm, crestBoost);
+        const alpha = hNorm < 0.08
+          ? (0.24 + nz * 0.24)
+          : Math.min(0.96, 0.46 + intensity * 0.50);
+        return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+      } else if (palName === 'lava') {
+        if (intensity > 0.28 || crest > 0.8) {
+          const t = Math.min(1, Math.max(0, intensity - 0.20) / 0.58);
+          return `rgba(255, ${Math.round(92 + t * 148)}, ${Math.round(22 + t * 115)}, ${(0.24 + t * 0.64).toFixed(2)})`;
+        }
+        return `rgba(148, 163, 184, ${(0.09 + nz * 0.14).toFixed(2)})`;
+      } else if (palName === 'alpine') {
+        if (intensity > 0.24 || crest > 0.7) {
+          const t = Math.min(1, Math.max(0, intensity - 0.18) / 0.58);
+          return `rgba(253, ${Math.round(186 + t * 58)}, ${Math.round(52 + t * 120)}, ${(0.26 + t * 0.64).toFixed(2)})`;
+        }
+        return `rgba(195, 160, 92, ${(0.13 + nz * 0.16).toFixed(2)})`;
+      } else if (palName === 'emerald') {
+        return `rgba(52, 211, 153, ${(0.22 + intensity * 0.65).toFixed(2)})`;
+      } else {
+        return `rgba(56, 189, 248, ${(0.22 + intensity * 0.65).toFixed(2)})`;
+      }
+    }
+
+    function draw3DMountainCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas || canvas.offsetParent === null) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth || 960;
+      const h = canvas.clientHeight || 272;
+      if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+        canvas.width = Math.floor(w * dpr);
+        canvas.height = Math.floor(h * dpr);
+      }
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const isSaverCanvas = (canvasId === 'screensaver3dCanvas');
+      const padLeft = isSaverCanvas ? 54 : 42;
+      const padRight = isSaverCanvas ? 28 : 10;
+      const padBottom = isSaverCanvas ? 74 : 24;
+      const drawW = w - padLeft - padRight;
+
+      // 1. Deep Atmospheric Backdrop + Ambient Under-Glow
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+      skyGrad.addColorStop(0, '#03050a');
+      skyGrad.addColorStop(0.50, '#060a14');
+      skyGrad.addColorStop(1, '#030509');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      const glows = (currentPalette === 'aurora' || wireOnly)
+        ? [
+            { x: 0.28, y: 0.54, r: 0.26, c: 'rgba(249, 115, 22, 0.22)' },
+            { x: 0.53, y: 0.44, r: 0.28, c: 'rgba(236, 72, 153, 0.24)' },
+            { x: 0.77, y: 0.38, r: 0.26, c: 'rgba(6, 182, 212, 0.22)' }
+          ]
+        : (currentPalette === 'himalaya')
+        ? [
+            { x: 0.30, y: 0.58, r: 0.28, c: 'rgba(16, 185, 129, 0.16)' },
+            { x: 0.52, y: 0.36, r: 0.32, c: 'rgba(224, 242, 254, 0.24)' },
+            { x: 0.72, y: 0.48, r: 0.26, c: 'rgba(180, 120, 70, 0.16)' }
+          ]
+        : (currentPalette === 'snowpeaks')
+        ? [
+            { x: 0.50, y: 0.38, r: 0.34, c: 'rgba(186, 230, 253, 0.25)' },
+            { x: 0.65, y: 0.44, r: 0.26, c: 'rgba(255, 255, 255, 0.18)' }
+          ]
+        : (currentPalette === 'forest')
+        ? [
+            { x: 0.38, y: 0.54, r: 0.30, c: 'rgba(16, 185, 129, 0.22)' },
+            { x: 0.58, y: 0.38, r: 0.28, c: 'rgba(224, 242, 254, 0.20)' }
+          ]
+        : (currentPalette === 'hyperlava')
+        ? [
+            { x: 0.36, y: 0.56, r: 0.32, c: 'rgba(239, 68, 68, 0.32)' },
+            { x: 0.54, y: 0.42, r: 0.34, c: 'rgba(249, 115, 22, 0.34)' },
+            { x: 0.68, y: 0.50, r: 0.28, c: 'rgba(250, 204, 21, 0.22)' }
+          ]
+        : (currentPalette === 'lava')
+        ? [
+            { x: 0.42, y: 0.52, r: 0.26, c: 'rgba(234, 88, 12, 0.22)' },
+            { x: 0.56, y: 0.46, r: 0.30, c: 'rgba(220, 38, 38, 0.24)' }
+          ]
+        : [
+            { x: 0.52, y: 0.42, r: 0.32, c: 'rgba(245, 158, 11, 0.24)' }
+          ];
+
+      glows.forEach(g => {
+        const gx = padLeft + drawW * g.x;
+        const gy = h * g.y;
+        const gr = drawW * g.r;
+        const rad = ctx.createRadialGradient(gx, gy, 2, gx, gy, gr);
+        rad.addColorStop(0, g.c);
+        rad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rad;
+        ctx.fillRect(padLeft, 0, drawW, h - padBottom);
+      });
+
+      // 2. 3D Perspective Camera Projection (Supports Both Standard Yaw & True 360° Planetary Landscape Orbit!)
+      const horizonY = Math.max(isSaverCanvas ? 116 : 46, h * ((isSaverCanvas ? 0.31 : 0.30) + cameraPitch * 0.22));
+      const frontFloorY = h - padBottom - 3;
+      const floorSpanY = frontFloorY - horizonY;
+      const maxPeakHeightPx = h * (isSaverCanvas ? 0.55 : 0.70) * heightGain;
+
+      const activeTheta = orbitEnabled ? orbitTheta : (Math.abs(orbitTheta) > 0.001 ? orbitTheta : 0.0);
+      const use360 = orbitEnabled || Math.abs(activeTheta) > 0.001;
+      const cosT = Math.cos(activeTheta);
+      const sinT = Math.sin(activeTheta);
+
+      function projectVertex(z, x, val) {
+        const nzOrig = z / (NZ - 1);           // 0 (horizon) .. 1 (foreground)
+        const nxOrig = (x / (NX - 1)) * 2 - 1; // -1 (left) .. +1 (right)
+
+        if (!use360) {
+          const persp = 0.88 + nzOrig * 0.15;
+          const yawSkew = (nzOrig - 0.50) * (cameraAngle * 1.25);
+          const sx = padLeft + drawW * 0.50 + (nxOrig * drawW * 0.49) * persp + yawSkew;
+          const floorY = horizonY + Math.pow(nzOrig, 1.08) * floorSpanY;
+          const elevPx = (val / 100) * maxPeakHeightPx * (0.60 + nzOrig * 0.44);
+          return { x: sx, y: floorY - elevPx, floorY, val, nz: nzOrig, nx: nxOrig, rx: nxOrig, rz: nzOrig };
+        } else {
+          // True 360° Planetary / Landscape Orbit around center (0, 0)
+          const cz = nzOrig * 2 - 1; // -1 .. +1
+          const rx = nxOrig * cosT - cz * sinT;
+          const rz = nxOrig * sinT + cz * cosT;
+          const depthNorm = Math.max(0.0, Math.min(1.0, (rz + 1.28) / 2.56));
+          const persp = 0.74 + depthNorm * 0.34;
+          const sx = padLeft + drawW * 0.50 + (rx * drawW * 0.41) * persp;
+          const floorY = horizonY + Math.pow(depthNorm, 1.05) * floorSpanY;
+          const elevPx = (val / 100) * maxPeakHeightPx * (0.55 + depthNorm * 0.48);
+          return { x: sx, y: floorY - elevPx, floorY, val, nz: nzOrig, nx: nxOrig, rx, rz: depthNorm };
+        }
+      }
+
+      const proj = new Array(NZ);
+      for (let z = 0; z < NZ; z++) {
+        const row = new Array(NX);
+        for (let x = 0; x < NX; x++) {
+          row[x] = projectVertex(z, x, heightField[z][x]);
+        }
+        proj[z] = row;
+      }
+
+      // 3. Exact O(1) Sign-Directed Back-to-Front Painter's Ordering for Any 360° Angle!
+      const detectedPeaks = [];
+      const drawWireMesh = showGrid || wireOnly || currentPalette === 'aurora';
+
+      const zForward = !use360 || (cosT >= 0);
+      const xForward = !use360 || (sinT >= 0);
+
+      const zStart = zForward ? 0 : (NZ - 2);
+      const zEnd   = zForward ? (NZ - 1) : -1;
+      const zStep  = zForward ? 1 : -1;
+
+      const xStart = xForward ? 0 : (NX - 2);
+      const xEnd   = xForward ? (NX - 1) : -1;
+      const xStep  = xForward ? 1 : -1;
+
+      for (let z = zStart; z !== zEnd; z += zStep) {
+        const nz = z / (NZ - 1);
+        for (let x = xStart; x !== xEnd; x += xStep) {
+          const p00 = proj[z][x];
+          const p10 = proj[z][x + 1];
+          const p11 = proj[z + 1][x + 1];
+          const p01 = proj[z + 1][x];
+
+          const avgVal = (p00.val + p10.val + p11.val + p01.val) * 0.25;
+          const hNorm = avgVal / 100;
+          const slopeX = (p10.val - p00.val) * (use360 ? cosT : 1.0) + (p01.val - p00.val) * (use360 ? -sinT : 0.0);
+          const slopeZ = (p01.val - p00.val) * (use360 ? cosT : 1.0) + (p10.val - p00.val) * (use360 ? sinT : 0.0);
+          const prevXVal = x > 0 ? proj[z][x - 1].val : p00.val;
+          const prevZVal = z > 0 ? proj[z - 1][x].val : p00.val;
+          const crest = (p00.val - (prevXVal + p10.val) * 0.5) + (p00.val - (prevZVal + p01.val) * 0.5) * 0.65;
+
+          // 3A. Fill 3D Quad (Dark Core Hidden-Surface Occlusion + Directional Mountain Facet Shading)
+          ctx.beginPath();
+          ctx.moveTo(p00.x, p00.y);
+          ctx.lineTo(p10.x, p10.y);
+          ctx.lineTo(p11.x, p11.y);
+          ctx.lineTo(p01.x, p01.y);
+          ctx.closePath();
+          ctx.fillStyle = getQuadFillStyle(hNorm, slopeX, slopeZ, crest, p00.nx, nz, currentPalette, wireOnly);
+          ctx.fill();
+
+          // 3B. Telemetry Code Matrix Ticks on Flat Foreground/Flank Floor Cells (Like Image 2 a326b098.webp!)
+          if ((wireOnly || currentPalette === 'aurora') && hNorm < 0.085 && z > 14 && (z % 2 === 0)) {
+            const hSeed = hash2D(x + Math.floor(phaseTick * 0.5), z);
+            if (hSeed > 0.36) {
+              const tickFrac = 0.28 + (hSeed * 0.62);
+              ctx.beginPath();
+              ctx.moveTo(p00.x + 0.8, (p00.y + p01.y) * 0.5);
+              ctx.lineTo(p00.x + (p10.x - p00.x) * tickFrac, (p10.y + p11.y) * 0.5);
+              ctx.strokeStyle = p00.nx < -0.15
+                ? `rgba(251, 191, 36, ${(0.18 + nz * 0.24).toFixed(2)})`
+                : `rgba(56, 189, 248, ${(0.20 + nz * 0.26).toFixed(2)})`;
+              ctx.lineWidth = 0.85;
+              ctx.stroke();
+            }
+          }
+
+          // 3C. True 3D Triangulated Wireframe Mesh
+          if (drawWireMesh) {
+            const wireCol = getQuadWireStyle(hNorm, slopeX, crest, p00.nx, nz, currentPalette, wireOnly);
+            ctx.strokeStyle = wireCol;
+            ctx.lineWidth = hNorm > 0.58 ? 0.90 : (hNorm > 0.22 ? 0.64 : 0.42);
+            ctx.stroke();
+
+            // Triangulate mountain slopes (diagonal edge p00 -> p11 or p10 -> p01) like Image 2 & Image 5!
+            if (hNorm > 0.09) {
+              ctx.beginPath();
+              if (slopeX >= 0) {
+                ctx.moveTo(p00.x, p00.y);
+                ctx.lineTo(p11.x, p11.y);
+              } else {
+                ctx.moveTo(p10.x, p10.y);
+                ctx.lineTo(p01.x, p01.y);
+              }
+              ctx.lineWidth = hNorm > 0.58 ? 0.60 : 0.36;
+              ctx.stroke();
+            }
+
+            // Glowing Vertex Sparks at 3D Mesh Nodes on Ridges & Peaks (Matches "Punkte anzeigen" in Image 5!)
+            if ((currentPalette === 'aurora' || wireOnly) && (hNorm > 0.24 || crest > 1.2)) {
+              const [vr, vg, vb] = getAuroraColor(p00.nx, nz, Math.min(1, hNorm + 0.18), crest);
+              ctx.fillStyle = `rgba(${vr},${vg},${vb},${Math.min(0.98, 0.50 + hNorm * 0.48).toFixed(2)})`;
+              const dotR = hNorm > 0.62 ? 1.75 : 1.15;
+              ctx.fillRect(p00.x - dotR * 0.5, p00.y - dotR * 0.5, dotR, dotR);
+            }
+          }
+
+          // 3D. Procedural 3D Pine Trees (🌲) in Himalaya Valley & Forest Biome!
+          if (!wireOnly && (currentPalette === 'himalaya' || currentPalette === 'forest')) {
+            const maxTreeElev = currentPalette === 'forest' ? 0.42 : 0.21;
+            if (hNorm > 0.045 && hNorm < maxTreeElev && (x % 2 === 0) && (z % 2 === 0)) {
+              const tHash = hash2D(x * 3, z * 5);
+              if (tHash > 0.44) {
+                const treeH = (4.5 + (tHash - 0.44) * 11.0) * (0.65 + p00.rz * 0.55);
+                const treeW = treeH * 0.42;
+                const tx = (p00.x + p11.x) * 0.5;
+                const ty = (p00.y + p11.y) * 0.5;
+                // Left sunlit pine cone facet
+                ctx.beginPath();
+                ctx.moveTo(tx, ty - treeH);
+                ctx.lineTo(tx - treeW, ty);
+                ctx.lineTo(tx, ty + 1);
+                ctx.closePath();
+                ctx.fillStyle = currentPalette === 'forest' ? 'rgba(52, 211, 102, 0.88)' : 'rgba(42, 168, 82, 0.85)';
+                ctx.fill();
+                // Right shadowed pine cone facet
+                ctx.beginPath();
+                ctx.moveTo(tx, ty - treeH);
+                ctx.lineTo(tx + treeW, ty);
+                ctx.lineTo(tx, ty + 1);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(12, 68, 34, 0.92)';
+                ctx.fill();
+              }
+            }
+          }
+
+          // 3E. Collect True 3D Local Maxima (Mountain Summits) for Vertical Summit Pins (|o)
+          if (
+            z > 8 && z < NZ - 6 && x > 6 && x < NX - 6 &&
+            p00.val > 42 &&
+            p00.val >= proj[z][x - 1].val &&
+            p00.val >= proj[z][x + 1].val &&
+            p00.val >= proj[z - 1][x].val &&
+            p00.val >= proj[z + 1][x].val
+          ) {
+            detectedPeaks.push(p00);
+          }
+        }
+      }
+
+      // 3F. Rising Glowing Volcanic Ember Sparks in Hyper-Magma Mode!
+      if (!wireOnly && currentPalette === 'hyperlava') {
+        detectedPeaks.slice(0, 18).forEach((pk, idx) => {
+          for (let e = 0; e < 3; e++) {
+            const phase = ((phaseTick * 1.8 + idx * 13 + e * 29) % 46) / 46;
+            const ex = pk.x + Math.sin(phase * 8.0 + idx + e) * 11;
+            const ey = pk.y - phase * 48;
+            const er = (1.0 - phase) * 2.4 + 0.6;
+            ctx.beginPath();
+            ctx.arc(ex, ey, er, 0, Math.PI * 2);
+            ctx.fillStyle = phase < 0.4 ? `rgba(255, 240, 138, ${(1 - phase).toFixed(2)})` : `rgba(249, 115, 22, ${(1 - phase).toFixed(2)})`;
+            ctx.fill();
+          }
+        });
+      }
+
+      // 4. Subtle Soft Vignette on Left Edge for Y-Axis Readability
+      const leftVig = ctx.createLinearGradient(0, 0, padLeft + 16, 0);
+      leftVig.addColorStop(0, '#03050a');
+      leftVig.addColorStop(0.70, '#03050a');
+      leftVig.addColorStop(1, 'rgba(3,5,10,0)');
+      ctx.fillStyle = leftVig;
+      ctx.fillRect(0, 0, padLeft + 16, h);
+
+      // 5. Left Y-Axis Scale (100%, 75%, 50%, 25%, 0%)
+      ctx.font = '600 10.5px ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.88)';
+      const topY = h * 0.13;
+      const botY = h - padBottom - 4;
+      [100, 75, 50, 25, 0].forEach(pct => {
+        const yPos = botY - (pct / 100) * (botY - topY);
+        ctx.fillText(pct + '%', 10, yPos + 3);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, yPos);
+        ctx.lineTo(w - padRight, yPos);
+        ctx.stroke();
+      });
+
+      // 6. Render Well-Spaced Real 3D Summit Pins (|o) with Glowing Stems & Hollow Ring Tips
+      detectedPeaks.sort((a, b) => b.val - a.val);
+      const spacedPeaks = [];
+      for (const cand of detectedPeaks) {
+        if (spacedPeaks.every(existing => Math.hypot(cand.x - existing.x, cand.y - existing.y) > 38)) {
+          spacedPeaks.push(cand);
+          if (spacedPeaks.length >= 13) break;
+        }
+      }
+
+      const mainSummit = spacedPeaks[0] || { x: padLeft + drawW * 0.54, y: h * 0.16, val: 87, nx: 0.08, nz: 0.45 };
+
+      if (showPeaks) {
+        spacedPeaks.forEach((pk, idx) => {
+          const isMain = idx === 0;
+          const stemLen = isMain ? 26 : (14 + (idx % 3) * 4);
+          let pinColor = '#fef08a';
+          if (currentPalette === 'aurora' || wireOnly) {
+            const [pr, pg, pb] = getAuroraColor(pk.nx, pk.nz, Math.min(1, pk.val / 100 + 0.15), 2.5);
+            pinColor = isMain ? '#67e8f9' : `rgb(${pr},${pg},${pb})`;
+          } else if (currentPalette === 'himalaya' || currentPalette === 'snowpeaks' || currentPalette === 'forest') {
+            pinColor = isMain ? '#ffffff' : '#7dd3fc';
+          } else if (currentPalette === 'lava' || currentPalette === 'hyperlava') {
+            pinColor = isMain ? '#fef08a' : '#fb923c';
+          } else if (currentPalette === 'alpine') {
+            pinColor = isMain ? '#fef9c3' : '#fbbf24';
+          }
+
+          ctx.save();
+          // Soft summit glow halo at the peak apex
+          const apexHalo = ctx.createRadialGradient(pk.x, pk.y, 1, pk.x, pk.y, isMain ? 20 : 11);
+          apexHalo.addColorStop(0, isMain ? 'rgba(254, 240, 138, 0.46)' : 'rgba(251, 146, 60, 0.25)');
+          apexHalo.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = apexHalo;
+          ctx.beginPath();
+          ctx.arc(pk.x, pk.y, isMain ? 20 : 11, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Vertical laser stem (dotted on secondary pins in Wireframe/Aurora mode like Image 2 a326b098.webp!)
+          ctx.beginPath();
+          if (!isMain && (wireOnly || currentPalette === 'aurora')) {
+            ctx.setLineDash([2, 2]);
+          }
+          ctx.moveTo(pk.x, pk.y);
+          ctx.lineTo(pk.x, pk.y - stemLen);
+          ctx.strokeStyle = pinColor;
+          ctx.lineWidth = isMain ? 1.65 : 1.15;
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Hollow glowing ring tip (o)
+          const tipY = pk.y - stemLen - 2.5;
+          ctx.beginPath();
+          ctx.arc(pk.x, tipY, isMain ? 3.3 : 2.3, 0, Math.PI * 2);
+          ctx.fillStyle = '#050811';
+          ctx.fill();
+          ctx.strokeStyle = pinColor;
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+
+          // Binary micro-label above pin in Wireframe/Aurora mode (Matches Image 2 a326b098.webp!)
+          if ((wireOnly || currentPalette === 'aurora') && idx < 9) {
+            ctx.font = '700 8.5px ui-monospace, monospace';
+            ctx.fillStyle = pinColor;
+            ctx.fillText(idx % 2 === 0 ? '0' : '1', pk.x - 2.5, tipY - 5);
+          }
+          ctx.restore();
+        });
+      }
+
+      // 7. Floating HUD Callout Box on Highest Peak (Matches Image 5: CPU Thread 104 · 87% · 2.63 GHz · Temp 68°C)
+      if (showCallout && mainSummit) {
+        const bx = Math.min(w - 160, Math.max(58, mainSummit.x + 12));
+        const by = Math.max(isSaverCanvas ? 96 : 8, Math.min(h - padBottom - 58, mainSummit.y - 34));
+
+        ctx.fillStyle = 'rgba(8, 12, 22, 0.90)';
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, 146, 52, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '700 10.5px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText(`CPU Thread ${hoveredPeak.thread}`, bx + 10, by + 15);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 14px ui-monospace, monospace';
+        ctx.fillText(`${hoveredPeak.pct}%`, bx + 10, by + 31);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 10px ui-monospace, monospace';
+        ctx.fillText(`${hoveredPeak.ghz} GHz · Temp ${hoveredPeak.temp}°C`, bx + 10, by + 45);
+      }
+
+      // 8. Bottom X-Axis Timeline Ruler (-60 s, -45 s, -30 s, -15 s, Now)
+      const axisY = h - padBottom + 9;
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.28)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padLeft + 8, axisY);
+      ctx.lineTo(w - padRight - 8, axisY);
+      ctx.stroke();
+
+      const degNow = Math.round(((activeTheta * 180 / Math.PI) % 360 + 360) % 360);
+      const labelsX = use360
+        ? [`Orbit ${degNow}°`, 'Nord-West', 'Zentrum (192 Ch)', 'Süd-Ost', 'Live 360°']
+        : ['-60 s', '-45 s', '-30 s', '-15 s', 'Now'];
+      ctx.fillStyle = 'rgba(203, 213, 225, 0.92)';
+      ctx.font = '600 10.5px ui-monospace, monospace';
+      labelsX.forEach((lbl, i) => {
+        const lx = padLeft + 18 + (i / (labelsX.length - 1)) * (drawW - 36);
+        ctx.fillText(lbl, lx - 14, axisY + 12);
+        ctx.beginPath();
+        ctx.arc(lx, axisY, 2.0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.restore();
+    }
+
+    // Mini Spectrum Histogram Renderer for Top 8 Cards & Bottom 7 Cards
+    function drawSpectrumHistogram(canvasId, colorHex, seedOffset) {
+      const c = document.getElementById(canvasId);
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const bars = 28;
+      const barW = (w - bars) / bars;
+      ctx.beginPath();
+      for (let i = 0; i < bars; i++) {
+        const v = 0.25 + 0.65 * Math.pow(Math.sin(i * 0.35 + phaseTick * 0.2 + seedOffset) * 0.5 + 0.5, 1.6);
+        const bh = v * (h - 3);
+        const x = i * (barW + 1);
+        const y = h - bh;
+        ctx.fillStyle = colorHex + '55';
+        ctx.fillRect(x, y, barW, bh);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = colorHex;
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+    }
+
+    function renderAllHistograms() {
+      drawSpectrumHistogram('histTopCpu',   '#38bdf8', 0.0);
+      drawSpectrumHistogram('histTopGpu',   '#a855f7', 1.2);
+      drawSpectrumHistogram('histTopRam',   '#f59e0b', 2.4);
+      drawSpectrumHistogram('histTopDisk',  '#10b981', 3.6);
+      drawSpectrumHistogram('histTopNet',   '#60a5fa', 4.8);
+      drawSpectrumHistogram('histTopTemp',  '#f97316', 6.0);
+      drawSpectrumHistogram('histTopPower', '#06b6d4', 7.2);
+
+      drawSpectrumHistogram('botChart1', '#f97316', 0.5);
+      drawSpectrumHistogram('botChart2', '#38bdf8', 1.7);
+      drawSpectrumHistogram('botChart3', '#f59e0b', 2.9);
+      drawSpectrumHistogram('botChart4', '#10b981', 4.1);
+      drawSpectrumHistogram('botChart5', '#60a5fa', 5.3);
+      drawSpectrumHistogram('botChart6', '#f97316', 6.5);
+      drawSpectrumHistogram('botChart7', '#facc15', 7.7);
+    }
+
+    // Build 192-Channel Thread Matrix (Image 1)
+    function initMatrix192() {
+      const m = document.getElementById('matrix192Grid');
+      if (!m) return;
+      m.innerHTML = '';
+      for (let i = 0; i < 192; i++) {
+        const d = document.createElement('div');
+        d.className = 'm-cell';
+        d.style.background = '#10b981';
+        m.appendChild(d);
+      }
+    }
+
+    function updateMatrix192() {
+      const cells = document.querySelectorAll('#matrix192Grid .m-cell');
+      cells.forEach((c, i) => {
+        let v;
+        if (liveCoreLoads && liveCoreLoads.length > 0) {
+          v = liveCoreLoads[i % liveCoreLoads.length];
+        } else {
+          v = (Math.sin(i * 0.25 + phaseTick * 0.3) + 1) * 50;
+        }
+        c.style.background = v > 78 ? '#f59e0b' : v > 42 ? '#10b981' : '#065f46';
+      });
+    }
+
+    // Real-Time 3D Mesh + 360° Planetary Orbit Evolution Loop
+    setInterval(() => {
+      if (isLive) {
+        phaseTick += 1;
+        spikeBoost *= 0.86;
+        if (orbitEnabled) {
+          orbitTheta = (orbitTheta + 0.0065 * orbitSpeed) % (Math.PI * 2);
+          const deg = Math.round((orbitTheta * 180 / Math.PI) % 360);
+          const ob = document.getElementById('saverOrbitBadge');
+          if (ob) ob.textContent = `🪐 Orbit ${deg}°`;
+        }
+        const now = new Date();
+        const clk = document.getElementById('saverClock');
+        if (clk) {
+          clk.textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        }
+        rebuildHeightField(phaseTick, false);
+        draw3DMountainCanvas('relief3dCanvas');
+        draw3DMountainCanvas('screensaver3dCanvas');
+        renderAllHistograms();
+        updateMatrix192();
+      }
+    }, 90);
+
+    // Preset Layout Switcher: Image 1 vs Image 2 vs Image 3 vs Dream 2-Click
+    function switchPresetLayout(mode) {
+      ['img1', 'img2', 'img3', 'dream'].forEach(m => {
+        const b = document.getElementById('layoutBtn-' + m);
+        if (b) b.classList.toggle('active', m === mode);
+        const s = document.getElementById('snav-' + m);
+        if (s) s.classList.toggle('active', m === mode);
+      });
+
+      document.getElementById('bottomSectionImg1').classList.toggle('hidden', mode !== 'img1');
+      document.getElementById('bottomSectionImg2').classList.toggle('hidden', mode !== 'img2');
+      document.getElementById('bottomSectionImg3').classList.toggle('hidden', mode !== 'img3');
+      document.getElementById('bottomSectionDream').classList.toggle('hidden', mode !== 'dream');
+
+      if (mode === 'img1') {
+        showCallout = false;
+        document.getElementById('mainHeaderTitle').innerHTML = 'Performance Command Center';
+        document.getElementById('mainHeaderSub').textContent = 'MacPulse × Netdata-Denke × 3D Performance-Relief (192 Kanäle)';
+        setPalette('alpine');
+      } else if (mode === 'img2') {
+        showCallout = false;
+        document.getElementById('mainHeaderTitle').innerHTML = 'NALA-HWSensors <span style="color:#38bdf8;font-weight:400;">v2.7</span>';
+        document.getElementById('mainHeaderSub').textContent = 'LIVE HARDWARE TELEMETRY · 3D PERFORMANCE RELIEF';
+        setPalette('lava');
+      } else if (mode === 'img3') {
+        showCallout = true;
+        document.getElementById('mainHeaderTitle').innerHTML = 'NALA-HWSensors <span style="color:#ec4899;font-weight:400;">v2.7</span>';
+        document.getElementById('mainHeaderSub').textContent = 'LIVE · 3D PERFORMANCE RELIEF · WIDGETS · REMOTE · SCREENSAVER';
+        setPalette('aurora');
+      } else if (mode === 'himalaya' || mode === 'snowpeaks' || mode === 'forest' || mode === 'hyperlava') {
+        showCallout = true;
+        setPalette(mode);
+      } else if (mode === 'wire') {
+        showCallout = true;
+        setPalette('aurora');
+        wireOnly = true;
+        draw3DMountainCanvas('relief3dCanvas');
+      }
+    }
+
+    const BIOME_LABELS = {
+      himalaya: '🏔️ Himalaya (Grün → Braun → Fels → Schnee)',
+      snowpeaks: '❄️ Matterhorn Schnee-Gipfel',
+      forest: '🌲 Tannenwald & Alpengipfel',
+      hyperlava: '🌋 Hyper-Magma (Lava-Flüsse & Glut)',
+      lava: '🟧 Vulkan / Lava',
+      aurora: '🌌 NALA Aurora',
+      alpine: '🏔️ Alpine Gold',
+      emerald: '🟢 Emerald Matrix',
+      ice: '❄️ Arctic Ice'
+    };
+
+    function setPalette(pal) {
+      currentPalette = pal;
+      wireOnly = false;
+      ['himalaya', 'snowpeaks', 'forest', 'hyperlava', 'lava', 'aurora', 'alpine', 'emerald', 'ice'].forEach(p => {
+        const b = document.getElementById('palBtn-' + p);
+        if (b) b.classList.toggle('active', p === pal);
+      });
+      const sel = document.getElementById('inspectorPaletteSelect');
+      if (sel) sel.value = pal;
+      const badge = document.getElementById('saverBiomeBadge');
+      if (badge) badge.textContent = BIOME_LABELS[pal] || pal;
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function setOrbit360(enabled) {
+      orbitEnabled = enabled;
+      const chk = document.getElementById('chkOrbit360');
+      if (chk) chk.checked = enabled;
+      const bTop = document.getElementById('btnOrbitTop');
+      if (bTop) bTop.style.background = enabled ? 'rgba(56,189,248,0.28)' : '#131c2e';
+      const bSav = document.getElementById('btnOrbitSaver');
+      if (bSav) bSav.textContent = enabled ? '🪐 360° Orbit: EIN' : '🪐 360° Orbit: AUS';
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function toggleOrbit360() {
+      setOrbit360(!orbitEnabled);
+    }
+
+    function resetCameraAndOrbit() {
+      cameraAngle = 0;
+      cameraPitch = 0;
+      orbitTheta = 0;
+      setOrbit360(false);
+    }
+
+    function toggleWireframeOnly() {
+      wireOnly = !wireOnly;
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function rotatePerspective() {
+      cameraAngle = cameraAngle === 0 ? 32 : cameraAngle === 32 ? -32 : 0;
+      cameraPitch = cameraAngle === 32 ? 0.06 : cameraAngle === -32 ? -0.05 : 0.0;
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function setReliefLive(state) {
+      isLive = state;
+      document.getElementById('btnLiveState').classList.toggle('active', state);
+      document.getElementById('btnPauseState').classList.toggle('active', !state);
+    }
+
+    function toggleReliefPause() {
+      setReliefLive(!isLive);
+    }
+
+    function triggerMountainSpike() {
+      spikeBoost = 1.0;
+      rebuildHeightField(phaseTick, true);
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function selectHost(el, title, cpu, gpu, ram, pal) {
+      document.querySelectorAll('#hostList .host-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('hostBadge').textContent = title;
+      document.getElementById('valCpuTop').textContent = cpu + '%';
+      document.getElementById('valGpuTop').textContent = gpu + '%';
+      document.getElementById('valRamTop').textContent = ram + '%';
+      setPalette(pal);
+      triggerMountainSpike();
+    }
+
+    function toggleSysPopover() {
+      document.getElementById('sysPopover').classList.toggle('hidden');
+    }
+
+    // Native macOS Fullscreen Bridge + HTML5 Fullscreen Fallback
+    function toggleNativeFullscreen() {
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'toggleFullscreen' });
+      } else if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function enterNativeFullscreen() {
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'enterFullscreen' });
+      } else if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }
+
+    function exportOrInstallScreensaver() {
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'installScreenSaver' });
+      }
+      const toast = document.getElementById('saverToast');
+      if (toast) {
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 5000);
+      }
+    }
+
+    function openScreensaver(wantFullscreen) {
+      document.getElementById('screensaverModal').classList.remove('hidden');
+      setOrbit360(true);
+      if (wantFullscreen) {
+        enterNativeFullscreen();
+      }
+      setTimeout(() => draw3DMountainCanvas('screensaver3dCanvas'), 40);
+    }
+
+    function closeScreensaver() {
+      document.getElementById('screensaverModal').classList.add('hidden');
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'exitFullscreen' });
+      } else if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Live Hardware Telemetry Bridge from Native macOS (Apple Silicon arm64 & Intel x86_64)
+    window.updateNativeTelemetry = function(data) {
+      if (!data) return;
+      if (typeof data.cpuPercent === 'number') {
+        document.getElementById('mbCpu').textContent = data.cpuPercent + '%';
+        document.getElementById('valCpuTop').textContent = data.cpuPercent + '%';
+        const dash = Math.round((data.cpuPercent / 100) * 162);
+        const rc = document.getElementById('ringCpu');
+        if (rc) rc.setAttribute('stroke-dasharray', `${dash} 220`);
+      }
+      if (typeof data.tempCelsius === 'number') {
+        document.getElementById('mbTemp').textContent = data.tempCelsius + '°C';
+        document.getElementById('valTempTop').textContent = data.tempCelsius + '°C';
+      }
+      if (typeof data.ramPercent === 'number') {
+        document.getElementById('mbRam').textContent = data.ramPercent + '%';
+        document.getElementById('valRamTop').textContent = data.ramPercent + '%';
+        const dash = Math.round((data.ramPercent / 100) * 162);
+        const rr = document.getElementById('ringRam');
+        if (rr) rr.setAttribute('stroke-dasharray', `${dash} 220`);
+      }
+      if (typeof data.netUpKBps === 'number') {
+        document.getElementById('mbUp').textContent = data.netUpKBps + 'KB/s';
+      }
+      if (typeof data.netDownKBps === 'number') {
+        document.getElementById('mbDown').textContent = data.netDownKBps + 'KB/s';
+      }
+      if (Array.isArray(data.coreLoads) && data.coreLoads.length > 0) {
+        liveCoreLoads = data.coreLoads;
+      }
+      if (data.archLabel) {
+        document.getElementById('hostBadge').textContent = `${data.archLabel} · ${data.logicalCores || 16} Local + 192 Cluster Threads`;
+      }
+    };
+
+    function openTwoClickModal(name) {
+      document.getElementById('twoClickText').textContent =
+        `Möchten Sie "${name}" (analysiert in 5 Runden durch Grand NALAtheON, Grand NEOP & Grand TheGremium) jetzt mit atomarem NCSP-Snapshot ausführen?`;
+      document.getElementById('twoClickModal').classList.remove('hidden');
+    }
+
+    function closeTwoClickModal() {
+      document.getElementById('twoClickModal').classList.add('hidden');
+    }
+
+    function confirmTwoClickExecute() {
+      closeTwoClickModal();
+      switchPresetLayout('img3');
+      triggerMountainSpike();
+    }
+
+    const MANDATORY_FOOTER = `Kannst du die alles nach TheStandart und NCSP & Inventary (BackUP's, Snapshots und Rollbacks!) Umsetzen und mit NALAtheON's, NEOP's, und Grand TheGremium's jeweils mit Experten und mit (3-7 Runden) Analysiert, Optimiert und vom UI/UXI  entsprechend AAA Premium geplant und umgesetzt werden so wie aus einer Highend Software Firma kommt.  OHNE dabei AI-Slop zu erstellen! Und OHNE bestehende Features zu beschädigen oder NALA oder das NALA-OS kaputt zu machen! 
+Nutze die Resourcen von NALA und bringe ihr auch alles bei, trainiere sie so, dass sie das als einen Skill nutzen kann, den sie auch mit anderen Skill’s kombinieren kann! Sowie das sie auch diese Software weiterentwickeln kann, mögliche Verbesserungen in ihrer "Dream" Phasen überlegen, die Software Perlen durchsuchen oder eigenen Konzepte entwickeln, mit REA oder auch mit RSI  dann einen Plan erstellen (mit NALAtheON's, NEOP's und Grand TheGremium auf den NALA Resourcen  mit Experten) und mir diese als übersichtliches Konzepte mit Lösungsmatrix inkl. Delta Übersichts Matrix (Performance/Features/Sicherheits Optimierungen) vorschlagen kann die ich dann mit 2 Klick (1. klick -> (Installieren/Umsetzen)  und dann (wollen sie wirklich? -> (abbrechen) oder (AUSFÜHREN) und dann wird NALA dies implementieren (oder mir  die entsprechenden Prompts für Codex / Antigravity, ZCode oder OpenCode generieren, damit ich diese dann in den entsprechenden Coding tools Umsetzen kann!`;
+
+    function buildIdePrompt(ide) {
+      document.getElementById('idePromptArea').value =
+        `[TARGET IDE: ${ide}] — NALA-HWSensors v2.7 (True 3D Mountain Relief, Himalaya/SnowPeaks/Forest/HyperLava Biomes, 360° Planetary Orbit Screensaver .saver & Universal macOS arm64+x86_64)
+` +
+        `Repository: https://github.com/Master-MD/NALA-HWSensors
+
+` + MANDATORY_FOOTER;
+    }
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeScreensaver();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initMatrix192();
+      const params = new URLSearchParams(window.location.search);
+      const urlMode = params.get('mode');
+      const urlBiome = params.get('biome');
+      const urlOrbit = params.get('orbit');
+      const urlSaver = params.get('saver');
+      const urlAngle = params.get('angle');
+
+      if (urlMode) {
+        switchPresetLayout(urlMode);
+      } else {
+        switchPresetLayout('img3');
+      }
+      if (urlBiome) {
+        setPalette(urlBiome);
+      }
+      if (urlOrbit === '1') {
+        setOrbit360(true);
+      }
+      if (urlAngle !== null) {
+        orbitTheta = (parseFloat(urlAngle) || 0) * Math.PI / 180;
+      }
+      if (urlSaver === '1') {
+        openScreensaver(false);
+      }
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+      renderAllHistograms();
+      buildIdePrompt('OpenAI Codex / Antigravity / ZCode / OpenCode');
+
+      ['relief3dCanvas', 'screensaver3dCanvas'].forEach(cid => {
+        const c = document.getElementById(cid);
+        if (!c) return;
+        c.style.cursor = 'grab';
+        c.addEventListener('mousedown', e => {
+          isDragging3D = true;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          c.style.cursor = 'grabbing';
+        });
+        c.addEventListener('mousemove', e => {
+          const r = c.getBoundingClientRect();
+          if (isDragging3D) {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            if (orbitEnabled || cid === 'screensaver3dCanvas') {
+              orbitTheta = (orbitTheta + dx * 0.008 + Math.PI * 2) % (Math.PI * 2);
+            } else {
+              cameraAngle = Math.max(-55, Math.min(55, cameraAngle + dx * 0.35));
+            }
+            cameraPitch = Math.max(-0.12, Math.min(0.15, cameraPitch + dy * 0.0015));
+            draw3DMountainCanvas('relief3dCanvas');
+            draw3DMountainCanvas('screensaver3dCanvas');
+          }
+          const th = Math.min(191, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * 192)));
+          const pct = Math.min(98, Math.max(24, Math.round(52 + Math.sin(th * 0.18) * 38)));
+          hoveredPeak = {
+            thread: th,
+            pct,
+            ghz: (2.2 + (pct / 100) * 1.1).toFixed(2),
+            temp: Math.round(49 + (pct / 100) * 23)
+          };
+        });
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging3D) {
+          isDragging3D = false;
+        }
+      });
+    });
+    window.addEventListener('resize', () => {
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    });
+  </script>
+</body>
+</html>

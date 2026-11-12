@@ -487,15 +487,25 @@
     <div class="menubar-left">
       <span style="font-weight:800;font-size:14px;"></span>
       <span style="font-weight:800;color:#fff;cursor:pointer;" onclick="switchPresetLayout('img2')">
-        NALA-HWSensors <span style="color:#38bdf8;font-family:monospace;">v2.6</span>
+        NALA-HWSensors <span style="color:#38bdf8;font-family:monospace;">v2.7</span>
       </span>
-      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img1')">Bild 1: Alpine Command Center</span>
-      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img2')">Bild 2: Lava v2.6</span>
-      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img3')">Bild 3: NALA Aurora v2.6</span>
-      <span style="color:#fbbf24;font-weight:700;cursor:pointer;" onclick="switchPresetLayout('dream')">🌙 Dream / REA / RSI (2-Klick)</span>
+      <span style="color:#6ee7b7;font-weight:700;cursor:pointer;" onclick="setPalette('himalaya')">🏔️ Himalaya</span>
+      <span style="color:#93c5fd;font-weight:700;cursor:pointer;" onclick="setPalette('snowpeaks')">❄️ Schnee-Gipfel</span>
+      <span style="color:#86efac;font-weight:700;cursor:pointer;" onclick="setPalette('forest')">🌲 Tannenwald</span>
+      <span style="color:#fca5a5;font-weight:700;cursor:pointer;" onclick="setPalette('hyperlava')">🌋 Hyper-Magma</span>
+      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img1')">Bild 1: Alpine</span>
+      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img2')">Bild 2: Lava</span>
+      <span style="color:#cbd5e1;cursor:pointer;" onclick="switchPresetLayout('img3')">Bild 3: Aurora</span>
+      <span style="color:#fbbf24;font-weight:700;cursor:pointer;" onclick="switchPresetLayout('dream')">🌙 2-Klick RSI</span>
     </div>
 
     <div class="menubar-right">
+      <button onclick="toggleNativeFullscreen()" style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.55);color:#6ee7b7;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;" title="Echtes macOS Vollbild umschalten">
+        ⛶ Vollbild
+      </button>
+      <button onclick="exportOrInstallScreensaver()" style="background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.5);color:#7dd3fc;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;cursor:pointer;" title="macOS .saver Bildschirmschoner installieren / exportieren">
+        💾 .saver
+      </button>
       <div class="nala-capsule-pill" onclick="toggleSysPopover()" title="Klicken für macOS System-Popover">
         <span style="color:#4ade80;">💻 <strong id="mbCpu">42%</strong></span>
         <span style="color:#86efac;" id="mbTemp">56°C</span>
@@ -565,10 +575,10 @@
     <aside class="sidebar">
       <div>
         <div class="traffic-lights">
-          <span class="tl r"></span>
-          <span class="tl y"></span>
-          <span class="tl g"></span>
-          <span style="margin-left:auto;font-family:monospace;font-size:10px;color:#38bdf8;">v2.6 NCSP</span>
+          <span class="tl r" style="cursor:pointer;" onclick="closeScreensaver()" title="Schließen / Zurück"></span>
+          <span class="tl y" style="cursor:pointer;" onclick="toggleOrbit360()" title="360° Orbit umschalten"></span>
+          <span class="tl g" style="cursor:pointer;" onclick="toggleNativeFullscreen()" title="Echtes macOS Vollbild (Fullscreen) umschalten"></span>
+          <span style="margin-left:auto;font-family:monospace;font-size:10px;color:#38bdf8;">v2.7 UNI</span>
         </div>
 
         <!-- Real Photorealistic Neon Black Cat Avatar Card (Top-Left of Images 2 & 3) -->
@@ -592,8 +602,14 @@
         <div id="snav-img1" class="side-btn" onclick="switchPresetLayout('img1')">
           <span>🏔️</span><span>Command Center (Bild 1)</span>
         </div>
-        <div class="side-btn" onclick="openScreensaver()">
-          <span>🖥️</span><span>Screensaver (22:24)</span>
+        <div class="side-btn" onclick="openScreensaver(true)">
+          <span>🖥️</span><span>Screensaver (360° Full)</span>
+        </div>
+        <div class="side-btn" style="color:#6ee7b7;" onclick="exportOrInstallScreensaver()">
+          <span>💾</span><span>.saver installieren</span>
+        </div>
+        <div class="side-btn" style="color:#38bdf8;" onclick="toggleNativeFullscreen()">
+          <span>⛶</span><span>Echtes Vollbild (Mac)</span>
         </div>
         <div id="snav-dream" class="side-btn" style="color:#fbbf24;" onclick="switchPresetLayout('dream')">
           <span>🌙</span><span>Dream / REA / RSI (2-Klick)</span>
@@ -676,6 +692,10 @@
           </div>
 
           <div class="pill-group">
+            <button id="palBtn-himalaya" class="pill-tab" onclick="setPalette('himalaya')" title="Grün (Wald) → Feldbraun → Graufels → Gletscher-Schnee">🏔️ Himalaya</button>
+            <button id="palBtn-snowpeaks" class="pill-tab" onclick="setPalette('snowpeaks')" title="Schneebedeckte Hochalpen & Matterhorn">❄️ Schnee-Gipfel</button>
+            <button id="palBtn-forest" class="pill-tab" onclick="setPalette('forest')" title="Grüner Tannenwald mit 3D-Bäumen & Schneespitzen">🌲 Tannenwald</button>
+            <button id="palBtn-hyperlava" class="pill-tab" onclick="setPalette('hyperlava')" title="Krakatau Hyper-Magma mit Lava-Flüssen & Glut-Funken">🌋 Hyper-Magma</button>
             <button id="palBtn-lava" class="pill-tab active" onclick="setPalette('lava')">Lava</button>
             <button id="palBtn-aurora" class="pill-tab" onclick="setPalette('aurora')">NALA Aurora</button>
             <button id="palBtn-alpine" class="pill-tab" onclick="setPalette('alpine')">Alpine Gold</button>
@@ -838,19 +858,26 @@
             </span>
           </div>
 
-          <!-- Preset Pills from Image 1 & Image 2 -->
+          <!-- Preset Pills from Image 1 & Image 2 + v2.7 Biomes -->
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
             <div class="pill-group">
+              <button class="pill-tab" onclick="setPalette('himalaya')" title="Grün → Feldbraun → Graufels → Gletscher-Schnee">🏔️ Himalaya</button>
+              <button class="pill-tab" onclick="setPalette('snowpeaks')" title="Schneebedeckte Gipfel">❄️ Schnee</button>
+              <button class="pill-tab" onclick="setPalette('forest')" title="Grüner Tannenwald & Gipfel">🌲 Wald</button>
+              <button class="pill-tab" onclick="setPalette('hyperlava')" title="Hyper-Magma & Lava-Flüsse">🌋 Hyper-Magma</button>
               <button class="pill-tab" onclick="setPalette('alpine')">🏔️ Alpine</button>
               <button class="pill-tab" onclick="toggleWireframeOnly()">🕸️ Wireframe</button>
-              <button class="pill-tab" onclick="setPalette('lava')">🌋 Vulkan / Lava</button>
-              <button class="pill-tab" onclick="setPalette('aurora')">🌌 NALA Aurora</button>
+              <button class="pill-tab" onclick="setPalette('lava')">🟧 Lava</button>
+              <button class="pill-tab" onclick="setPalette('aurora')">🌌 Aurora</button>
             </div>
-            <button onclick="rotatePerspective()" style="background:#131c2e;border:1px solid rgba(255,255,255,0.15);color:#e2e8f0;padding:5px 10px;border-radius:7px;font-weight:600;cursor:pointer;">
-              👁️ Perspektive
+            <button id="btnOrbitTop" onclick="toggleOrbit360()" style="background:#131c2e;border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;padding:5px 10px;border-radius:7px;font-weight:700;cursor:pointer;" title="Langsame 360°-Planeten-Rotation um die Berglandschaft">
+              🪐 360° Orbit
             </button>
-            <button onclick="openScreensaver()" style="background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);color:#6ee7b7;padding:5px 11px;border-radius:7px;font-weight:700;cursor:pointer;">
-              ⛶ Screensaver
+            <button onclick="toggleNativeFullscreen()" style="background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.5);color:#7dd3fc;padding:5px 10px;border-radius:7px;font-weight:700;cursor:pointer;">
+              ⛶ Vollbild
+            </button>
+            <button onclick="openScreensaver(true)" style="background:rgba(16,185,129,0.22);border:1px solid rgba(16,185,129,0.55);color:#6ee7b7;padding:5px 11px;border-radius:7px;font-weight:700;cursor:pointer;">
+              🖥️ Screensaver
             </button>
           </div>
         </div>
@@ -868,12 +895,14 @@
                 <button id="btnLiveState" class="pill-tab active" onclick="setReliefLive(true)">Live</button>
                 <button id="btnPauseState" class="pill-tab" onclick="setReliefLive(false)">Pause</button>
                 <button class="pill-tab" onclick="triggerMountainSpike()">⚡ Spike</button>
+                <button id="btnOrbitBottom" class="pill-tab" onclick="toggleOrbit360()" style="color:#7dd3fc;">🪐 360° Rotation</button>
               </div>
 
               <div class="pill-group" style="background:rgba(10,14,23,0.88);backdrop-filter:blur(10px);">
-                <button class="pill-tab" onclick="cameraAngle=0">📷 Kamera zurücksetzen</button>
+                <button class="pill-tab" onclick="resetCameraAndOrbit()">📷 Kamera zurücksetzen</button>
                 <button class="pill-tab" onclick="rotatePerspective()">📐 Perspektive</button>
-                <button class="pill-tab" onclick="openScreensaver()">⛶</button>
+                <button class="pill-tab" onclick="toggleNativeFullscreen()" title="Echtes macOS Vollbild">⛶ Vollbild</button>
+                <button class="pill-tab" onclick="openScreensaver(true)" style="color:#6ee7b7;">🖥️ Screensaver</button>
               </div>
             </div>
           </div>
@@ -883,12 +912,12 @@
             <div style="display:flex;flex-direction:column;gap:5px;">
               <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px;">
                 <strong style="color:#fff;font-size:12px;">3D Ansicht · CPU Threads</strong>
-                <span style="color:#38bdf8;font-family:monospace;font-size:11px;">192 Ch</span>
+                <span id="lblThreadCount" style="color:#38bdf8;font-family:monospace;font-size:11px;">192 Ch</span>
               </div>
 
               <div class="insp-row">
-                <div class="insp-lbl"><span>Zeitraum</span><span style="font-family:monospace;color:#38bdf8;">60 s</span></div>
-                <input type="range" min="30" max="120" value="60" style="width:100%;accent-color:#38bdf8;" />
+                <div class="insp-lbl"><span>360° Orbit-Speed</span><span id="lblOrbitSpeed" style="font-family:monospace;color:#38bdf8;">1.0x</span></div>
+                <input type="range" min="2" max="25" value="10" oninput="orbitSpeed=this.value/10;document.getElementById('lblOrbitSpeed').textContent=orbitSpeed.toFixed(1)+'x';" style="width:100%;accent-color:#38bdf8;" />
               </div>
 
               <div class="insp-row">
@@ -907,8 +936,12 @@
               </div>
 
               <div class="insp-row">
-                <div class="insp-lbl"><span>Farbe</span></div>
+                <div class="insp-lbl"><span>Biom / Farbe</span></div>
                 <select id="inspectorPaletteSelect" onchange="setPalette(this.value)" style="background:#161f30;border:1px solid rgba(255,255,255,0.16);color:#fff;padding:5px 8px;border-radius:6px;font-size:11.5px;">
+                  <option value="himalaya">🏔️ Himalaya (Grün → Braun → Fels → Schnee)</option>
+                  <option value="snowpeaks">❄️ Matterhorn Schnee-Gipfel</option>
+                  <option value="forest">🌲 Tannenwald &amp; Alpengipfel</option>
+                  <option value="hyperlava">🌋 Hyper-Magma (Lava-Flüsse &amp; Glut)</option>
                   <option value="lava">🟧 Lava (Bild 2)</option>
                   <option value="aurora">🌌 NALA Aurora (Bild 3)</option>
                   <option value="alpine">🏔️ Alpine Gold (Bild 1)</option>
@@ -918,6 +951,10 @@
               </div>
 
               <div style="display:flex;flex-direction:column;gap:6px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.08);">
+                <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+                  <span>360° Planeten-Orbit</span>
+                  <input id="chkOrbit360" type="checkbox" class="ios-toggle" onchange="setOrbit360(this.checked)" />
+                </label>
                 <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
                   <span>Gitterlinien (3D Mesh)</span>
                   <input type="checkbox" class="ios-toggle" checked onchange="showGrid=this.checked" />
@@ -1181,23 +1218,64 @@
   </div>
 
   <!-- =====================================================================
-       FULLSCREEN 3D PERFORMANCE RELIEF SCREENSAVER (With Clock 22:24)
+       FULLSCREEN 360° ORBIT 3D PERFORMANCE RELIEF SCREENSAVER (v2.7)
        ===================================================================== -->
-  <div id="screensaverModal" class="hidden" onclick="closeScreensaver()" style="position:fixed;inset:0;background:#03050a;z-index:600;padding:24px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <img src="data:image/jpeg;base64,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" alt="Icon" style="width:48px;height:48px;border-radius:11px;" />
+  <div id="screensaverModal" class="hidden" style="position:fixed;inset:0;background:#020409;z-index:600;overflow:hidden;">
+    <!-- Full-Bleed 100vw x 100vh 3D Canvas -->
+    <canvas id="screensaver3dCanvas" style="position:absolute;inset:0;width:100vw;height:100vh;display:block;cursor:grab;"></canvas>
+
+    <!-- Top Floating Translucent HUD Header -->
+    <div style="position:relative;z-index:610;display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:linear-gradient(180deg,rgba(2,4,9,0.88) 0%,rgba(2,4,9,0.35) 70%,transparent 100%);pointer-events:none;">
+      <div style="display:flex;align-items:center;gap:14px;pointer-events:auto;">
+        <img src="data:image/jpeg;base64,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" alt="Icon" style="width:48px;height:48px;border-radius:11px;border:1px solid rgba(56,189,248,0.5);" />
         <div>
-          <div style="font-size:18px;font-weight:900;color:#fff;">NALA-HWSensors v2.6 · 3D Performance Relief Screensaver</div>
-          <div style="font-size:12px;color:#38bdf8;font-family:monospace;">192 CPU Threads · 60 FPS Live Mountain Mesh · Klicken zum Zurückkehren</div>
+          <div style="font-size:18px;font-weight:900;color:#fff;display:flex;align-items:center;gap:10px;">
+            <span>NALA-HWSensors v2.7 · 360° 3D Performance Relief Screensaver</span>
+            <span id="saverBiomeBadge" style="font-size:11px;background:rgba(16,185,129,0.22);border:1px solid rgba(16,185,129,0.55);color:#6ee7b7;padding:2px 9px;border-radius:999px;">🏔️ Himalaya</span>
+            <span id="saverOrbitBadge" style="font-size:11px;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;padding:2px 9px;border-radius:999px;font-family:monospace;">🪐 Orbit 0°</span>
+          </div>
+          <div style="font-size:12px;color:#94a3b8;font-family:monospace;">192 CPU Threads · 60 FPS Echtzeit-3D-Mesh · Langsamer 360°-Planeten-Orbit · Universal macOS (Apple Silicon &amp; Intel)</div>
         </div>
       </div>
-      <div style="font-size:48px;font-weight:900;font-family:monospace;color:#fff;">22:55</div>
+      <div id="saverClock" style="font-size:48px;font-weight:900;font-family:monospace;color:#fff;text-shadow:0 0 24px rgba(56,189,248,0.35);">22:55</div>
     </div>
-    <canvas id="screensaver3dCanvas" style="width:100%;height:74vh;display:block;"></canvas>
-    <div style="display:flex;justify-content:space-between;color:#94a3b8;font-family:monospace;">
-      <span>CPU: 42% (192 Threads) · GPU: 68% · Memory: 63% (81.2/128 GB) · Thermal: 56°C · Power: 212 W</span>
-      <span style="color:#10b981;font-weight:700;">NALA All Systems Online ●</span>
+
+    <!-- Optional Toast inside Screensaver / Studio -->
+    <div id="saverToast" class="hidden" style="position:fixed;top:86px;left:50%;transform:translateX(-50%);z-index:650;background:rgba(6,78,59,0.95);border:1px solid #34d399;color:#ecfdf5;padding:10px 18px;border-radius:12px;font-weight:700;box-shadow:0 16px 40px rgba(0,0,0,0.75);">
+      ✅ NALA-HWSensors.saver installiert in ~/Library/Screen Savers/ (Universal Binary arm64 + x86_64)
+    </div>
+
+    <!-- Bottom Interactive Glassmorphic Control Dock (Clicking here controls the 3D scene without closing!) -->
+    <div style="position:absolute;bottom:16px;left:24px;right:24px;z-index:610;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:rgba(8,12,21,0.86);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.14);border-radius:14px;padding:10px 16px;">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+        <span style="font-size:11px;font-weight:800;color:#94a3b8;margin-right:4px;">BIOM:</span>
+        <button class="pill-tab" onclick="setPalette('himalaya')">🏔️ Himalaya</button>
+        <button class="pill-tab" onclick="setPalette('snowpeaks')">❄️ Schnee-Gipfel</button>
+        <button class="pill-tab" onclick="setPalette('forest')">🌲 Tannenwald</button>
+        <button class="pill-tab" onclick="setPalette('hyperlava')">🌋 Hyper-Magma</button>
+        <button class="pill-tab" onclick="setPalette('aurora')">🌌 Aurora</button>
+        <button class="pill-tab" onclick="setPalette('alpine')">🏔️ Alpine Gold</button>
+        <button class="pill-tab" onclick="setPalette('lava')">🟧 Lava</button>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+        <button id="btnOrbitSaver" onclick="toggleOrbit360()" style="background:rgba(56,189,248,0.22);border:1px solid #38bdf8;color:#fff;padding:5px 11px;border-radius:8px;font-weight:700;cursor:pointer;">
+          🪐 360° Orbit: EIN
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#cbd5e1;">
+          <span>Speed:</span>
+          <input type="range" min="2" max="25" value="10" oninput="orbitSpeed=this.value/10;document.getElementById('lblOrbitSpeed').textContent=orbitSpeed.toFixed(1)+'x';" style="width:76px;accent-color:#38bdf8;" />
+        </div>
+        <button onclick="toggleNativeFullscreen()" style="background:rgba(16,185,129,0.22);border:1px solid #10b981;color:#6ee7b7;padding:5px 12px;border-radius:8px;font-weight:700;cursor:pointer;">
+          ⛶ Echtes Vollbild
+        </button>
+        <button onclick="exportOrInstallScreensaver()" style="background:rgba(168,85,247,0.24);border:1px solid #a855f7;color:#e9d5ff;padding:5px 12px;border-radius:8px;font-weight:700;cursor:pointer;">
+          💾 .saver installieren
+        </button>
+        <button onclick="closeScreensaver()" style="background:rgba(239,68,68,0.24);border:1px solid #ef4444;color:#fecaca;padding:5px 12px;border-radius:8px;font-weight:800;cursor:pointer;">
+          ✕ Beenden (ESC)
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1237,6 +1315,10 @@
     let wireOnly = false;
     let cameraAngle = 0;      // Horizontal yaw (-55 .. +55)
     let cameraPitch = 0.0;    // Vertical pitch (-0.12 .. +0.15)
+    let orbitEnabled = false; // v2.7: Slow 360° Planetary / Landscape Orbit
+    let orbitSpeed = 1.0;     // v2.7: Orbit angular speed multiplier
+    let orbitTheta = 0.0;     // v2.7: Current 360° angle in radians (0 .. 2*PI)
+    let liveCoreLoads = null; // v2.7: Real per-core CPU thread loads from macOS Mach / Cluster
     let isDragging3D = false;
     let dragStartX = 0;
     let dragStartY = 0;
@@ -1351,7 +1433,14 @@
       const frontApron = nz > 0.82 ? Math.pow(Math.max(0, 1.0 - (nz - 0.82) / 0.18), 1.75) : 1.0;
       const sideApron  = Math.max(0.04, 1.0 - Math.pow(Math.abs(nx), 3.8) * 0.90);
 
-      const combined = (massifBase * 0.74 + ridgeFractal * weight) * frontApron * sideApron;
+      // Optional live per-core CPU thread modulation from macOS Mach host_processor_info
+      let liveMod = 0.0;
+      if (liveCoreLoads && liveCoreLoads.length > 0) {
+        const coreIdx = x % liveCoreLoads.length;
+        liveMod = (liveCoreLoads[coreIdx] - 35.0) * 0.16 * weight;
+      }
+
+      const combined = (massifBase * 0.74 + ridgeFractal * weight + liveMod) * frontApron * sideApron;
       return Math.min(98.0, Math.max(0.8, combined + spikeBoost * weight * 16.0));
     }
 
@@ -1435,12 +1524,169 @@
       ];
     }
 
-    // Solid 3D Quad Fill (Provides Hidden-Surface Occlusion + Authentic Rock/Magma/Alpine Shading!)
+    // =========================================================================
+    // v2.7 NEW ELEVATION-STRATIFIED BIOME SHADERS:
+    // 1. HIMALAYA (Grün / Tannenwald -> Feldbraun -> Graufels -> Gletscher-Schneeweiß)
+    //    "von grün auf feldbraun und dann graufels und dann weißes ... umso höher, umso weißer!"
+    // 2. SNOWPEAKS (Matterhorn / Schneebedeckte Hochalpen)
+    // 3. FOREST (Schwarzwald / Tannenwald & Alpengipfel mit 3D-Bäumen)
+    // 4. HYPERLAVA (Krakatau / Lava-Flüsse im Tal + Weißglühende Gipfel + Glut-Funken)
+    // =========================================================================
+    function getHimalayaRGB(nx, nz, hNorm, slopeX, light, crestBoost) {
+      if (hNorm < 0.038) return [7, 14, 18];
+
+      // Organic snowline & treeline jitter so elevation bands look like natural mountain strata
+      const strataJitter = Math.sin(nx * 14.0 + nz * 11.0) * 0.022 + Math.cos(nx * 27.0 - nz * 19.0) * 0.012;
+      const h = Math.max(0, Math.min(1, hNorm + strataJitter));
+
+      const colValleyDeep  = [16,  64,  34];  // Deep sub-alpine pine forest green
+      const colMeadowGreen = [46, 136,  64];  // Lush alpine meadow green
+      const colFeldBraun   = [132, 86,  46];  // Earthy Himalayan Feldbraun / ochre-brown
+      const colTerrazzoBrn = [164, 114, 68];  // Sunlit dry alpine earth
+      const colGrauFelsDk  = [76,  86, 100];  // Dark Himalayan granite cliff
+      const colGrauFelsLt  = [138, 150, 168]; // Craggy Graufels
+      const colGlacierBlue = [196, 224, 248]; // Shadowed glacier ice-snow
+      const colPureSnow    = [255, 255, 255]; // Blinding summit snow ("umso höher, umso weißer")
+
+      let rgb;
+      if (h < 0.21) {
+        // Zone 1: Green Pine Valley -> Meadow Green (0% .. 21%)
+        const t = Math.max(0, (h - 0.038) / 0.172);
+        rgb = mixRGB(colValleyDeep, colMeadowGreen, t);
+      } else if (h < 0.39) {
+        // Zone 2: Waldgrenze -> Feldbraun (21% .. 39%)
+        const t = (h - 0.21) / 0.18;
+        const brn = light > 0 ? mixRGB(colFeldBraun, colTerrazzoBrn, Math.min(1, light * 1.2)) : colFeldBraun;
+        rgb = mixRGB(colMeadowGreen, brn, t);
+      } else if (h < 0.57) {
+        // Zone 3: Feldbraun -> Graufels (39% .. 57%)
+        const t = (h - 0.39) / 0.18;
+        const rock = mixRGB(colGrauFelsDk, colGrauFelsLt, Math.max(0, Math.min(1, 0.45 + light * 0.75)));
+        rgb = mixRGB(colFeldBraun, rock, t);
+      } else {
+        // Zone 4: Graufels -> Eternal Glacier & Blinding White Snow (57% .. 100%)
+        // "Umso höher dann, umso weißer!"
+        const snowProgress = Math.min(1, (h - 0.57) / 0.26);
+        const snowShade = mixRGB(colGlacierBlue, colPureSnow, Math.min(1, 0.35 + Math.max(0, light) * 0.55 + snowProgress * 0.45 + crestBoost * 0.6));
+        const rock = mixRGB(colGrauFelsDk, colGrauFelsLt, 0.5);
+        // Steep vertical rock cliffs poke slightly through lower snow, while high summits are 100% pure white!
+        const steepCliffExposure = (Math.abs(slopeX) > 4.6 && h < 0.78 && crestBoost < 0.14) ? 0.38 : 0.0;
+        rgb = mixRGB(rock, snowShade, Math.max(0, Math.min(1, snowProgress * 1.15 - steepCliffExposure)));
+      }
+
+      // Directional sunlight & shadow relief
+      const sunMul = h > 0.58
+        ? (0.86 + Math.max(-0.20, light) * 0.26 + crestBoost * 0.25)
+        : (0.72 + Math.max(-0.35, light) * 0.48 + crestBoost * 0.22);
+
+      return [
+        Math.min(255, Math.max(6, Math.round(rgb[0] * sunMul))),
+        Math.min(255, Math.max(10, Math.round(rgb[1] * sunMul))),
+        Math.min(255, Math.max(14, Math.round(rgb[2] * sunMul)))
+      ];
+    }
+
+    function getSnowPeaksRGB(nx, nz, hNorm, slopeX, light, crestBoost) {
+      if (hNorm < 0.04) return [6, 10, 18];
+      const jitter = Math.sin(nx * 16.0 - nz * 12.0) * 0.025;
+      const h = Math.max(0, Math.min(1, hNorm + jitter));
+
+      const colDarkGranite = [24, 34, 52];
+      const colMidSlate    = [68, 84, 110];
+      const colGlacierIce  = [178, 218, 250];
+      const colSummitSnow  = [255, 255, 255];
+
+      let rgb;
+      if (h < 0.38) {
+        rgb = mixRGB(colDarkGranite, colMidSlate, h / 0.38);
+      } else {
+        const snowT = Math.min(1, (h - 0.38) / 0.24);
+        const snowCol = mixRGB(colGlacierIce, colSummitSnow, Math.min(1, 0.30 + Math.max(0, light) * 0.65 + snowT * 0.45 + crestBoost * 0.7));
+        rgb = mixRGB(colMidSlate, snowCol, snowT);
+      }
+      const mul = 0.78 + Math.max(-0.3, light) * 0.42 + crestBoost * 0.25;
+      return [
+        Math.min(255, Math.round(rgb[0] * mul)),
+        Math.min(255, Math.round(rgb[1] * mul)),
+        Math.min(255, Math.round(rgb[2] * mul))
+      ];
+    }
+
+    function getForestRGB(nx, nz, hNorm, slopeX, light, crestBoost) {
+      if (hNorm < 0.04) return [5, 13, 10];
+      const jitter = Math.cos(nx * 15.0 + nz * 13.0) * 0.022;
+      const h = Math.max(0, Math.min(1, hNorm + jitter));
+
+      const colDeepPine   = [12, 54, 28];
+      const colSpruceGrn  = [34, 124, 58];
+      const colBrownRock  = [108, 84, 62];
+      const colGreySummit = [142, 152, 166];
+      const colSnowCap    = [250, 253, 255];
+
+      let rgb;
+      if (h < 0.44) {
+        rgb = mixRGB(colDeepPine, colSpruceGrn, h / 0.44);
+      } else if (h < 0.62) {
+        rgb = mixRGB(colSpruceGrn, mixRGB(colBrownRock, colGreySummit, 0.5), (h - 0.44) / 0.18);
+      } else {
+        rgb = mixRGB(colGreySummit, colSnowCap, Math.min(1, (h - 0.62) / 0.22));
+      }
+      const mul = 0.76 + Math.max(-0.3, light) * 0.45 + crestBoost * 0.22;
+      return [
+        Math.min(255, Math.round(rgb[0] * mul)),
+        Math.min(255, Math.round(rgb[1] * mul)),
+        Math.min(255, Math.round(rgb[2] * mul))
+      ];
+    }
+
+    function getHyperLavaRGB(nx, nz, hNorm, slopeX, light, crest, crestBoost) {
+      // Glowing molten lava rivers winding across the dark valley canyons + white-hot magma craters on high peaks!
+      const riverWave = Math.sin(nx * 9.5 + Math.sin(nz * 7.0 + phaseTick * 0.08) * 1.8);
+      const isLavaRiver = hNorm < 0.22 && Math.abs(riverWave) < 0.24 && nz > 0.16 && nz < 0.88;
+      if (isLavaRiver) {
+        const riverCore = 1.0 - Math.abs(riverWave) / 0.24;
+        return [
+          255,
+          Math.min(255, Math.round(95 + riverCore * 145)),
+          Math.min(255, Math.round(15 + riverCore * 90))
+        ];
+      }
+
+      const gullyFissure = (hNorm > 0.12 && hNorm < 0.65 && crest < -0.35)
+        ? Math.min(0.95, Math.abs(crest) * 0.28)
+        : 0.0;
+      const heat = Math.pow(Math.max(0, hNorm - 0.12), 1.15) * 0.88 + crestBoost * 1.75 + gullyFissure + Math.max(0, light) * 0.28;
+
+      if (heat < 0.28) {
+        const base = 10 + hNorm * 22 + Math.max(0, light) * 24;
+        return [Math.round(base * 1.35 + heat * 110), Math.round(base * 0.72), Math.round(base * 0.95)];
+      } else if (heat < 0.62) {
+        const t = (heat - 0.28) / 0.34;
+        return [Math.round(165 + t * 90), Math.round(20 + t * 115), Math.round(18 + t * 10)];
+      } else {
+        const t = Math.min(1, (heat - 0.62) / 0.42);
+        return [255, Math.round(140 + t * 115), Math.round(30 + t * 215)];
+      }
+    }
+
+    // Solid 3D Quad Fill (Provides Hidden-Surface Occlusion + Authentic Rock/Magma/Alpine/Himalaya Shading!)
     function getQuadFillStyle(hNorm, slopeX, slopeZ, crest, nx, nz, palName, isWireMode) {
       const light = Math.max(-0.65, Math.min(0.85, slopeX * 0.105 - slopeZ * 0.042));
       const crestBoost = Math.max(0, crest * 0.095);
 
-      if (isWireMode || palName === 'aurora') {
+      if (!isWireMode && palName === 'himalaya') {
+        const [r, g, b] = getHimalayaRGB(nx, nz, hNorm, slopeX, light, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (!isWireMode && palName === 'snowpeaks') {
+        const [r, g, b] = getSnowPeaksRGB(nx, nz, hNorm, slopeX, light, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (!isWireMode && palName === 'forest') {
+        const [r, g, b] = getForestRGB(nx, nz, hNorm, slopeX, light, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (!isWireMode && palName === 'hyperlava') {
+        const [r, g, b] = getHyperLavaRGB(nx, nz, hNorm, slopeX, light, crest, crestBoost);
+        return `rgb(${r},${g},${b})`;
+      } else if (isWireMode || palName === 'aurora') {
         if (hNorm < 0.055) return 'rgb(5, 8, 16)';
         const [sr, sg, sb] = getAuroraColor(nx, nz, hNorm, crestBoost);
         const shade = (isWireMode ? 0.09 : 0.14) + Math.max(0, light) * 0.18 + Math.pow(hNorm, 1.65) * (isWireMode ? 0.15 : 0.24);
@@ -1512,7 +1758,25 @@
       const crestBoost = Math.max(0, crest * 0.085);
       const intensity = Math.min(1, hNorm * 0.92 + crestBoost);
 
-      if (isWireMode || palName === 'aurora') {
+      if (!isWireMode && palName === 'himalaya') {
+        if (hNorm < 0.21) return `rgba(74, 222, 128, ${(0.18 + nz * 0.22).toFixed(2)})`;
+        if (hNorm < 0.39) return `rgba(217, 155, 92, 0.34)`;
+        if (hNorm < 0.57) return `rgba(186, 200, 218, 0.38)`;
+        return `rgba(255, 255, 255, ${(0.55 + Math.min(0.42, (hNorm - 0.55) * 1.1)).toFixed(2)})`;
+      } else if (!isWireMode && palName === 'snowpeaks') {
+        if (hNorm > 0.38) return `rgba(240, 249, 255, ${(0.52 + intensity * 0.44).toFixed(2)})`;
+        return `rgba(125, 211, 252, ${(0.14 + nz * 0.18).toFixed(2)})`;
+      } else if (!isWireMode && palName === 'forest') {
+        if (hNorm < 0.44) return `rgba(52, 211, 153, ${(0.22 + nz * 0.22).toFixed(2)})`;
+        if (hNorm < 0.62) return `rgba(203, 213, 225, 0.35)`;
+        return `rgba(255, 255, 255, 0.78)`;
+      } else if (!isWireMode && palName === 'hyperlava') {
+        if (intensity > 0.20 || crest > 0.5) {
+          const t = Math.min(1, Math.max(0, intensity - 0.15) / 0.55);
+          return `rgba(255, ${Math.round(135 + t * 120)}, ${Math.round(35 + t * 185)}, ${(0.38 + t * 0.58).toFixed(2)})`;
+        }
+        return `rgba(249, 115, 22, ${(0.16 + nz * 0.18).toFixed(2)})`;
+      } else if (isWireMode || palName === 'aurora') {
         const [r, g, b] = getAuroraColor(nx, nz, hNorm, crestBoost);
         const alpha = hNorm < 0.08
           ? (0.24 + nz * 0.24)
@@ -1552,9 +1816,10 @@
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, h);
 
-      const padLeft = 42;
-      const padRight = 10;
-      const padBottom = 24;
+      const isSaverCanvas = (canvasId === 'screensaver3dCanvas');
+      const padLeft = isSaverCanvas ? 54 : 42;
+      const padRight = isSaverCanvas ? 28 : 10;
+      const padBottom = isSaverCanvas ? 74 : 24;
       const drawW = w - padLeft - padRight;
 
       // 1. Deep Atmospheric Backdrop + Ambient Under-Glow
@@ -1570,6 +1835,28 @@
             { x: 0.28, y: 0.54, r: 0.26, c: 'rgba(249, 115, 22, 0.22)' },
             { x: 0.53, y: 0.44, r: 0.28, c: 'rgba(236, 72, 153, 0.24)' },
             { x: 0.77, y: 0.38, r: 0.26, c: 'rgba(6, 182, 212, 0.22)' }
+          ]
+        : (currentPalette === 'himalaya')
+        ? [
+            { x: 0.30, y: 0.58, r: 0.28, c: 'rgba(16, 185, 129, 0.16)' },
+            { x: 0.52, y: 0.36, r: 0.32, c: 'rgba(224, 242, 254, 0.24)' },
+            { x: 0.72, y: 0.48, r: 0.26, c: 'rgba(180, 120, 70, 0.16)' }
+          ]
+        : (currentPalette === 'snowpeaks')
+        ? [
+            { x: 0.50, y: 0.38, r: 0.34, c: 'rgba(186, 230, 253, 0.25)' },
+            { x: 0.65, y: 0.44, r: 0.26, c: 'rgba(255, 255, 255, 0.18)' }
+          ]
+        : (currentPalette === 'forest')
+        ? [
+            { x: 0.38, y: 0.54, r: 0.30, c: 'rgba(16, 185, 129, 0.22)' },
+            { x: 0.58, y: 0.38, r: 0.28, c: 'rgba(224, 242, 254, 0.20)' }
+          ]
+        : (currentPalette === 'hyperlava')
+        ? [
+            { x: 0.36, y: 0.56, r: 0.32, c: 'rgba(239, 68, 68, 0.32)' },
+            { x: 0.54, y: 0.42, r: 0.34, c: 'rgba(249, 115, 22, 0.34)' },
+            { x: 0.68, y: 0.50, r: 0.28, c: 'rgba(250, 204, 21, 0.22)' }
           ]
         : (currentPalette === 'lava')
         ? [
@@ -1591,21 +1878,40 @@
         ctx.fillRect(padLeft, 0, drawW, h - padBottom);
       });
 
-      // 2. 3D Perspective Camera Projection
-      const horizonY = Math.max(46, h * (0.30 + cameraPitch * 0.22));
+      // 2. 3D Perspective Camera Projection (Supports Both Standard Yaw & True 360° Planetary Landscape Orbit!)
+      const horizonY = Math.max(isSaverCanvas ? 116 : 46, h * ((isSaverCanvas ? 0.31 : 0.30) + cameraPitch * 0.22));
       const frontFloorY = h - padBottom - 3;
       const floorSpanY = frontFloorY - horizonY;
-      const maxPeakHeightPx = h * 0.70 * heightGain;
+      const maxPeakHeightPx = h * (isSaverCanvas ? 0.55 : 0.70) * heightGain;
+
+      const activeTheta = orbitEnabled ? orbitTheta : (Math.abs(orbitTheta) > 0.001 ? orbitTheta : 0.0);
+      const use360 = orbitEnabled || Math.abs(activeTheta) > 0.001;
+      const cosT = Math.cos(activeTheta);
+      const sinT = Math.sin(activeTheta);
 
       function projectVertex(z, x, val) {
-        const nz = z / (NZ - 1);              // 0 (horizon) .. 1 (foreground)
-        const nx = (x / (NX - 1)) * 2 - 1;    // -1 (left) .. +1 (right)
-        const persp = 0.88 + nz * 0.15;
-        const yawSkew = (nz - 0.50) * (cameraAngle * 1.25);
-        const sx = padLeft + drawW * 0.50 + (nx * drawW * 0.49) * persp + yawSkew;
-        const floorY = horizonY + Math.pow(nz, 1.08) * floorSpanY;
-        const elevPx = (val / 100) * maxPeakHeightPx * (0.60 + nz * 0.44);
-        return { x: sx, y: floorY - elevPx, floorY, val, nz, nx };
+        const nzOrig = z / (NZ - 1);           // 0 (horizon) .. 1 (foreground)
+        const nxOrig = (x / (NX - 1)) * 2 - 1; // -1 (left) .. +1 (right)
+
+        if (!use360) {
+          const persp = 0.88 + nzOrig * 0.15;
+          const yawSkew = (nzOrig - 0.50) * (cameraAngle * 1.25);
+          const sx = padLeft + drawW * 0.50 + (nxOrig * drawW * 0.49) * persp + yawSkew;
+          const floorY = horizonY + Math.pow(nzOrig, 1.08) * floorSpanY;
+          const elevPx = (val / 100) * maxPeakHeightPx * (0.60 + nzOrig * 0.44);
+          return { x: sx, y: floorY - elevPx, floorY, val, nz: nzOrig, nx: nxOrig, rx: nxOrig, rz: nzOrig };
+        } else {
+          // True 360° Planetary / Landscape Orbit around center (0, 0)
+          const cz = nzOrig * 2 - 1; // -1 .. +1
+          const rx = nxOrig * cosT - cz * sinT;
+          const rz = nxOrig * sinT + cz * cosT;
+          const depthNorm = Math.max(0.0, Math.min(1.0, (rz + 1.28) / 2.56));
+          const persp = 0.74 + depthNorm * 0.34;
+          const sx = padLeft + drawW * 0.50 + (rx * drawW * 0.41) * persp;
+          const floorY = horizonY + Math.pow(depthNorm, 1.05) * floorSpanY;
+          const elevPx = (val / 100) * maxPeakHeightPx * (0.55 + depthNorm * 0.48);
+          return { x: sx, y: floorY - elevPx, floorY, val, nz: nzOrig, nx: nxOrig, rx, rz: depthNorm };
+        }
       }
 
       const proj = new Array(NZ);
@@ -1617,13 +1923,24 @@
         proj[z] = row;
       }
 
-      // 3. Painter's Algorithm Back-to-Front Rendering (z = 0 .. NZ-2)
+      // 3. Exact O(1) Sign-Directed Back-to-Front Painter's Ordering for Any 360° Angle!
       const detectedPeaks = [];
       const drawWireMesh = showGrid || wireOnly || currentPalette === 'aurora';
 
-      for (let z = 0; z < NZ - 1; z++) {
+      const zForward = !use360 || (cosT >= 0);
+      const xForward = !use360 || (sinT >= 0);
+
+      const zStart = zForward ? 0 : (NZ - 2);
+      const zEnd   = zForward ? (NZ - 1) : -1;
+      const zStep  = zForward ? 1 : -1;
+
+      const xStart = xForward ? 0 : (NX - 2);
+      const xEnd   = xForward ? (NX - 1) : -1;
+      const xStep  = xForward ? 1 : -1;
+
+      for (let z = zStart; z !== zEnd; z += zStep) {
         const nz = z / (NZ - 1);
-        for (let x = 0; x < NX - 1; x++) {
+        for (let x = xStart; x !== xEnd; x += xStep) {
           const p00 = proj[z][x];
           const p10 = proj[z][x + 1];
           const p11 = proj[z + 1][x + 1];
@@ -1631,8 +1948,8 @@
 
           const avgVal = (p00.val + p10.val + p11.val + p01.val) * 0.25;
           const hNorm = avgVal / 100;
-          const slopeX = p10.val - p00.val;
-          const slopeZ = p01.val - p00.val;
+          const slopeX = (p10.val - p00.val) * (use360 ? cosT : 1.0) + (p01.val - p00.val) * (use360 ? -sinT : 0.0);
+          const slopeZ = (p01.val - p00.val) * (use360 ? cosT : 1.0) + (p10.val - p00.val) * (use360 ? sinT : 0.0);
           const prevXVal = x > 0 ? proj[z][x - 1].val : p00.val;
           const prevZVal = z > 0 ? proj[z - 1][x].val : p00.val;
           const crest = (p00.val - (prevXVal + p10.val) * 0.5) + (p00.val - (prevZVal + p01.val) * 0.5) * 0.65;
@@ -1693,7 +2010,37 @@
             }
           }
 
-          // 3D. Collect True 3D Local Maxima (Mountain Summits) for Vertical Summit Pins (|o)
+          // 3D. Procedural 3D Pine Trees (🌲) in Himalaya Valley & Forest Biome!
+          if (!wireOnly && (currentPalette === 'himalaya' || currentPalette === 'forest')) {
+            const maxTreeElev = currentPalette === 'forest' ? 0.42 : 0.21;
+            if (hNorm > 0.045 && hNorm < maxTreeElev && (x % 2 === 0) && (z % 2 === 0)) {
+              const tHash = hash2D(x * 3, z * 5);
+              if (tHash > 0.44) {
+                const treeH = (4.5 + (tHash - 0.44) * 11.0) * (0.65 + p00.rz * 0.55);
+                const treeW = treeH * 0.42;
+                const tx = (p00.x + p11.x) * 0.5;
+                const ty = (p00.y + p11.y) * 0.5;
+                // Left sunlit pine cone facet
+                ctx.beginPath();
+                ctx.moveTo(tx, ty - treeH);
+                ctx.lineTo(tx - treeW, ty);
+                ctx.lineTo(tx, ty + 1);
+                ctx.closePath();
+                ctx.fillStyle = currentPalette === 'forest' ? 'rgba(52, 211, 102, 0.88)' : 'rgba(42, 168, 82, 0.85)';
+                ctx.fill();
+                // Right shadowed pine cone facet
+                ctx.beginPath();
+                ctx.moveTo(tx, ty - treeH);
+                ctx.lineTo(tx + treeW, ty);
+                ctx.lineTo(tx, ty + 1);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(12, 68, 34, 0.92)';
+                ctx.fill();
+              }
+            }
+          }
+
+          // 3E. Collect True 3D Local Maxima (Mountain Summits) for Vertical Summit Pins (|o)
           if (
             z > 8 && z < NZ - 6 && x > 6 && x < NX - 6 &&
             p00.val > 42 &&
@@ -1705,6 +2052,22 @@
             detectedPeaks.push(p00);
           }
         }
+      }
+
+      // 3F. Rising Glowing Volcanic Ember Sparks in Hyper-Magma Mode!
+      if (!wireOnly && currentPalette === 'hyperlava') {
+        detectedPeaks.slice(0, 18).forEach((pk, idx) => {
+          for (let e = 0; e < 3; e++) {
+            const phase = ((phaseTick * 1.8 + idx * 13 + e * 29) % 46) / 46;
+            const ex = pk.x + Math.sin(phase * 8.0 + idx + e) * 11;
+            const ey = pk.y - phase * 48;
+            const er = (1.0 - phase) * 2.4 + 0.6;
+            ctx.beginPath();
+            ctx.arc(ex, ey, er, 0, Math.PI * 2);
+            ctx.fillStyle = phase < 0.4 ? `rgba(255, 240, 138, ${(1 - phase).toFixed(2)})` : `rgba(249, 115, 22, ${(1 - phase).toFixed(2)})`;
+            ctx.fill();
+          }
+        });
       }
 
       // 4. Subtle Soft Vignette on Left Edge for Y-Axis Readability
@@ -1751,7 +2114,9 @@
           if (currentPalette === 'aurora' || wireOnly) {
             const [pr, pg, pb] = getAuroraColor(pk.nx, pk.nz, Math.min(1, pk.val / 100 + 0.15), 2.5);
             pinColor = isMain ? '#67e8f9' : `rgb(${pr},${pg},${pb})`;
-          } else if (currentPalette === 'lava') {
+          } else if (currentPalette === 'himalaya' || currentPalette === 'snowpeaks' || currentPalette === 'forest') {
+            pinColor = isMain ? '#ffffff' : '#7dd3fc';
+          } else if (currentPalette === 'lava' || currentPalette === 'hyperlava') {
             pinColor = isMain ? '#fef08a' : '#fb923c';
           } else if (currentPalette === 'alpine') {
             pinColor = isMain ? '#fef9c3' : '#fbbf24';
@@ -1802,7 +2167,7 @@
       // 7. Floating HUD Callout Box on Highest Peak (Matches Image 5: CPU Thread 104 · 87% · 2.63 GHz · Temp 68°C)
       if (showCallout && mainSummit) {
         const bx = Math.min(w - 160, Math.max(58, mainSummit.x + 12));
-        const by = Math.max(8, Math.min(h - 78, mainSummit.y - 34));
+        const by = Math.max(isSaverCanvas ? 96 : 8, Math.min(h - padBottom - 58, mainSummit.y - 34));
 
         ctx.fillStyle = 'rgba(8, 12, 22, 0.90)';
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.65)';
@@ -1824,7 +2189,7 @@
       }
 
       // 8. Bottom X-Axis Timeline Ruler (-60 s, -45 s, -30 s, -15 s, Now)
-      const axisY = h - 15;
+      const axisY = h - padBottom + 9;
       ctx.strokeStyle = 'rgba(148, 163, 184, 0.28)';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -1832,7 +2197,10 @@
       ctx.lineTo(w - padRight - 8, axisY);
       ctx.stroke();
 
-      const labelsX = ['-60 s', '-45 s', '-30 s', '-15 s', 'Now'];
+      const degNow = Math.round(((activeTheta * 180 / Math.PI) % 360 + 360) % 360);
+      const labelsX = use360
+        ? [`Orbit ${degNow}°`, 'Nord-West', 'Zentrum (192 Ch)', 'Süd-Ost', 'Live 360°']
+        : ['-60 s', '-45 s', '-30 s', '-15 s', 'Now'];
       ctx.fillStyle = 'rgba(203, 213, 225, 0.92)';
       ctx.font = '600 10.5px ui-monospace, monospace';
       labelsX.forEach((lbl, i) => {
@@ -1907,16 +2275,32 @@
     function updateMatrix192() {
       const cells = document.querySelectorAll('#matrix192Grid .m-cell');
       cells.forEach((c, i) => {
-        const v = (Math.sin(i * 0.25 + phaseTick * 0.3) + 1) * 50;
+        let v;
+        if (liveCoreLoads && liveCoreLoads.length > 0) {
+          v = liveCoreLoads[i % liveCoreLoads.length];
+        } else {
+          v = (Math.sin(i * 0.25 + phaseTick * 0.3) + 1) * 50;
+        }
         c.style.background = v > 78 ? '#f59e0b' : v > 42 ? '#10b981' : '#065f46';
       });
     }
 
-    // Real-Time 3D Mesh Evolution Loop
+    // Real-Time 3D Mesh + 360° Planetary Orbit Evolution Loop
     setInterval(() => {
       if (isLive) {
         phaseTick += 1;
         spikeBoost *= 0.86;
+        if (orbitEnabled) {
+          orbitTheta = (orbitTheta + 0.0065 * orbitSpeed) % (Math.PI * 2);
+          const deg = Math.round((orbitTheta * 180 / Math.PI) % 360);
+          const ob = document.getElementById('saverOrbitBadge');
+          if (ob) ob.textContent = `🪐 Orbit ${deg}°`;
+        }
+        const now = new Date();
+        const clk = document.getElementById('saverClock');
+        if (clk) {
+          clk.textContent = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        }
         rebuildHeightField(phaseTick, false);
         draw3DMountainCanvas('relief3dCanvas');
         draw3DMountainCanvas('screensaver3dCanvas');
@@ -1946,14 +2330,17 @@
         setPalette('alpine');
       } else if (mode === 'img2') {
         showCallout = false;
-        document.getElementById('mainHeaderTitle').innerHTML = 'NALA-HWSensors <span style="color:#38bdf8;font-weight:400;">v2.6</span>';
+        document.getElementById('mainHeaderTitle').innerHTML = 'NALA-HWSensors <span style="color:#38bdf8;font-weight:400;">v2.7</span>';
         document.getElementById('mainHeaderSub').textContent = 'LIVE HARDWARE TELEMETRY · 3D PERFORMANCE RELIEF';
         setPalette('lava');
       } else if (mode === 'img3') {
         showCallout = true;
-        document.getElementById('mainHeaderTitle').innerHTML = 'NALA-HWSensors <span style="color:#ec4899;font-weight:400;">v2.6</span>';
+        document.getElementById('mainHeaderTitle').innerHTML = 'NALA-HWSensors <span style="color:#ec4899;font-weight:400;">v2.7</span>';
         document.getElementById('mainHeaderSub').textContent = 'LIVE · 3D PERFORMANCE RELIEF · WIDGETS · REMOTE · SCREENSAVER';
         setPalette('aurora');
+      } else if (mode === 'himalaya' || mode === 'snowpeaks' || mode === 'forest' || mode === 'hyperlava') {
+        showCallout = true;
+        setPalette(mode);
       } else if (mode === 'wire') {
         showCallout = true;
         setPalette('aurora');
@@ -1962,27 +2349,67 @@
       }
     }
 
+    const BIOME_LABELS = {
+      himalaya: '🏔️ Himalaya (Grün → Braun → Fels → Schnee)',
+      snowpeaks: '❄️ Matterhorn Schnee-Gipfel',
+      forest: '🌲 Tannenwald & Alpengipfel',
+      hyperlava: '🌋 Hyper-Magma (Lava-Flüsse & Glut)',
+      lava: '🟧 Vulkan / Lava',
+      aurora: '🌌 NALA Aurora',
+      alpine: '🏔️ Alpine Gold',
+      emerald: '🟢 Emerald Matrix',
+      ice: '❄️ Arctic Ice'
+    };
+
     function setPalette(pal) {
       currentPalette = pal;
       wireOnly = false;
-      ['lava', 'aurora', 'alpine', 'emerald', 'ice'].forEach(p => {
+      ['himalaya', 'snowpeaks', 'forest', 'hyperlava', 'lava', 'aurora', 'alpine', 'emerald', 'ice'].forEach(p => {
         const b = document.getElementById('palBtn-' + p);
         if (b) b.classList.toggle('active', p === pal);
       });
       const sel = document.getElementById('inspectorPaletteSelect');
       if (sel) sel.value = pal;
+      const badge = document.getElementById('saverBiomeBadge');
+      if (badge) badge.textContent = BIOME_LABELS[pal] || pal;
       draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function setOrbit360(enabled) {
+      orbitEnabled = enabled;
+      const chk = document.getElementById('chkOrbit360');
+      if (chk) chk.checked = enabled;
+      const bTop = document.getElementById('btnOrbitTop');
+      if (bTop) bTop.style.background = enabled ? 'rgba(56,189,248,0.28)' : '#131c2e';
+      const bSav = document.getElementById('btnOrbitSaver');
+      if (bSav) bSav.textContent = enabled ? '🪐 360° Orbit: EIN' : '🪐 360° Orbit: AUS';
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    }
+
+    function toggleOrbit360() {
+      setOrbit360(!orbitEnabled);
+    }
+
+    function resetCameraAndOrbit() {
+      cameraAngle = 0;
+      cameraPitch = 0;
+      orbitTheta = 0;
+      setOrbit360(false);
     }
 
     function toggleWireframeOnly() {
       wireOnly = !wireOnly;
       draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
     }
 
     function rotatePerspective() {
       cameraAngle = cameraAngle === 0 ? 32 : cameraAngle === 32 ? -32 : 0;
       cameraPitch = cameraAngle === 32 ? 0.06 : cameraAngle === -32 ? -0.05 : 0.0;
       draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
     }
 
     function setReliefLive(state) {
@@ -1999,6 +2426,7 @@
       spikeBoost = 1.0;
       rebuildHeightField(phaseTick, true);
       draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
     }
 
     function selectHost(el, title, cpu, gpu, ram, pal) {
@@ -2016,14 +2444,88 @@
       document.getElementById('sysPopover').classList.toggle('hidden');
     }
 
-    function openScreensaver() {
+    // Native macOS Fullscreen Bridge + HTML5 Fullscreen Fallback
+    function toggleNativeFullscreen() {
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'toggleFullscreen' });
+      } else if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function enterNativeFullscreen() {
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'enterFullscreen' });
+      } else if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }
+
+    function exportOrInstallScreensaver() {
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'installScreenSaver' });
+      }
+      const toast = document.getElementById('saverToast');
+      if (toast) {
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 5000);
+      }
+    }
+
+    function openScreensaver(wantFullscreen) {
       document.getElementById('screensaverModal').classList.remove('hidden');
+      setOrbit360(true);
+      if (wantFullscreen) {
+        enterNativeFullscreen();
+      }
       setTimeout(() => draw3DMountainCanvas('screensaver3dCanvas'), 40);
     }
 
     function closeScreensaver() {
       document.getElementById('screensaverModal').classList.add('hidden');
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nalaNative) {
+        window.webkit.messageHandlers.nalaNative.postMessage({ action: 'exitFullscreen' });
+      } else if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
     }
+
+    // Live Hardware Telemetry Bridge from Native macOS (Apple Silicon arm64 & Intel x86_64)
+    window.updateNativeTelemetry = function(data) {
+      if (!data) return;
+      if (typeof data.cpuPercent === 'number') {
+        document.getElementById('mbCpu').textContent = data.cpuPercent + '%';
+        document.getElementById('valCpuTop').textContent = data.cpuPercent + '%';
+        const dash = Math.round((data.cpuPercent / 100) * 162);
+        const rc = document.getElementById('ringCpu');
+        if (rc) rc.setAttribute('stroke-dasharray', `${dash} 220`);
+      }
+      if (typeof data.tempCelsius === 'number') {
+        document.getElementById('mbTemp').textContent = data.tempCelsius + '°C';
+        document.getElementById('valTempTop').textContent = data.tempCelsius + '°C';
+      }
+      if (typeof data.ramPercent === 'number') {
+        document.getElementById('mbRam').textContent = data.ramPercent + '%';
+        document.getElementById('valRamTop').textContent = data.ramPercent + '%';
+        const dash = Math.round((data.ramPercent / 100) * 162);
+        const rr = document.getElementById('ringRam');
+        if (rr) rr.setAttribute('stroke-dasharray', `${dash} 220`);
+      }
+      if (typeof data.netUpKBps === 'number') {
+        document.getElementById('mbUp').textContent = data.netUpKBps + 'KB/s';
+      }
+      if (typeof data.netDownKBps === 'number') {
+        document.getElementById('mbDown').textContent = data.netDownKBps + 'KB/s';
+      }
+      if (Array.isArray(data.coreLoads) && data.coreLoads.length > 0) {
+        liveCoreLoads = data.coreLoads;
+      }
+      if (data.archLabel) {
+        document.getElementById('hostBadge').textContent = `${data.archLabel} · ${data.logicalCores || 16} Local + 192 Cluster Threads`;
+      }
+    };
 
     function openTwoClickModal(name) {
       document.getElementById('twoClickText').textContent =
@@ -2046,61 +2548,95 @@ Nutze die Resourcen von NALA und bringe ihr auch alles bei, trainiere sie so, da
 
     function buildIdePrompt(ide) {
       document.getElementById('idePromptArea').value =
-        `[TARGET IDE: ${ide}] — NALA-HWSensors v2.6 (True 3D Triangulated Wireframe & Mountain Relief, Neon Radial Gauges, Native macOS Menu Bar & Keychain)
+        `[TARGET IDE: ${ide}] — NALA-HWSensors v2.7 (True 3D Mountain Relief, Himalaya/SnowPeaks/Forest/HyperLava Biomes, 360° Planetary Orbit Screensaver .saver & Universal macOS arm64+x86_64)
 ` +
         `Repository: https://github.com/Master-MD/NALA-HWSensors
 
 ` + MANDATORY_FOOTER;
     }
 
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeScreensaver();
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
       initMatrix192();
-      const urlMode = new URLSearchParams(window.location.search).get('mode');
+      const params = new URLSearchParams(window.location.search);
+      const urlMode = params.get('mode');
+      const urlBiome = params.get('biome');
+      const urlOrbit = params.get('orbit');
+      const urlSaver = params.get('saver');
+      const urlAngle = params.get('angle');
+
       if (urlMode) {
         switchPresetLayout(urlMode);
       } else {
         switchPresetLayout('img3');
       }
+      if (urlBiome) {
+        setPalette(urlBiome);
+      }
+      if (urlOrbit === '1') {
+        setOrbit360(true);
+      }
+      if (urlAngle !== null) {
+        orbitTheta = (parseFloat(urlAngle) || 0) * Math.PI / 180;
+      }
+      if (urlSaver === '1') {
+        openScreensaver(false);
+      }
       draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
       renderAllHistograms();
       buildIdePrompt('OpenAI Codex / Antigravity / ZCode / OpenCode');
 
-      const c = document.getElementById('relief3dCanvas');
-      c.style.cursor = 'grab';
-      c.addEventListener('mousedown', e => {
-        isDragging3D = true;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        c.style.cursor = 'grabbing';
+      ['relief3dCanvas', 'screensaver3dCanvas'].forEach(cid => {
+        const c = document.getElementById(cid);
+        if (!c) return;
+        c.style.cursor = 'grab';
+        c.addEventListener('mousedown', e => {
+          isDragging3D = true;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          c.style.cursor = 'grabbing';
+        });
+        c.addEventListener('mousemove', e => {
+          const r = c.getBoundingClientRect();
+          if (isDragging3D) {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            if (orbitEnabled || cid === 'screensaver3dCanvas') {
+              orbitTheta = (orbitTheta + dx * 0.008 + Math.PI * 2) % (Math.PI * 2);
+            } else {
+              cameraAngle = Math.max(-55, Math.min(55, cameraAngle + dx * 0.35));
+            }
+            cameraPitch = Math.max(-0.12, Math.min(0.15, cameraPitch + dy * 0.0015));
+            draw3DMountainCanvas('relief3dCanvas');
+            draw3DMountainCanvas('screensaver3dCanvas');
+          }
+          const th = Math.min(191, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * 192)));
+          const pct = Math.min(98, Math.max(24, Math.round(52 + Math.sin(th * 0.18) * 38)));
+          hoveredPeak = {
+            thread: th,
+            pct,
+            ghz: (2.2 + (pct / 100) * 1.1).toFixed(2),
+            temp: Math.round(49 + (pct / 100) * 23)
+          };
+        });
       });
+
       window.addEventListener('mouseup', () => {
         if (isDragging3D) {
           isDragging3D = false;
-          c.style.cursor = 'grab';
         }
-      });
-      c.addEventListener('mousemove', e => {
-        const r = c.getBoundingClientRect();
-        if (isDragging3D) {
-          const dx = e.clientX - dragStartX;
-          const dy = e.clientY - dragStartY;
-          dragStartX = e.clientX;
-          dragStartY = e.clientY;
-          cameraAngle = Math.max(-55, Math.min(55, cameraAngle + dx * 0.35));
-          cameraPitch = Math.max(-0.12, Math.min(0.15, cameraPitch + dy * 0.0015));
-          draw3DMountainCanvas('relief3dCanvas');
-        }
-        const th = Math.min(191, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * 192)));
-        const pct = Math.min(98, Math.max(24, Math.round(52 + Math.sin(th * 0.18) * 38)));
-        hoveredPeak = {
-          thread: th,
-          pct,
-          ghz: (2.2 + (pct / 100) * 1.1).toFixed(2),
-          temp: Math.round(49 + (pct / 100) * 23)
-        };
       });
     });
-    window.addEventListener('resize', () => draw3DMountainCanvas('relief3dCanvas'));
+    window.addEventListener('resize', () => {
+      draw3DMountainCanvas('relief3dCanvas');
+      draw3DMountainCanvas('screensaver3dCanvas');
+    });
   </script>
 </body>
 </html>
